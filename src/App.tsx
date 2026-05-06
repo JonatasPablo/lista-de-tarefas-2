@@ -1,122 +1,142 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect, useState } from 'react'
+import { Header } from './components/Header/Header'
+import { TaskForm } from './components/TaskForm/TaskForm'
+import { TaskList } from './components/TaskList/TaskList'
+import type { Task, TaskPriority } from './types/task'
+import { getCurrentDateTime } from './utils/date'
+import './styles/global.css'
+
+const LOCAL_STORAGE_KEY = 'tasks'
+
+const priorityOrder: Record<TaskPriority, number> = {
+    alta: 1,
+    media: 2,
+    baixa: 3,
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [tasks, setTasks] = useState<Task[]>(() => {
+        const storedTasks = localStorage.getItem(LOCAL_STORAGE_KEY)
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+        if (!storedTasks) {
+            return []
+        }
 
-      <div className="ticks"></div>
+        return JSON.parse(storedTasks) as Task[]
+    })
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+    const sortedTasks = [...tasks].sort((taskA, taskB) => {
+        if (taskA.completed !== taskB.completed) {
+            return Number(taskA.completed) - Number(taskB.completed)
+        }
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        return priorityOrder[taskA.priority] - priorityOrder[taskB.priority]
+    })
+
+    const addTask = (text: string, priority: TaskPriority) => {
+        const newTask: Task = {
+            id: crypto.randomUUID(),
+            text,
+            priority,
+            completed: false,
+            createdAt: getCurrentDateTime(),
+        }
+
+        setTasks((currentTasks) => [...currentTasks, newTask])
+    }
+
+    const toggleTask = (taskId: string) => {
+        setTasks((currentTasks) =>
+            currentTasks.map((task) =>
+                task.id === taskId
+                    ? { ...task, completed: !task.completed }
+                    : task
+            )
+        )
+    }
+
+    const updateTask = (
+        taskId: string,
+        text: string,
+        priority: TaskPriority
+    ) => {
+        setTasks((currentTasks) =>
+            currentTasks.map((task) =>
+                task.id === taskId
+                    ? {
+                          ...task,
+                          text,
+                          priority,
+                          updatedAt: getCurrentDateTime(),
+                      }
+                    : task
+            )
+        )
+    }
+
+    const deleteTask = (taskId: string) => {
+        setTasks((currentTasks) =>
+            currentTasks.filter((task) => task.id !== taskId)
+        )
+    }
+
+    const deleteCompletedTasks = () => {
+        setTasks((currentTasks) =>
+            currentTasks.filter((task) => !task.completed)
+        )
+    }
+
+    const exportTasks = () => {
+        const taskText = sortedTasks
+            .map((task) => {
+                const status = task.completed ? 'Concluída' : 'Pendente'
+
+                return `${task.text} - ${status} - Criada em: ${task.createdAt} - Prioridade: ${task.priority}`
+            })
+            .join('\n')
+
+        const blob = new Blob([taskText], {
+            type: 'text/plain;charset=utf-8',
+        })
+
+        const url = URL.createObjectURL(blob)
+
+        const link = document.createElement('a')
+        link.href = url
+        link.download = 'lista_de_tarefas.txt'
+        link.click()
+
+        URL.revokeObjectURL(url)
+    }
+
+    useEffect(() => {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(tasks))
+    }, [tasks])
+
+    return (
+        <main className="container">
+            <Header />
+
+            <TaskForm onAddTask={addTask} />
+
+            <div className="buttons-wrapper">
+                <button type="button" onClick={exportTasks}>
+                    Exportar Lista
+                </button>
+
+                <button type="button" onClick={deleteCompletedTasks}>
+                    Deletar Tarefas Completas
+                </button>
+            </div>
+
+            <TaskList
+                tasks={sortedTasks}
+                onToggleTask={toggleTask}
+                onDeleteTask={deleteTask}
+                onUpdateTask={updateTask}
+            />
+        </main>
+    )
 }
 
 export default App
