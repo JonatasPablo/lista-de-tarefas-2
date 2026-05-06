@@ -1,11 +1,22 @@
+/* =========================
+   Reset / Base
+========================= */
+
 * {
     box-sizing: border-box;
     font-family: Helvetica, Arial, sans-serif;
 }
 
+html,
+body,
+#root {
+    height: 100%;
+}
+
 body {
     margin: 0;
     min-height: 100vh;
+    overflow: hidden;
     background-color: #d9d9d9;
     background-position: center;
     background-size: cover;
@@ -23,6 +34,7 @@ button {
     border-radius: 10px;
     border: 1px solid #ffffff;
     background-color: #ffffff;
+    color: #000000;
     cursor: pointer;
     transition: 0.2s;
 }
@@ -32,76 +44,251 @@ button:hover {
     color: #ffffff;
 }
 
+button:disabled,
+.file-upload-button.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    background-color: #ffffff;
+    color: #777777;
+    border-color: #ffffff;
+}
+
+button:disabled:hover,
+.file-upload-button.disabled:hover {
+    background-color: #ffffff;
+    color: #777777;
+    border-color: #ffffff;
+}
+
+/* =========================
+   Layout principal
+========================= */
+
 .container {
-    width: min(1100px, 90%);
-    margin: 32px auto;
-    padding: 24px;
+    width: min(1100px, 95%);
+    height: 100vh;
+    margin: 0 auto;
+    padding: 14px;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 16px;
+    overflow: hidden;
     background-color: rgba(150, 150, 150, 0.4);
-    border-radius: 32px;
+    border-radius: 24px;
 }
 
-.header h1 {
-    margin: 0 0 24px;
-    color: #404040;
-    text-align: center;
-    font-size: clamp(32px, 7vw, 82px);
+.page-section {
+    display: grid;
+    grid-template-rows: auto auto auto auto 1fr;
+    gap: 14px;
+    min-height: 0;
 }
 
-.task-form {
+/* =========================
+   Header / Navegação
+========================= */
+
+.header {
     display: grid;
     gap: 12px;
 }
 
+.header h1 {
+    margin: 0;
+    color: #404040;
+    text-align: center;
+    font-size: clamp(28px, 5vw, 64px);
+}
+
+.main-nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.nav-link {
+    padding: 10px 16px;
+    border-radius: 999px;
+    background-color: #ffffff;
+    color: #404040;
+    text-decoration: none;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background-color: #404040;
+    color: #ffffff;
+}
+
+/* =========================
+   Formulário
+========================= */
+
+.task-form {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.35);
+}
+
 .task-form label {
     color: #404040;
-    font-size: 18px;
+    font-size: 16px;
+    font-weight: 700;
 }
 
 .task-form input,
 .task-form select,
 .task-edit input,
-.task-edit select {
+.task-edit select,
+.task-filters input,
+.task-filters select {
     width: 100%;
-    padding: 12px;
+    padding: 9px 10px;
     border: 0;
-    border-radius: 10px;
+    border-radius: 8px;
+    font-size: 14px;
 }
 
-.buttons-wrapper {
+.task-form button {
+    width: fit-content;
+}
+
+/* =========================
+   Resumo / Contadores
+========================= */
+
+.task-stats {
+    display: grid;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.28);
+}
+
+.task-stats h3 {
+    margin: 0 0 2px;
+    color: #404040;
+    font-size: 15px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.stats-grid div {
+    display: grid;
+    gap: 4px;
+    min-height: 58px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+}
+
+.stats-grid strong {
+    color: #404040;
+    font-size: 22px;
+    line-height: 1;
+}
+
+.stats-grid span {
+    color: #404040;
+    font-size: 12px;
+}
+
+/* =========================
+   Filtros
+========================= */
+
+.task-filters {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.28);
+}
+
+/* =========================
+   Barra de exportação
+========================= */
+
+.export-toolbar {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin: 16px 0;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.22);
 }
+
+.export-toolbar button {
+    padding: 7px 10px;
+    font-size: 14px;
+}
+
+/* =========================
+   Seção de tarefas com rolagem
+========================= */
+
+.tasks-section {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 10px;
+    min-height: 0;
+}
+
+.tasks-section h2 {
+    margin: 0;
+    color: #404040;
+    font-size: 22px;
+}
+
+.tasks-scroll-area {
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.tasks-scroll-area::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tasks-scroll-area::-webkit-scrollbar-thumb {
+    background-color: rgba(64, 64, 64, 0.35);
+    border-radius: 999px;
+}
+
+.tasks-scroll-area::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+/* =========================
+   Lista / Card da tarefa
+========================= */
 
 .task-list {
     display: grid;
-    gap: 8px;
+    gap: 12px;
     padding: 0;
+    margin: 0;
     list-style: none;
 }
 
 .task-item {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 12px;
-    border: 1px solid #dddddd;
-    border-radius: 10px;
-}
-
-.task-item label {
-    display: flex;
-    gap: 8px;
-    align-items: flex-start;
-    color: #ffffff;
-    word-break: break-word;
-}
-
-.task-item.completed {
-    text-decoration: line-through;
-    font-style: italic;
-    opacity: 0.7;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 16px;
 }
 
 .task-item[data-priority='alta'] {
@@ -116,11 +303,33 @@ button:hover {
     background-color: rgba(5, 116, 1, 0.572);
 }
 
+.task-header-row {
+    display: grid;
+    gap: 10px;
+}
+
+.task-header-row > label:not(.export-selection) {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    color: #ffffff;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
 .task-actions,
-.task-edit {
+.task-edit,
+.task-file-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+}
+
+.task-actions button,
+.task-file-actions button,
+.file-upload-button {
+    min-width: 90px;
+    text-align: center;
 }
 
 .empty-message {
@@ -129,16 +338,167 @@ button:hover {
     font-size: 18px;
 }
 
-@media only screen and (max-width: 600px) {
-    .container {
-        width: 95%;
-        padding: 16px;
-        border-radius: 24px;
+/* =========================
+   Seleção para exportação
+========================= */
+
+.export-selection {
+    display: inline-flex;
+    width: fit-content;
+    gap: 8px;
+    align-items: center;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.export-selection:hover {
+    background-color: rgba(255, 255, 255, 0.28);
+}
+
+/* =========================
+   Upload / Arquivos anexados
+========================= */
+
+.file-upload-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #ffffff;
+    background-color: #ffffff;
+    color: #000000;
+    cursor: pointer;
+    transition: 0.2s;
+    word-break: normal;
+}
+
+.file-upload-button:hover {
+    background-color: #404040;
+    color: #ffffff;
+}
+
+.task-files {
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+}
+
+.task-files strong {
+    color: #ffffff;
+}
+
+.task-files ul {
+    display: grid;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.task-files-empty {
+    margin: 0;
+    color: #ffffff;
+    opacity: 0.8;
+}
+
+.task-file-item {
+    display: grid;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.task-file-item span {
+    display: block;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+.task-file-item small {
+    display: block;
+    margin-top: 4px;
+    opacity: 0.85;
+    word-break: break-word;
+}
+
+/* =========================
+   Concluídas / bloqueadas
+========================= */
+
+.task-item.completed {
+    opacity: 0.9;
+}
+
+.task-item.completed .task-text {
+    text-decoration: line-through;
+    font-style: italic;
+    opacity: 0.75;
+}
+
+.task-item.completed button,
+.task-item.completed .file-upload-button,
+.task-locked-message,
+.task-files,
+.task-files * {
+    text-decoration: none;
+    font-style: normal;
+}
+
+.task-locked-message {
+    margin: 0;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+    font-size: 14px;
+}
+
+/* =========================
+   Responsivo
+========================= */
+
+@media only screen and (max-width: 800px) {
+    .task-filters {
+        grid-template-columns: 1fr;
     }
 
-    .buttons-wrapper,
-    .task-actions,
-    .task-edit {
-        flex-direction: column;
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .task-form button,
+    .export-toolbar button,
+    .task-actions button,
+    .task-file-actions button,
+    .file-upload-button {
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        width: 96%;
+        padding: 12px;
+        border-radius: 20px;
+    }
+
+    .header h1 {
+        font-size: 30px;
     }
 }
