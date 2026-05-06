@@ -2,36 +2,53 @@ import { useState } from 'react'
 import type { TaskPriority } from '../../types/task'
 
 interface TaskFormProps {
-    onAddTask: (text: string, priority: TaskPriority) => void
+    onAddTask: (
+        title: string,
+        description: string,
+        priority: TaskPriority
+    ) => void
 }
 
 export const TaskForm = ({ onAddTask }: TaskFormProps) => {
-    const [text, setText] = useState('')
+    const [title, setTitle] = useState('')
+    const [description, setDescription] = useState('')
     const [priority, setPriority] = useState<TaskPriority>('alta')
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault()
 
-        if (!text.trim()) {
+        if (!title.trim()) {
+            alert('O título da tarefa não pode ficar vazio.')
             return
         }
 
-        onAddTask(text, priority)
+        onAddTask(title, description, priority)
 
-        setText('')
+        setTitle('')
+        setDescription('')
         setPriority('alta')
     }
 
     return (
         <form className="task-form" onSubmit={handleSubmit}>
-            <label htmlFor="taskInput">Descrição da Tarefa:</label>
+            <label htmlFor="taskTitle">Título da tarefa:</label>
 
             <input
-                id="taskInput"
+                id="taskTitle"
                 type="text"
-                placeholder="Adicionar tarefa"
-                value={text}
-                onChange={(event) => setText(event.target.value)}
+                placeholder="Ex: Ajustar relatório de vendas"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+            />
+
+            <label htmlFor="taskDescription">Descrição:</label>
+
+            <textarea
+                id="taskDescription"
+                placeholder="Detalhes da tarefa..."
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                rows={3}
             />
 
             <select

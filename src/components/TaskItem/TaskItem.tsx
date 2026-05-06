@@ -12,7 +12,8 @@ interface TaskItemProps {
     onDeleteTask: (taskId: string) => void
     onUpdateTask: (
         taskId: string,
-        text: string,
+        title: string,
+        description: string,
         priority: TaskPriority
     ) => void
     onAddFiles: (taskId: string, files: File[]) => void
@@ -37,7 +38,10 @@ export const TaskItem = ({
     onDeleteFile,
 }: TaskItemProps) => {
     const [isEditing, setIsEditing] = useState(false)
-    const [editedText, setEditedText] = useState(task.text)
+    const [editedTitle, setEditedTitle] = useState(task.title)
+    const [editedDescription, setEditedDescription] = useState(
+        task.description || ''
+    )
     const [editedPriority, setEditedPriority] = useState<TaskPriority>(
         task.priority
     )
@@ -50,12 +54,12 @@ export const TaskItem = ({
             return
         }
 
-        if (!editedText.trim()) {
-            alert('A descrição da tarefa não pode ficar vazia.')
+        if (!editedTitle.trim()) {
+            alert('O título da tarefa não pode ficar vazio.')
             return
         }
 
-        onUpdateTask(task.id, editedText, editedPriority)
+        onUpdateTask(task.id, editedTitle, editedDescription, editedPriority)
         setIsEditing(false)
     }
 
@@ -117,12 +121,21 @@ export const TaskItem = ({
                 <div className="task-edit">
                     <input
                         type="text"
-                        value={editedText}
+                        value={editedTitle}
                         disabled={isTaskCompleted}
                         onChange={(event) =>
-                            setEditedText(event.target.value)
+                            setEditedTitle(event.target.value)
                         }
                         onKeyDown={handleKeyDown}
+                    />
+
+                    <textarea
+                        value={editedDescription}
+                        disabled={isTaskCompleted}
+                        onChange={(event) =>
+                            setEditedDescription(event.target.value)
+                        }
+                        rows={3}
                     />
 
                     <select
@@ -168,47 +181,63 @@ export const TaskItem = ({
                             </label>
                         )}
 
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={task.completed}
-                                onChange={() => onToggleTask(task.id)}
-                            />
+                        <div className="task-main-info">
+                            {!isTaskCompleted && (
+                                <input
+                                    type="checkbox"
+                                    checked={task.completed}
+                                    onChange={() => onToggleTask(task.id)}
+                                    title="Concluir tarefa"
+                                />
+                            )}
 
                             <span className="task-text">
-                                {task.text} - Criada em: {task.createdAt} -
-                                Prioridade:{' '}
-                                {task.priority.charAt(0).toUpperCase() +
-                                    task.priority.slice(1)}
-                                {task.updatedAt &&
-                                    ` - Editada em: ${task.updatedAt}`}
+                                <strong>{task.title}</strong>
+
+                                {task.description && (
+                                    <small>{task.description}</small>
+                                )}
+
+                                <em>
+                                    Criada em: {task.createdAt} | Prioridade:{' '}
+                                    {task.priority}
+                                    {task.updatedAt &&
+                                        ` | Editada em: ${task.updatedAt}`}
+                                    {task.completedAt &&
+                                        ` | Concluída em: ${task.completedAt}`}
+                                </em>
                             </span>
-                        </label>
+                        </div>
                     </div>
 
                     <div className="task-actions">
-                        <button
-                            type="button"
-                            disabled={isTaskCompleted}
-                            onClick={() => setIsEditing(true)}
-                        >
-                            Editar
-                        </button>
+                        {isTaskCompleted ? (
+                            <button
+                                type="button"
+                                onClick={() => onToggleTask(task.id)}
+                            >
+                                Reabrir tarefa
+                            </button>
+                        ) : (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsEditing(true)}
+                                >
+                                    Editar
+                                </button>
 
-                        <label
-                            className={`file-upload-button ${
-                                isTaskCompleted ? 'disabled' : ''
-                            }`}
-                        >
-                            Anexar arquivo
-                            <input
-                                type="file"
-                                multiple
-                                disabled={isTaskCompleted}
-                                onChange={handleFileChange}
-                                hidden
-                            />
-                        </label>
+                                <label className="file-upload-button">
+                                    Anexar arquivo
+                                    <input
+                                        type="file"
+                                        multiple
+                                        onChange={handleFileChange}
+                                        hidden
+                                    />
+                                </label>
+                            </>
+                        )}
 
                         <button
                             type="button"

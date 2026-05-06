@@ -11,7 +11,8 @@ interface TaskListProps {
     onDeleteTask: (taskId: string) => void
     onUpdateTask: (
         taskId: string,
-        text: string,
+        title: string,
+        description: string,
         priority: TaskPriority
     ) => void
     onAddFiles: (taskId: string, files: File[]) => void

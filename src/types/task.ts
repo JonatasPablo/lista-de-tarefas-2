@@ -11,10 +11,13 @@ export interface TaskFile {
 
 export interface Task {
     id: string
-    text: string
+    title: string
+    description?: string
+    text?: string
     priority: TaskPriority
     completed: boolean
     createdAt: string
     updatedAt?: string
+    completedAt?: string
     files: TaskFile[]
 }

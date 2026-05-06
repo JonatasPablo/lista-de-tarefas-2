@@ -1,0 +1,88 @@
+import type { PriorityFilter, TaskSortOption } from '../components/TaskFilters/TaskFilters'
+import type { Task, TaskPriority } from '../types/task'
+
+const priorityOrder: Record<TaskPriority, number> = {
+    alta: 1,
+    media: 2,
+    baixa: 3,
+}
+
+const parseBrazilianDateTime = (dateTime?: string) => {
+    if (!dateTime) {
+        return 0
+    }
+
+    const [datePart, timePart = '00:00:00'] = dateTime.split(', ')
+    const [day, month, year] = datePart.split('/').map(Number)
+    const [hour, minute, second] = timePart.split(':').map(Number)
+
+    return new Date(year, month - 1, day, hour, minute, second).getTime()
+}
+
+export const filterTasks = (
+    tasks: Task[],
+    searchTerm: string,
+    priorityFilter: PriorityFilter
+) => {
+    return tasks.filter((task) => {
+        const normalizedSearch = searchTerm.trim().toLowerCase()
+
+        const matchesSearch =
+            normalizedSearch === '' ||
+            task.title.toLowerCase().includes(normalizedSearch) ||
+            task.description?.toLowerCase().includes(normalizedSearch) ||
+            task.files.some((file) =>
+                file.displayName.toLowerCase().includes(normalizedSearch)
+            )
+
+        const matchesPriority =
+            priorityFilter === 'todas' || task.priority === priorityFilter
+
+        return matchesSearch && matchesPriority
+    })
+}
+
+export const sortTasks = (tasks: Task[], sortOption: TaskSortOption) => {
+    const sortedTasks = [...tasks]
+
+    switch (sortOption) {
+        case 'mais-recentes':
+            return sortedTasks.sort(
+                (taskA, taskB) =>
+                    parseBrazilianDateTime(taskB.createdAt) -
+                    parseBrazilianDateTime(taskA.createdAt)
+            )
+
+        case 'mais-antigas':
+            return sortedTasks.sort(
+                (taskA, taskB) =>
+                    parseBrazilianDateTime(taskA.createdAt) -
+                    parseBrazilianDateTime(taskB.createdAt)
+            )
+
+        case 'ultimas-editadas':
+            return sortedTasks.sort(
+                (taskA, taskB) =>
+                    parseBrazilianDateTime(taskB.updatedAt) -
+                    parseBrazilianDateTime(taskA.updatedAt)
+            )
+
+        case 'nome-az':
+            return sortedTasks.sort((taskA, taskB) =>
+                taskA.title.localeCompare(taskB.title)
+            )
+
+        case 'nome-za':
+            return sortedTasks.sort((taskA, taskB) =>
+                taskB.title.localeCompare(taskA.title)
+            )
+
+        case 'prioridade':
+        default:
+            return sortedTasks.sort(
+                (taskA, taskB) =>
+                    priorityOrder[taskA.priority] -
+                    priorityOrder[taskB.priority]
+            )
+    }
+}

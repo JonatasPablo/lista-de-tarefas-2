@@ -1,9 +1,13 @@
 import { useMemo, useState } from 'react'
 import { TaskFilters } from '../../components/TaskFilters/TaskFilters'
-import type { PriorityFilter } from '../../components/TaskFilters/TaskFilters'
+import type {
+    PriorityFilter,
+    TaskSortOption,
+} from '../../components/TaskFilters/TaskFilters'
 import { TaskList } from '../../components/TaskList/TaskList'
 import { TaskStats } from '../../components/TaskStats/TaskStats'
 import type { Task, TaskPriority } from '../../types/task'
+import { filterTasks, sortTasks } from '../../utils/tasks'
 
 interface CompletedTasksPageProps {
     completedTasks: Task[]
@@ -11,7 +15,8 @@ interface CompletedTasksPageProps {
     onDeleteTask: (taskId: string) => void
     onUpdateTask: (
         taskId: string,
-        text: string,
+        title: string,
+        description: string,
         priority: TaskPriority
     ) => void
     onAddFiles: (taskId: string, files: File[]) => void
@@ -35,35 +40,33 @@ export const CompletedTasksPage = ({
     const [searchTerm, setSearchTerm] = useState('')
     const [priorityFilter, setPriorityFilter] =
         useState<PriorityFilter>('todas')
+    const [sortOption, setSortOption] =
+        useState<TaskSortOption>('mais-recentes')
 
     const filteredTasks = useMemo(() => {
-        return completedTasks.filter((task) => {
-            const normalizedSearch = searchTerm.trim().toLowerCase()
+        const filtered = filterTasks(completedTasks, searchTerm, priorityFilter)
 
-            const matchesSearch =
-                normalizedSearch === '' ||
-                task.text.toLowerCase().includes(normalizedSearch) ||
-                task.files.some((file) =>
-                    file.displayName.toLowerCase().includes(normalizedSearch)
-                )
+        return sortTasks(filtered, sortOption)
+    }, [completedTasks, priorityFilter, searchTerm, sortOption])
 
-            const matchesPriority =
-                priorityFilter === 'todas' ||
-                task.priority === priorityFilter
-
-            return matchesSearch && matchesPriority
-        })
-    }, [completedTasks, priorityFilter, searchTerm])
+    const handleClearFilters = () => {
+        setSearchTerm('')
+        setPriorityFilter('todas')
+        setSortOption('mais-recentes')
+    }
 
     return (
-        <section className="page-section">
-            <TaskStats tasks={completedTasks} title="Resumo do histórico" />
+        <section className="page-section completed-page-section">
+            <TaskStats tasks={filteredTasks} title="Resumo do histórico" />
 
             <TaskFilters
                 searchTerm={searchTerm}
                 priorityFilter={priorityFilter}
+                sortOption={sortOption}
                 onSearchChange={setSearchTerm}
                 onPriorityChange={setPriorityFilter}
+                onSortChange={setSortOption}
+                onClearFilters={handleClearFilters}
             />
 
             <section className="tasks-section">
@@ -71,14 +74,14 @@ export const CompletedTasksPage = ({
 
                 <div className="tasks-scroll-area">
                     <TaskList
-                    tasks={filteredTasks}
-                    emptyMessage="Nenhuma tarefa concluída encontrada."
-                    onToggleTask={onToggleTask}
-                    onDeleteTask={onDeleteTask}
-                    onUpdateTask={onUpdateTask}
-                    onAddFiles={onAddFiles}
-                    onRenameFile={onRenameFile}
-                    onDeleteFile={onDeleteFile}
+                        tasks={filteredTasks}
+                        emptyMessage="Nenhuma tarefa concluída encontrada."
+                        onToggleTask={onToggleTask}
+                        onDeleteTask={onDeleteTask}
+                        onUpdateTask={onUpdateTask}
+                        onAddFiles={onAddFiles}
+                        onRenameFile={onRenameFile}
+                        onDeleteFile={onDeleteFile}
                     />
                 </div>
             </section>

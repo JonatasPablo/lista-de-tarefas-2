@@ -466,6 +466,95 @@ button:disabled:hover,
 }
 
 /* =========================
+   Melhorias: descrição, ajuda e filtros
+========================= */
+
+.task-form textarea,
+.task-edit textarea {
+    width: 100%;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 8px;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.task-main-info {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    color: #ffffff;
+}
+
+.task-text {
+    display: grid;
+    gap: 4px;
+    word-break: break-word;
+}
+
+.task-text strong {
+    font-size: 18px;
+}
+
+.task-text small {
+    font-size: 14px;
+    line-height: 1.4;
+    opacity: 0.92;
+}
+
+.task-text em {
+    font-size: 12px;
+    opacity: 0.85;
+}
+
+.filter-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 10px;
+    border-radius: 999px;
+    background-color: rgba(64, 64, 64, 0.16);
+    color: #404040;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.help-page {
+    min-height: 0;
+    overflow-y: auto;
+    display: grid;
+    gap: 12px;
+    padding-right: 6px;
+}
+
+.help-page h2 {
+    margin: 0;
+    color: #404040;
+}
+
+.help-card {
+    padding: 14px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.35);
+}
+
+.help-card h3 {
+    margin: 0 0 6px;
+    color: #404040;
+}
+
+.help-card p {
+    margin: 0;
+    color: #404040;
+    line-height: 1.5;
+}
+
+@media only screen and (max-width: 900px) {
+    .task-filters {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
    Responsivo
 ========================= */
 

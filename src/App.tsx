@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import { Header } from './components/Header/Header'
 import { CompletedTasksPage } from './pages/CompletedTasksPage/CompletedTasksPage'
+import { HelpPage } from './pages/HelpPage/HelpPage'
 import { TasksPage } from './pages/TasksPage/TasksPage'
 
 import type { Task, TaskFile, TaskPriority } from './types/task'
@@ -10,12 +11,6 @@ import { getCurrentDateTime } from './utils/date'
 import './styles/global.css'
 
 const LOCAL_STORAGE_KEY = 'tasks'
-
-const priorityOrder: Record<TaskPriority, number> = {
-    alta: 1,
-    media: 2,
-    baixa: 3,
-}
 
 function App() {
     const [tasks, setTasks] = useState<Task[]>(() => {
@@ -29,23 +24,27 @@ function App() {
 
         return parsedTasks.map((task) => ({
             ...task,
+            title: task.title || task.text || 'Tarefa sem título',
+            description: task.description || '',
+            completedAt: task.completedAt,
             files: task.files || [],
         }))
     })
 
     const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
 
-    const sortedTasks = [...tasks].sort((taskA, taskB) => {
-        return priorityOrder[taskA.priority] - priorityOrder[taskB.priority]
-    })
+    const pendingTasks = tasks.filter((task) => !task.completed)
+    const completedTasks = tasks.filter((task) => task.completed)
 
-    const pendingTasks = sortedTasks.filter((task) => !task.completed)
-    const completedTasks = sortedTasks.filter((task) => task.completed)
-
-    const addTask = (text: string, priority: TaskPriority) => {
+    const addTask = (
+        title: string,
+        description: string,
+        priority: TaskPriority
+    ) => {
         const newTask: Task = {
             id: crypto.randomUUID(),
-            text,
+            title,
+            description,
             priority,
             completed: false,
             createdAt: getCurrentDateTime(),
@@ -76,7 +75,13 @@ function App() {
         setTasks((currentTasks) =>
             currentTasks.map((task) =>
                 task.id === taskId
-                    ? { ...task, completed: !task.completed }
+                    ? {
+                          ...task,
+                          completed: !task.completed,
+                          completedAt: !task.completed
+                              ? getCurrentDateTime()
+                              : undefined,
+                      }
                     : task
             )
         )
@@ -88,7 +93,8 @@ function App() {
 
     const updateTask = (
         taskId: string,
-        text: string,
+        title: string,
+        description: string,
         priority: TaskPriority
     ) => {
         setTasks((currentTasks) =>
@@ -104,7 +110,8 @@ function App() {
 
                 return {
                     ...task,
-                    text,
+                    title,
+                    description,
                     priority,
                     updatedAt: getCurrentDateTime(),
                 }
@@ -113,8 +120,15 @@ function App() {
     }
 
     const deleteTask = (taskId: string) => {
+        const taskToDelete = tasks.find((task) => task.id === taskId)
+
+        if (!taskToDelete) {
+            alert('Tarefa não encontrada.')
+            return
+        }
+
         const confirmDelete = window.confirm(
-            'Tem certeza que deseja excluir esta tarefa?'
+            `Tem certeza que deseja excluir a tarefa "${taskToDelete.title}"?`
         )
 
         if (!confirmDelete) {
@@ -246,13 +260,18 @@ function App() {
                         ? task.files.map((file) => file.displayName).join(', ')
                         : 'Nenhum arquivo anexado'
 
+                const descriptionText = task.description
+                    ? task.description
+                    : 'Sem descrição'
+
                 const editedAtText = task.updatedAt
                     ? `- Editada em: ${task.updatedAt}`
                     : '- Editada em: Não editada'
 
                 return [
                     `Tarefa ${index + 1}`,
-                    `- Tarefa: ${task.text}`,
+                    `- Título: ${task.title}`,
+                    `- Descrição: ${descriptionText}`,
                     '- Status: Pendente',
                     `- Criada em: ${task.createdAt}`,
                     `- Prioridade: ${task.priority}`,
@@ -324,6 +343,8 @@ function App() {
                             />
                         }
                     />
+
+                    <Route path="/ajuda" element={<HelpPage />} />
                 </Routes>
             </main>
         </BrowserRouter>

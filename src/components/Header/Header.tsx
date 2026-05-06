@@ -21,7 +21,16 @@ export const Header = () => {
                         isActive ? 'nav-link active' : 'nav-link'
                     }
                 >
-                    Histórico de concluídas
+                    Histórico
+                </NavLink>
+
+                <NavLink
+                    to="/ajuda"
+                    className={({ isActive }) =>
+                        isActive ? 'nav-link active' : 'nav-link'
+                    }
+                >
+                    Ajuda
                 </NavLink>
             </nav>
         </header>

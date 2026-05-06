@@ -1,10 +1,14 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { TaskFilters } from '../../components/TaskFilters/TaskFilters'
-import type { PriorityFilter } from '../../components/TaskFilters/TaskFilters'
+import type {
+    PriorityFilter,
+    TaskSortOption,
+} from '../../components/TaskFilters/TaskFilters'
 import { TaskForm } from '../../components/TaskForm/TaskForm'
 import { TaskList } from '../../components/TaskList/TaskList'
 import { TaskStats } from '../../components/TaskStats/TaskStats'
 import type { Task, TaskPriority } from '../../types/task'
+import { filterTasks, sortTasks } from '../../utils/tasks'
 
 interface TasksPageProps {
     pendingTasks: Task[]
@@ -12,12 +16,17 @@ interface TasksPageProps {
     onSelectTask: (taskId: string) => void
     onSelectAllVisibleTasks: (taskIds: string[]) => void
     onClearSelectedTasks: () => void
-    onAddTask: (text: string, priority: TaskPriority) => void
+    onAddTask: (
+        title: string,
+        description: string,
+        priority: TaskPriority
+    ) => void
     onToggleTask: (taskId: string) => void
     onDeleteTask: (taskId: string) => void
     onUpdateTask: (
         taskId: string,
-        text: string,
+        title: string,
+        description: string,
         priority: TaskPriority
     ) => void
     onAddFiles: (taskId: string, files: File[]) => void
@@ -48,29 +57,30 @@ export const TasksPage = ({
     const [searchTerm, setSearchTerm] = useState('')
     const [priorityFilter, setPriorityFilter] =
         useState<PriorityFilter>('todas')
+    const [sortOption, setSortOption] =
+        useState<TaskSortOption>('prioridade')
 
     const filteredTasks = useMemo(() => {
-        return pendingTasks.filter((task) => {
-            const normalizedSearch = searchTerm.trim().toLowerCase()
+        const filtered = filterTasks(pendingTasks, searchTerm, priorityFilter)
 
-            const matchesSearch =
-                normalizedSearch === '' ||
-                task.text.toLowerCase().includes(normalizedSearch) ||
-                task.files.some((file) =>
-                    file.displayName.toLowerCase().includes(normalizedSearch)
-                )
-
-            const matchesPriority =
-                priorityFilter === 'todas' ||
-                task.priority === priorityFilter
-
-            return matchesSearch && matchesPriority
-        })
-    }, [pendingTasks, priorityFilter, searchTerm])
+        return sortTasks(filtered, sortOption)
+    }, [pendingTasks, priorityFilter, searchTerm, sortOption])
 
     const selectedVisibleTasks = filteredTasks.filter((task) =>
         selectedTaskIds.includes(task.id)
     )
+
+    const hasActiveFilters =
+        searchTerm.trim() !== '' ||
+        priorityFilter !== 'todas' ||
+        sortOption !== 'prioridade'
+
+    const handleClearFilters = () => {
+        setSearchTerm('')
+        setPriorityFilter('todas')
+        setSortOption('prioridade')
+        onClearSelectedTasks()
+    }
 
     const handleExport = () => {
         if (selectedTaskIds.length > 0) {
@@ -89,20 +99,27 @@ export const TasksPage = ({
         onExportTasks(filteredTasks)
     }
 
+    useEffect(() => {
+    onClearSelectedTasks()
+}, [searchTerm, priorityFilter, onClearSelectedTasks])
+
     return (
         <section className="page-section">
             <TaskForm onAddTask={onAddTask} />
 
             <TaskStats
-                tasks={pendingTasks}
+                tasks={filteredTasks}
                 title="Resumo das tarefas pendentes"
             />
 
             <TaskFilters
                 searchTerm={searchTerm}
                 priorityFilter={priorityFilter}
+                sortOption={sortOption}
                 onSearchChange={setSearchTerm}
                 onPriorityChange={setPriorityFilter}
+                onSortChange={setSortOption}
+                onClearFilters={handleClearFilters}
             />
 
             <div className="export-toolbar">
@@ -131,6 +148,12 @@ export const TasksPage = ({
                 >
                     Limpar seleção
                 </button>
+
+                {hasActiveFilters && (
+                    <span className="filter-status">
+                        Filtros aplicados
+                    </span>
+                )}
             </div>
 
             <section className="tasks-section">
@@ -138,17 +161,17 @@ export const TasksPage = ({
 
                 <div className="tasks-scroll-area">
                     <TaskList
-                    tasks={filteredTasks}
-                    selectable
-                    selectedTaskIds={selectedTaskIds}
-                    onSelectTask={onSelectTask}
-                    emptyMessage="Nenhuma tarefa pendente encontrada."
-                    onToggleTask={onToggleTask}
-                    onDeleteTask={onDeleteTask}
-                    onUpdateTask={onUpdateTask}
-                    onAddFiles={onAddFiles}
-                    onRenameFile={onRenameFile}
-                    onDeleteFile={onDeleteFile}
+                        tasks={filteredTasks}
+                        selectable
+                        selectedTaskIds={selectedTaskIds}
+                        onSelectTask={onSelectTask}
+                        emptyMessage="Nenhuma tarefa pendente encontrada."
+                        onToggleTask={onToggleTask}
+                        onDeleteTask={onDeleteTask}
+                        onUpdateTask={onUpdateTask}
+                        onAddFiles={onAddFiles}
+                        onRenameFile={onRenameFile}
+                        onDeleteFile={onDeleteFile}
                     />
                 </div>
             </section>
