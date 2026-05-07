@@ -721,7 +721,7 @@ button:disabled:hover,
 
 .log-page {
     display: grid;
-    grid-template-rows: auto auto 1fr;
+    grid-template-rows: auto auto auto 1fr;
     gap: 12px;
     min-height: 0;
 }
@@ -779,6 +779,24 @@ button:disabled:hover,
     width: 100%;
     min-height: 34px;
     white-space: nowrap;
+}
+
+.log-actions-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+.log-actions-toolbar button {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 130px;
+    min-height: 34px;
 }
 
 .log-list {
@@ -909,6 +927,14 @@ button:disabled:hover,
     color: rgba(64, 64, 64, 0.78);
     font-size: 12px;
     font-weight: 700;
+}
+
+/* =========================
+   LogPage - Resumo de impressão
+========================= */
+
+.print-report-summary {
+    display: none;
 }
 
 /* =========================
@@ -1414,6 +1440,16 @@ button:disabled:hover,
         font-size: 12px;
     }
 
+    .log-actions-toolbar {
+        padding: 8px 10px;
+        border-radius: 12px;
+    }
+
+    .log-actions-toolbar button {
+        min-height: 30px;
+        font-size: 12px;
+    }
+
     .log-card {
         gap: 10px;
         padding: 11px;
@@ -1864,6 +1900,22 @@ button:disabled:hover,
         font-size: 11px;
     }
 
+    .log-actions-toolbar {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        padding: 7px;
+        border-radius: 12px;
+    }
+
+    .log-actions-toolbar button {
+        width: 100%;
+        min-width: 0;
+        min-height: 36px;
+        padding: 5px 3px;
+        font-size: 12px;
+    }
+
     .log-list {
         gap: 8px;
     }
@@ -1983,23 +2035,6 @@ button:disabled:hover,
 }
 
 /* =========================
-   LogPage - Impressão / Exportação
-========================= */
-
-.log-actions-toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 10px 12px;
-    border-radius: 14px;
-    background-color: rgba(255, 255, 255, 0.22);
-}
-
-.log-actions-toolbar button {
-    min-width: 130px;
-}
-
-/* =========================
    Impressão
 ========================= */
 
@@ -2058,6 +2093,38 @@ button:disabled:hover,
         border: 1px solid #000000;
     }
 
+    .print-report-summary {
+        display: block;
+        margin-bottom: 12px;
+        padding: 10px;
+        border: 1px solid #000000;
+        background: #ffffff;
+        color: #000000;
+    }
+
+    .print-report-summary h3 {
+        margin: 0 0 8px;
+        color: #000000;
+        font-size: 16px;
+    }
+
+    .print-summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px 12px;
+    }
+
+    .print-summary-grid p {
+        margin: 0;
+        color: #000000;
+        font-size: 12px;
+        line-height: 1.35;
+    }
+
+    .print-summary-grid strong {
+        color: #000000;
+    }
+
     .log-list {
         display: block;
     }
@@ -2097,73 +2164,5 @@ button:disabled:hover,
     .log-value-card {
         background: #ffffff;
         border: 1px solid #cccccc;
-    }
-}
-
-/* =========================
-   Mobile - LogPage ações
-========================= */
-
-@media only screen and (max-width: 700px) {
-    .log-actions-toolbar {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 6px;
-        padding: 7px;
-        border-radius: 12px;
-    }
-
-    .log-actions-toolbar button {
-        width: 100%;
-        min-width: 0;
-        min-height: 36px;
-        padding: 5px 3px;
-        font-size: 12px;
-    }
-}
-
-/* =========================
-   LogPage - Resumo de impressão
-========================= */
-
-.print-report-summary {
-    display: none;
-}
-
-/* =========================
-   Impressão - resumo e filtros do relatório
-========================= */
-
-@media print {
-    .print-report-summary {
-        display: block;
-        margin-bottom: 12px;
-        padding: 10px;
-        border: 1px solid #000000;
-        background: #ffffff;
-        color: #000000;
-    }
-
-    .print-report-summary h3 {
-        margin: 0 0 8px;
-        color: #000000;
-        font-size: 16px;
-    }
-
-    .print-summary-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 4px 12px;
-    }
-
-    .print-summary-grid p {
-        margin: 0;
-        color: #000000;
-        font-size: 12px;
-        line-height: 1.35;
-    }
-
-    .print-summary-grid strong {
-        color: #000000;
     }
 }
