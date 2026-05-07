@@ -25,35 +25,36 @@ body {
 
 button,
 input,
-select,
-textarea {
+select {
     font: inherit;
 }
 
-button,
-.file-upload-button {
-    padding: 6px 10px;
+button {
+    padding: 8px 12px;
+    border-radius: 10px;
     border: 1px solid #ffffff;
-    border-radius: 8px;
     background-color: #ffffff;
     color: #000000;
     cursor: pointer;
     transition: 0.2s;
-    font-size: 13px;
 }
 
-button:hover,
-.file-upload-button:hover {
+button:hover {
     background-color: #404040;
     color: #ffffff;
 }
 
 button:disabled,
-button:disabled:hover,
-.file-upload-button.disabled,
-.file-upload-button.disabled:hover {
+.file-upload-button.disabled {
     cursor: not-allowed;
     opacity: 0.6;
+    background-color: #ffffff;
+    color: #777777;
+    border-color: #ffffff;
+}
+
+button:disabled:hover,
+.file-upload-button.disabled:hover {
     background-color: #ffffff;
     color: #777777;
     border-color: #ffffff;
@@ -64,7 +65,6 @@ button:disabled:hover,
 ========================= */
 
 .container {
-    position: relative;
     width: min(1100px, 95%);
     height: 100vh;
     margin: 0 auto;
@@ -90,44 +90,32 @@ button:disabled:hover,
 ========================= */
 
 .header {
-    position: relative;
-    z-index: 4;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: grid;
     gap: 12px;
-    min-height: 42px;
 }
 
 .header h1 {
     margin: 0;
     color: #404040;
-    font-size: clamp(24px, 4vw, 42px);
-    line-height: 1;
-    white-space: nowrap;
+    text-align: center;
+    font-size: clamp(28px, 5vw, 64px);
 }
 
 .main-nav {
-    position: relative;
-    z-index: 5;
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    justify-content: center;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-left: auto;
+    gap: 10px;
 }
 
 .nav-link {
-    padding: 6px 10px;
+    padding: 10px 16px;
     border-radius: 999px;
     background-color: #ffffff;
     color: #404040;
     text-decoration: none;
-    font-size: 12px;
     font-weight: 700;
     transition: 0.2s;
-    white-space: nowrap;
 }
 
 .nav-link:hover,
@@ -137,51 +125,15 @@ button:disabled:hover,
 }
 
 /* =========================
-   Painel do formulário
-========================= */
-
-.task-form-panel {
-    display: grid;
-    gap: 10px;
-}
-
-.new-task-toggle {
-    display: none;
-    width: fit-content;
-    min-width: 110px;
-    justify-self: start;
-    background-color: #404040;
-    color: #ffffff;
-    border-color: #404040;
-    font-weight: 700;
-}
-
-.new-task-toggle:hover {
-    background-color: #000000;
-    border-color: #000000;
-}
-
-.task-form-panel.is-closed {
-    gap: 0;
-}
-
-/* =========================
-   Formulários / Campos
+   Formulário
 ========================= */
 
 .task-form {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas:
-        'title-label description-label'
-        'title-input description-input'
-        'priority description-input'
-        'button description-input';
-    gap: 10px 12px;
+    gap: 10px;
     padding: 12px;
     border-radius: 14px;
     background-color: rgba(255, 255, 255, 0.35);
-    align-items: start;
 }
 
 .task-form label {
@@ -190,61 +142,21 @@ button:disabled:hover,
     font-weight: 700;
 }
 
-.task-form label:nth-of-type(1) {
-    grid-area: title-label;
-}
-
-.task-form input {
-    grid-area: title-input;
-}
-
-.task-form label:nth-of-type(2) {
-    grid-area: description-label;
-}
-
-.task-form textarea {
-    grid-area: description-input;
-    min-height: 118px;
-}
-
-.task-form select {
-    grid-area: priority;
-    width: 100%;
-    max-width: 220px;
-}
-
-.task-form button {
-    grid-area: button;
-    width: fit-content;
-    min-width: 90px;
-}
-
 .task-form input,
 .task-form select,
-.task-form textarea,
 .task-edit input,
 .task-edit select,
-.task-edit textarea,
 .task-filters input,
-.task-filters select,
-.confirm-modal input {
+.task-filters select {
     width: 100%;
-    padding: 8px 10px;
+    padding: 9px 10px;
     border: 0;
     border-radius: 8px;
     font-size: 14px;
 }
 
-.task-form textarea,
-.task-edit textarea {
-    resize: vertical;
-}
-
-.confirm-modal input {
-    padding: 10px 12px;
-    border: 1px solid rgba(64, 64, 64, 0.18);
-    border-radius: 10px;
-    font-size: 15px;
+.task-form button {
+    width: fit-content;
 }
 
 /* =========================
@@ -252,108 +164,62 @@ button:disabled:hover,
 ========================= */
 
 .task-stats {
-    position: absolute;
-    top: 16px;
-    left: 54%;
-    transform: translateX(-50%);
-    z-index: 3;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: fit-content;
-    padding: 0;
-    background-color: transparent;
-    pointer-events: none;
-}
-
-.task-stats h3 {
-    display: none;
-}
-
-.stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 58px);
-    gap: 5px;
-}
-
-.stats-grid div {
-    display: grid;
-    gap: 1px;
-    min-height: 34px;
-    padding: 4px 6px;
-    border-radius: 9px;
-    text-align: center;
-    align-content: center;
-    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.1);
-}
-
-.stats-grid strong {
-    color: #ffffff;
-    font-size: 15px;
-    line-height: 1;
-}
-
-.stats-grid span {
-    color: #ffffff;
-    font-size: 9px;
-    font-weight: 700;
-    line-height: 1.1;
-}
-
-.stats-grid div:nth-child(1) {
-    background-color: #404040;
-}
-
-.stats-grid div:nth-child(2) {
-    background-color: rgb(129, 1, 1);
-}
-
-.stats-grid div:nth-child(3) {
-    background-color: rgba(191, 162, 0, 0.95);
-}
-
-.stats-grid div:nth-child(4) {
-    background-color: rgba(5, 116, 1, 0.9);
-}
-
-.stats-grid div:nth-child(5) {
-    display: none;
-}
-
-/* =========================
-   Filtros / Exportação
-========================= */
-
-.task-filters {
-    display: grid;
-    grid-template-columns:
-        minmax(260px, 2fr)
-        minmax(150px, 1fr)
-        minmax(150px, 1fr)
-        minmax(130px, auto);
-    gap: 10px;
-    align-items: center;
+    gap: 8px;
     padding: 10px 12px;
     border-radius: 14px;
     background-color: rgba(255, 255, 255, 0.28);
 }
 
-.task-filters button {
-    width: 100%;
-    min-height: 34px;
-    white-space: nowrap;
+.task-stats h3 {
+    margin: 0 0 2px;
+    color: #404040;
+    font-size: 15px;
 }
 
-.filter-status {
-    display: inline-flex;
-    align-items: center;
-    padding: 7px 10px;
-    border-radius: 999px;
-    background-color: rgba(64, 64, 64, 0.16);
-    color: #404040;
-    font-size: 13px;
-    font-weight: 700;
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
 }
+
+.stats-grid div {
+    display: grid;
+    gap: 4px;
+    min-height: 58px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+}
+
+.stats-grid strong {
+    color: #404040;
+    font-size: 22px;
+    line-height: 1;
+}
+
+.stats-grid span {
+    color: #404040;
+    font-size: 12px;
+}
+
+/* =========================
+   Filtros
+========================= */
+
+.task-filters {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.28);
+}
+
+/* =========================
+   Barra de exportação
+========================= */
 
 .export-toolbar {
     display: flex;
@@ -365,30 +231,12 @@ button:disabled:hover,
 }
 
 .export-toolbar button {
-    padding: 6px 10px;
-    font-size: 13px;
-}
-
-.export-selection {
-    display: inline-flex;
-    width: fit-content;
-    gap: 8px;
-    align-items: center;
-    padding: 6px 10px;
-    border-radius: 999px;
-    background-color: rgba(255, 255, 255, 0.18);
-    color: #ffffff;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.export-selection:hover {
-    background-color: rgba(255, 255, 255, 0.28);
+    padding: 7px 10px;
+    font-size: 14px;
 }
 
 /* =========================
-   Seção de tarefas
+   Seção de tarefas com rolagem
 ========================= */
 
 .tasks-section {
@@ -404,8 +252,7 @@ button:disabled:hover,
     font-size: 22px;
 }
 
-.tasks-scroll-area,
-.help-page {
+.tasks-scroll-area {
     min-height: 0;
     overflow-y: auto;
     padding-right: 6px;
@@ -462,35 +309,13 @@ button:disabled:hover,
     gap: 10px;
 }
 
-.task-header-row > label:not(.export-selection),
-.task-main-info {
+.task-header-row > label:not(.export-selection) {
     display: flex;
     gap: 8px;
     align-items: flex-start;
     color: #ffffff;
     line-height: 1.4;
     word-break: break-word;
-}
-
-.task-text {
-    display: grid;
-    gap: 4px;
-    word-break: break-word;
-}
-
-.task-text strong {
-    font-size: 18px;
-}
-
-.task-text small {
-    font-size: 14px;
-    line-height: 1.4;
-    opacity: 0.92;
-}
-
-.task-text em {
-    font-size: 12px;
-    opacity: 0.85;
 }
 
 .task-actions,
@@ -504,7 +329,7 @@ button:disabled:hover,
 .task-actions button,
 .task-file-actions button,
 .file-upload-button {
-    min-width: 80px;
+    min-width: 90px;
     text-align: center;
 }
 
@@ -512,6 +337,28 @@ button:disabled:hover,
     color: #404040;
     text-align: center;
     font-size: 18px;
+}
+
+/* =========================
+   Seleção para exportação
+========================= */
+
+.export-selection {
+    display: inline-flex;
+    width: fit-content;
+    gap: 8px;
+    align-items: center;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.export-selection:hover {
+    background-color: rgba(255, 255, 255, 0.28);
 }
 
 /* =========================
@@ -523,7 +370,19 @@ button:disabled:hover,
     align-items: center;
     justify-content: center;
     width: fit-content;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #ffffff;
+    background-color: #ffffff;
+    color: #000000;
+    cursor: pointer;
+    transition: 0.2s;
     word-break: normal;
+}
+
+.file-upload-button:hover {
+    background-color: #404040;
+    color: #ffffff;
 }
 
 .task-files {
@@ -576,7 +435,7 @@ button:disabled:hover,
 }
 
 /* =========================
-   Concluídas / Bloqueadas
+   Concluídas / bloqueadas
 ========================= */
 
 .task-item.completed {
@@ -608,40 +467,69 @@ button:disabled:hover,
 }
 
 /* =========================
-   Ajuda
+   Melhorias: descrição, ajuda e filtros
 ========================= */
 
+.task-form textarea,
+.task-edit textarea {
+    width: 100%;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 8px;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.task-main-info {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    color: #ffffff;
+}
+
+.task-text {
+    display: grid;
+    gap: 4px;
+    word-break: break-word;
+}
+
+.task-text strong {
+    font-size: 18px;
+}
+
+.task-text small {
+    font-size: 14px;
+    line-height: 1.4;
+    opacity: 0.92;
+}
+
+.task-text em {
+    font-size: 12px;
+    opacity: 0.85;
+}
+
+.filter-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 10px;
+    border-radius: 999px;
+    background-color: rgba(64, 64, 64, 0.16);
+    color: #404040;
+    font-size: 13px;
+    font-weight: 700;
+}
+
 .help-page {
+    min-height: 0;
+    overflow-y: auto;
     display: grid;
     gap: 12px;
+    padding-right: 6px;
 }
 
 .help-page h2 {
     margin: 0;
     color: #404040;
-}
-
-.help-page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.help-page-header h2 {
-    margin: 0 0 6px;
-}
-
-.help-page-header span {
-    display: inline-flex;
-    width: fit-content;
-    padding: 6px 10px;
-    border-radius: 999px;
-    background-color: rgba(255, 255, 255, 0.45);
-    color: #404040;
-    font-size: 13px;
-    font-weight: 700;
 }
 
 .help-card {
@@ -659,16 +547,6 @@ button:disabled:hover,
     margin: 0;
     color: #404040;
     line-height: 1.5;
-}
-
-.help-card a {
-    color: #404040;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.help-card a:hover {
-    text-decoration: underline;
 }
 
 /* =========================
@@ -703,6 +581,49 @@ button:disabled:hover,
 }
 
 .app-footer a:hover {
+    text-decoration: underline;
+}
+
+@media only screen and (max-width: 900px) {
+    .task-filters {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
+   Ajuda / versão
+========================= */
+
+.help-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.help-page-header h2 {
+    margin: 0 0 6px;
+}
+
+.help-page-header span {
+    display: inline-flex;
+    width: fit-content;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.45);
+    color: #404040;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.help-card a {
+    color: #404040;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.help-card a:hover {
     text-decoration: underline;
 }
 
@@ -802,8 +723,8 @@ button:disabled:hover,
     width: 28px;
     height: 28px;
     padding: 0;
-    border: 0;
     border-radius: 999px;
+    border: 0;
     background-color: rgba(255, 255, 255, 0.22);
     color: #ffffff;
     font-size: 20px;
@@ -839,6 +760,14 @@ button:disabled:hover,
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@media only screen and (max-width: 700px) {
+    .toast-container {
+        right: 10px;
+        bottom: 76px;
+        width: calc(100% - 20px);
     }
 }
 
@@ -900,183 +829,18 @@ button:disabled:hover,
     background-color: #000000;
 }
 
-/* =========================
-   Modo compacto para notebooks
-========================= */
-
-@media only screen and (max-height: 850px) and (min-width: 901px) {
-    .container {
-        width: min(1200px, 96%);
-        padding: 10px 12px;
-        gap: 8px;
-        border-radius: 18px;
+@media only screen and (max-width: 700px) {
+    .confirm-modal {
+        padding: 18px;
     }
 
-    .page-section {
-        grid-template-rows: auto auto auto auto 1fr;
-        gap: 8px;
-    }
-
-    .header {
-        min-height: 34px;
-    }
-
-    .header h1 {
-        font-size: clamp(26px, 3vw, 36px);
-    }
-
-    .nav-link {
-        padding: 5px 9px;
-        font-size: 11px;
-    }
-
-    .task-stats {
-        top: 11px;
-        left: 52%;
-    }
-
-    .stats-grid {
-        grid-template-columns: repeat(4, 50px);
-        gap: 5px;
-    }
-
-    .stats-grid div {
-        min-height: 30px;
-        padding: 3px 5px;
-        border-radius: 8px;
-    }
-
-    .stats-grid strong {
-        font-size: 13px;
-    }
-
-    .stats-grid span {
-        font-size: 8px;
-    }
-
-    .task-form-panel {
-        gap: 7px;
-    }
-
-    .new-task-toggle {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 30px;
-    }
-
-    .task-form-panel.is-open {
+    .confirm-modal-actions {
         display: grid;
+        grid-template-columns: 1fr;
     }
 
-    .task-form-panel.is-closed {
-        display: flex;
-        align-items: center;
-    }
-
-    .task-form {
-        gap: 7px 12px;
-        padding: 10px 12px;
-        border-radius: 14px;
-    }
-
-    .task-form label {
-        font-size: 14px;
-    }
-
-    .task-form input,
-    .task-form select,
-    .task-form textarea,
-    .task-edit input,
-    .task-edit select,
-    .task-edit textarea,
-    .task-filters input,
-    .task-filters select,
-    .confirm-modal input {
-        padding: 6px 9px;
-        font-size: 13px;
-        border-radius: 7px;
-    }
-
-    .task-form textarea {
-        min-height: 82px;
-    }
-
-    .task-form select {
-        max-width: 210px;
-    }
-
-    .task-form button {
-        min-width: 82px;
-    }
-
-    button,
-    .file-upload-button {
-        padding: 5px 9px;
-        border-radius: 7px;
-        font-size: 12px;
-    }
-
-    .task-filters {
-        gap: 8px;
-        padding: 8px 10px;
-        border-radius: 12px;
-    }
-
-    .task-filters button {
-        min-height: 30px;
-    }
-
-    .export-toolbar {
-        gap: 7px;
-        padding: 8px 10px;
-        border-radius: 12px;
-    }
-
-    .export-toolbar button {
-        padding: 5px 9px;
-        font-size: 12px;
-    }
-
-    .filter-status {
-        padding: 5px 8px;
-        font-size: 12px;
-    }
-
-    .tasks-section {
-        gap: 6px;
-    }
-
-    .tasks-section h2 {
-        font-size: 20px;
-    }
-
-    .task-list {
-        gap: 8px;
-    }
-
-    .task-item {
-        gap: 8px;
-        padding: 12px;
-        border-radius: 12px;
-    }
-
-    .task-text strong {
-        font-size: 16px;
-    }
-
-    .task-text small {
-        font-size: 13px;
-    }
-
-    .task-text em {
-        font-size: 11px;
-    }
-
-    .app-footer {
-        padding: 7px 12px;
-        border-radius: 12px;
-        font-size: 12px;
+    .confirm-modal-actions button {
+        width: 100%;
     }
 }
 
@@ -1084,68 +848,11 @@ button:disabled:hover,
    Responsivo
 ========================= */
 
-@media only screen and (max-width: 1050px) {
-    .task-stats {
-        left: 52%;
-    }
-
-    .stats-grid {
-        grid-template-columns: repeat(4, 52px);
-    }
-
-    .stats-grid div {
-        min-height: 32px;
-        padding: 4px;
-    }
-
-    .stats-grid strong {
-        font-size: 14px;
-    }
-
-    .stats-grid span {
-        font-size: 8px;
-    }
-}
-
-@media only screen and (max-width: 980px) {
-    .task-stats {
-        position: static;
-        transform: none;
-        width: 100%;
-        pointer-events: auto;
-    }
-
-    .stats-grid {
-        width: 100%;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
-    }
-
-    .stats-grid div {
-        min-height: 54px;
-        padding: 8px;
-    }
-
-    .stats-grid strong {
-        font-size: 22px;
-    }
-
-    .stats-grid span {
-        font-size: 12px;
-    }
-
-    .page-section {
-        grid-template-rows: auto auto auto auto auto 1fr;
-    }
-}
-
-@media only screen and (max-width: 900px) {
-    .task-filters {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
 @media only screen and (max-width: 800px) {
+    .task-filters {
+        grid-template-columns: 1fr;
+    }
+
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -1157,11 +864,27 @@ button:disabled:hover,
     .file-upload-button {
         width: 100%;
     }
+}
 
-    .task-form select {
-        max-width: 100%;
+@media only screen and (max-width: 500px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        width: 96%;
+        padding: 12px;
+        border-radius: 20px;
+    }
+
+    .header h1 {
+        font-size: 30px;
     }
 }
+
+/* =========================
+    Ajustes finais mobile / PWA
+========================= */
 
 @media only screen and (max-width: 700px) {
     body {
@@ -1171,10 +894,27 @@ button:disabled:hover,
     .container {
         width: 100%;
         height: 100dvh;
+        border-radius: 0;
         padding: 10px;
         gap: 10px;
-        border-radius: 0;
         grid-template-rows: auto 1fr auto;
+    }
+
+    .header {
+        gap: 8px;
+    }
+
+    .header h1 {
+        font-size: 26px;
+    }
+
+    .main-nav {
+        gap: 6px;
+    }
+
+    .nav-link {
+        padding: 8px 10px;
+        font-size: 13px;
     }
 
     .page-section {
@@ -1184,46 +924,7 @@ button:disabled:hover,
         padding-right: 2px;
     }
 
-    .header {
-        align-items: flex-start;
-        gap: 8px;
-    }
-
-    .header h1 {
-        font-size: 22px;
-    }
-
-    .main-nav {
-        justify-content: flex-end;
-        gap: 5px;
-    }
-
-    .nav-link {
-        padding: 6px 9px;
-        font-size: 12px;
-    }
-
-    .task-form-panel {
-        gap: 8px;
-    }
-
-    .new-task-toggle {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        min-height: 38px;
-    }
-
     .task-form {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-            'title-label'
-            'title-input'
-            'description-label'
-            'description-input'
-            'priority'
-            'button';
         gap: 8px;
         padding: 10px;
     }
@@ -1236,34 +937,36 @@ button:disabled:hover,
         min-height: 70px;
     }
 
-    .task-form select,
-    .task-form button {
-        max-width: 100%;
-        width: 100%;
+    .task-stats {
+        padding: 8px;
     }
 
-    .task-filters {
-        grid-template-columns: 1fr;
-        gap: 8px;
-        padding: 8px;
+    .task-stats h3 {
+        font-size: 14px;
     }
 
     .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
+        grid-template-columns: repeat(5, minmax(58px, 1fr));
+        overflow-x: auto;
+        padding-bottom: 2px;
     }
 
     .stats-grid div {
-        min-height: 54px;
-        padding: 8px;
+        min-height: 48px;
+        padding: 6px;
     }
 
     .stats-grid strong {
-        font-size: 20px;
+        font-size: 18px;
     }
 
     .stats-grid span {
         font-size: 11px;
+    }
+
+    .task-filters {
+        gap: 8px;
+        padding: 8px;
     }
 
     .task-filters input,
@@ -1273,20 +976,20 @@ button:disabled:hover,
     .task-actions button,
     .task-file-actions button,
     .file-upload-button {
-        min-height: 38px;
-        font-size: 13px;
+        min-height: 40px;
+        font-size: 14px;
     }
 
     .export-toolbar {
         padding: 8px;
     }
 
-    .tasks-section {
-        min-height: auto;
-    }
-
     .tasks-section h2 {
         font-size: 18px;
+    }
+
+    .tasks-section {
+        min-height: auto;
     }
 
     .tasks-scroll-area {
@@ -1323,45 +1026,15 @@ button:disabled:hover,
         flex-direction: column;
         align-items: center;
         text-align: center;
-        padding: 8px 10px;
         font-size: 12px;
-    }
-
-    .toast-container {
-        right: 10px;
-        bottom: 76px;
-        width: calc(100% - 20px);
-    }
-
-    .confirm-modal {
-        padding: 18px;
-    }
-
-    .confirm-modal-actions {
-        display: grid;
-        grid-template-columns: 1fr;
-    }
-
-    .confirm-modal-actions button {
-        width: 100%;
+        padding: 8px 10px;
     }
 }
 
-@media only screen and (max-width: 500px) {
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .main-nav {
-        justify-content: flex-start;
-    }
-
-    .header h1 {
-        font-size: 24px;
-    }
+.confirm-modal input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid rgba(64, 64, 64, 0.18);
+    border-radius: 10px;
+    font-size: 15px;
 }

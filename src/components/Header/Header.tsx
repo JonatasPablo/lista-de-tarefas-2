@@ -18,6 +18,10 @@ export const Header = () => {
                     Histórico
                 </NavLink>
 
+                <NavLink to="/log" className={getNavLinkClass}>
+                    Log
+                </NavLink>
+
                 <NavLink to="/ajuda" className={getNavLinkClass}>
                     Ajuda
                 </NavLink>

@@ -17,6 +17,7 @@ import { Header } from './components/Header/Header'
 import { CompletedTasksPage } from './pages/CompletedTasksPage/CompletedTasksPage'
 import { HelpPage } from './pages/HelpPage/HelpPage'
 import { TasksPage } from './pages/TasksPage/TasksPage'
+import { LogPage } from './pages/LogPage/LogPage'
 
 import type { Task, TaskFile, TaskPriority } from './types/task'
 import { getCurrentDateTime } from './utils/date'
@@ -423,6 +424,8 @@ function App() {
                 />
 
                 <Route path="/ajuda" element={<HelpPage />} />
+
+                <Route path="/log" element={<LogPage />} />
             </Routes>
 
             <Footer />

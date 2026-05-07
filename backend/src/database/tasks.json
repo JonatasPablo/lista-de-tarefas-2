@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "title": "Criar backend da Lista de Tarefas",
+        "completed": false
+    },
+    {
+        "id": 2,
+        "title": "Conectar frontend com backend",
+        "completed": false
+    },
+    {
+        "id": 3,
+        "title": "Testar criação de tarefa pelo Thunder Client",
+        "completed": false
+    },
+    {
+        "id": 4,
+        "title": "Estudar backend",
+        "completed": false
+    }
+]

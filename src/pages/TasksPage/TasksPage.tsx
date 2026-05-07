@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { TaskFilters } from '../../components/TaskFilters/TaskFilters'
 import type {
     PriorityFilter,
@@ -38,12 +38,30 @@ interface TasksPageProps {
     onDeleteFile: (taskId: string, fileId: string) => void
     onExportTasks: (tasksToExport: Task[]) => void | Promise<void>
     onConfirm: (options: {
-    title: string
-    message: string
-    confirmText?: string
-    cancelText?: string
+        title: string
+        message: string
+        confirmText?: string
+        cancelText?: string
     }) => Promise<boolean>
     onRequestRenameFile: (taskId: string, file: TaskFile) => void
+}
+
+const compactScreenQuery = '(max-height: 850px) and (min-width: 901px)'
+
+const isCompactScreen = () => {
+    if (typeof window === 'undefined') {
+        return false
+    }
+
+    return window.matchMedia(compactScreenQuery).matches
+}
+
+const getInitialFormVisibility = () => {
+    if (typeof window === 'undefined') {
+        return true
+    }
+
+    return !window.matchMedia(compactScreenQuery).matches
 }
 
 export const TasksPage = ({
@@ -61,13 +79,32 @@ export const TasksPage = ({
     onRenameFile,
     onDeleteFile,
     onExportTasks,
-    onConfirm,  
+    onConfirm,
 }: TasksPageProps) => {
     const [searchTerm, setSearchTerm] = useState('')
     const [priorityFilter, setPriorityFilter] =
         useState<PriorityFilter>('todas')
     const [sortOption, setSortOption] =
         useState<TaskSortOption>('prioridade')
+    const [isTaskFormVisible, setIsTaskFormVisible] = useState(
+        getInitialFormVisibility
+    )
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia(compactScreenQuery)
+
+        const handleScreenChange = () => {
+            setIsTaskFormVisible(!mediaQuery.matches)
+        }
+
+        handleScreenChange()
+
+        mediaQuery.addEventListener('change', handleScreenChange)
+
+        return () => {
+            mediaQuery.removeEventListener('change', handleScreenChange)
+        }
+    }, [])
 
     const filteredTasks = useMemo(() => {
         const filtered = filterTasks(pendingTasks, searchTerm, priorityFilter)
@@ -83,6 +120,22 @@ export const TasksPage = ({
         searchTerm.trim() !== '' ||
         priorityFilter !== 'todas' ||
         sortOption !== 'prioridade'
+
+    const handleToggleTaskForm = () => {
+        setIsTaskFormVisible((currentValue) => !currentValue)
+    }
+
+    const handleAddTask = (
+        title: string,
+        description: string,
+        priority: TaskPriority
+    ) => {
+        onAddTask(title, description, priority)
+
+        if (isCompactScreen()) {
+            setIsTaskFormVisible(false)
+        }
+    }
 
     const handleClearFilters = () => {
         setSearchTerm('')
@@ -129,7 +182,24 @@ export const TasksPage = ({
 
     return (
         <section className="page-section">
-            <TaskForm onAddTask={onAddTask} />
+            <div
+                className={`task-form-panel ${
+                    isTaskFormVisible ? 'is-open' : 'is-closed'
+                }`}
+            >
+                <button
+                    type="button"
+                    className="new-task-toggle"
+                    onClick={handleToggleTaskForm}
+                    aria-expanded={isTaskFormVisible}
+                >
+                    {isTaskFormVisible ? 'Fechar formulário' : '+ Nova tarefa'}
+                </button>
+
+                {isTaskFormVisible && (
+                    <TaskForm onAddTask={handleAddTask} />
+                )}
+            </div>
 
             <TaskStats
                 tasks={filteredTasks}
@@ -149,8 +219,8 @@ export const TasksPage = ({
             <div className="export-toolbar">
                 <button type="button" onClick={handleExport}>
                     {selectedTaskIds.length > 0
-                        ? `Exportar selecionadas (${selectedVisibleTasks.length})`
-                        : 'Exportar pendentes'}
+                        ? `Exportar (${selectedVisibleTasks.length})`
+                        : 'Exportar'}
                 </button>
 
                 <button
@@ -162,7 +232,7 @@ export const TasksPage = ({
                     }
                     disabled={filteredTasks.length === 0}
                 >
-                    Selecionar visíveis
+                    Selecionar
                 </button>
 
                 <button
@@ -170,13 +240,11 @@ export const TasksPage = ({
                     onClick={onClearSelectedTasks}
                     disabled={selectedTaskIds.length === 0}
                 >
-                    Limpar seleção
+                    Limpar
                 </button>
 
                 {hasActiveFilters && (
-                    <span className="filter-status">
-                        Filtros aplicados
-                    </span>
+                    <span className="filter-status">Filtros aplicados</span>
                 )}
             </div>
 
