@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { TaskFilters } from '../../components/TaskFilters/TaskFilters'
 import type {
     PriorityFilter,
@@ -99,9 +99,20 @@ export const TasksPage = ({
         onExportTasks(filteredTasks)
     }
 
-    useEffect(() => {
-    onClearSelectedTasks()
-}, [searchTerm, priorityFilter, onClearSelectedTasks])
+    const handleSearchChange = (value: string) => {
+        setSearchTerm(value)
+        onClearSelectedTasks()
+    }
+
+    const handlePriorityChange = (value: PriorityFilter) => {
+        setPriorityFilter(value)
+        onClearSelectedTasks()
+    }
+
+    const handleSortChange = (value: TaskSortOption) => {
+        setSortOption(value)
+        onClearSelectedTasks()
+    }
 
     return (
         <section className="page-section">
@@ -116,9 +127,9 @@ export const TasksPage = ({
                 searchTerm={searchTerm}
                 priorityFilter={priorityFilter}
                 sortOption={sortOption}
-                onSearchChange={setSearchTerm}
-                onPriorityChange={setPriorityFilter}
-                onSortChange={setSortOption}
+                onSearchChange={handleSearchChange}
+                onPriorityChange={handlePriorityChange}
+                onSortChange={handleSortChange}
                 onClearFilters={handleClearFilters}
             />
 

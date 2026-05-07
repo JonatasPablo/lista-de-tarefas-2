@@ -1,4 +1,7 @@
-import type { PriorityFilter, TaskSortOption } from '../components/TaskFilters/TaskFilters'
+import type {
+    PriorityFilter,
+    TaskSortOption,
+} from '../components/TaskFilters/TaskFilters'
 import type { Task, TaskPriority } from '../types/task'
 
 const priorityOrder: Record<TaskPriority, number> = {
@@ -19,6 +22,14 @@ const parseBrazilianDateTime = (dateTime?: string) => {
     return new Date(year, month - 1, day, hour, minute, second).getTime()
 }
 
+const getTaskTitle = (task: Task) => {
+    return task.title || task.text || 'Tarefa sem título'
+}
+
+const getTaskDescription = (task: Task) => {
+    return task.description || ''
+}
+
 export const filterTasks = (
     tasks: Task[],
     searchTerm: string,
@@ -27,10 +38,13 @@ export const filterTasks = (
     return tasks.filter((task) => {
         const normalizedSearch = searchTerm.trim().toLowerCase()
 
+        const taskTitle = getTaskTitle(task).toLowerCase()
+        const taskDescription = getTaskDescription(task).toLowerCase()
+
         const matchesSearch =
             normalizedSearch === '' ||
-            task.title.toLowerCase().includes(normalizedSearch) ||
-            task.description?.toLowerCase().includes(normalizedSearch) ||
+            taskTitle.includes(normalizedSearch) ||
+            taskDescription.includes(normalizedSearch) ||
             task.files.some((file) =>
                 file.displayName.toLowerCase().includes(normalizedSearch)
             )
@@ -69,12 +83,12 @@ export const sortTasks = (tasks: Task[], sortOption: TaskSortOption) => {
 
         case 'nome-az':
             return sortedTasks.sort((taskA, taskB) =>
-                taskA.title.localeCompare(taskB.title)
+                getTaskTitle(taskA).localeCompare(getTaskTitle(taskB))
             )
 
         case 'nome-za':
             return sortedTasks.sort((taskA, taskB) =>
-                taskB.title.localeCompare(taskA.title)
+                getTaskTitle(taskB).localeCompare(getTaskTitle(taskA))
             )
 
         case 'prioridade':

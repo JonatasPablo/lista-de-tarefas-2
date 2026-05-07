@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 
 import { Header } from './components/Header/Header'
 import { CompletedTasksPage } from './pages/CompletedTasksPage/CompletedTasksPage'
@@ -14,6 +14,7 @@ const LOCAL_STORAGE_KEY = 'tasks'
 
 function App() {
     const [tasks, setTasks] = useState<Task[]>(() => {
+    try {
         const storedTasks = localStorage.getItem(LOCAL_STORAGE_KEY)
 
         if (!storedTasks) {
@@ -26,10 +27,16 @@ function App() {
             ...task,
             title: task.title || task.text || 'Tarefa sem título',
             description: task.description || '',
+            priority: task.priority || 'media',
+            completed: Boolean(task.completed),
             completedAt: task.completedAt,
             files: task.files || [],
         }))
-    })
+    } catch {
+        localStorage.removeItem(LOCAL_STORAGE_KEY)
+        return []
+    }
+})
 
     const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
 
@@ -300,55 +307,55 @@ function App() {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(tasks))
     }, [tasks])
 
-    const routerBasename = import.meta.env.PROD ? '/lista-de-tarefas-2' : ''
-
     return (
-        <BrowserRouter basename={routerBasename}>
-            <main className="container">
-                <Header />
+    <HashRouter>
+        <main className="container">
+            <Header />
 
-                <Routes>
-                    <Route
-                        path="/"
-                        element={
-                            <TasksPage
-                                pendingTasks={pendingTasks}
-                                selectedTaskIds={selectedTaskIds}
-                                onSelectTask={selectTaskForExport}
-                                onSelectAllVisibleTasks={selectAllVisibleTasks}
-                                onClearSelectedTasks={clearSelectedTasks}
-                                onAddTask={addTask}
-                                onToggleTask={toggleTask}
-                                onDeleteTask={deleteTask}
-                                onUpdateTask={updateTask}
-                                onAddFiles={addFilesToTask}
-                                onRenameFile={renameTaskFile}
-                                onDeleteFile={deleteTaskFile}
-                                onExportTasks={exportTasks}
-                            />
-                        }
-                    />
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <TasksPage
+                            pendingTasks={pendingTasks}
+                            selectedTaskIds={selectedTaskIds}
+                            onSelectTask={selectTaskForExport}
+                            onSelectAllVisibleTasks={selectAllVisibleTasks}
+                            onClearSelectedTasks={clearSelectedTasks}
+                            onAddTask={addTask}
+                            onToggleTask={toggleTask}
+                            onDeleteTask={deleteTask}
+                            onUpdateTask={updateTask}
+                            onAddFiles={addFilesToTask}
+                            onRenameFile={renameTaskFile}
+                            onDeleteFile={deleteTaskFile}
+                            onExportTasks={exportTasks}
+                        />
+                    }
+                />
 
-                    <Route
-                        path="/historico"
-                        element={
-                            <CompletedTasksPage
-                                completedTasks={completedTasks}
-                                onToggleTask={toggleTask}
-                                onDeleteTask={deleteTask}
-                                onUpdateTask={updateTask}
-                                onAddFiles={addFilesToTask}
-                                onRenameFile={renameTaskFile}
-                                onDeleteFile={deleteTaskFile}
-                            />
-                        }
-                    />
+                <Route
+                    path="/historico"
+                    element={
+                        <CompletedTasksPage
+                            completedTasks={completedTasks}
+                            onToggleTask={toggleTask}
+                            onDeleteTask={deleteTask}
+                            onUpdateTask={updateTask}
+                            onAddFiles={addFilesToTask}
+                            onRenameFile={renameTaskFile}
+                            onDeleteFile={deleteTaskFile}
+                        />
+                    }
+                />
 
-                    <Route path="/ajuda" element={<HelpPage />} />
-                </Routes>
-            </main>
-        </BrowserRouter>
-    )
+                <Route path="/ajuda" element={<HelpPage />} />
+
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        </main>
+    </HashRouter>
+)
 }
 
 export default App
