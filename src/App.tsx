@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import { Footer } from './components/Footer/Footer'
+import { APP_NAME, APP_VERSION } from './config/app'
 
 import { Header } from './components/Header/Header'
 import { CompletedTasksPage } from './pages/CompletedTasksPage/CompletedTasksPage'
@@ -307,6 +308,10 @@ function App() {
     useEffect(() => {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(tasks))
     }, [tasks])
+
+    useEffect(() => {
+    document.title = `${APP_NAME} v${APP_VERSION}`
+}, [])
 
     return (
     <HashRouter>

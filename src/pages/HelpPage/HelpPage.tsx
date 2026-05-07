@@ -1,7 +1,33 @@
+import {
+    APP_DEVELOPER,
+    APP_NAME,
+    APP_VERSION,
+    DEVELOPER_EMAIL,
+} from '../../config/app'
+
 export const HelpPage = () => {
     return (
         <section className="help-page">
-            <h2>Ajuda</h2>
+            <div className="help-page-header">
+                <div>
+                    <h2>Ajuda</h2>
+                    <span>
+                        {APP_NAME} — versão {APP_VERSION}
+                    </span>
+                </div>
+            </div>
+
+            <div className="help-card">
+                <h3>Sobre o sistema</h3>
+                <p>
+                    O {APP_NAME} foi desenvolvido por {APP_DEVELOPER}. Para
+                    contato, utilize o e-mail{' '}
+                    <a href={`mailto:${DEVELOPER_EMAIL}`}>
+                        {DEVELOPER_EMAIL}
+                    </a>
+                    .
+                </p>
+            </div>
 
             <div className="help-card">
                 <h3>Como criar uma tarefa</h3>
@@ -50,6 +76,16 @@ export const HelpPage = () => {
                     Nesta etapa, o sistema salva apenas informações dos arquivos.
                     Quando o backend estiver pronto, os arquivos serão salvos no
                     MySQL e poderão ser baixados em outro computador.
+                </p>
+            </div>
+
+            <div className="help-card">
+                <h3>Versionamento</h3>
+                <p>
+                    A versão atual é <strong>{APP_VERSION}</strong>. A regra
+                    utilizada é: versão maior para nova geração do sistema,
+                    versão intermediária para mudanças visuais ou de rotina, e
+                    versão final para correções e pequenos ajustes.
                 </p>
             </div>
         </section>

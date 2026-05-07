@@ -574,10 +574,57 @@ button:disabled:hover,
     font-weight: 700;
 }
 
+.app-footer a {
+    color: #404040;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.app-footer a:hover {
+    text-decoration: underline;
+}
+
 @media only screen and (max-width: 900px) {
     .task-filters {
         grid-template-columns: 1fr;
     }
+}
+
+/* =========================
+   Ajuda / versão
+========================= */
+
+.help-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.help-page-header h2 {
+    margin: 0 0 6px;
+}
+
+.help-page-header span {
+    display: inline-flex;
+    width: fit-content;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.45);
+    color: #404040;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.help-card a {
+    color: #404040;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.help-card a:hover {
+    text-decoration: underline;
 }
 
 /* =========================

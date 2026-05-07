@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { APP_NAME, APP_VERSION } from './src/config/app'
 
 export default defineConfig({
     plugins: [
@@ -10,10 +11,9 @@ export default defineConfig({
             includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
             manifest: {
                 id: '/lista-de-tarefas-2/',
-                name: 'Lista de Tarefas',
+                name: `${APP_NAME} v${APP_VERSION}`,
                 short_name: 'Tarefas',
-                description:
-                    'Aplicativo para organizar tarefas, anexos e histórico de concluídas.',
+                description: `${APP_NAME} v${APP_VERSION} - Aplicativo para organizar tarefas, anexos e histórico de concluídas.`,
                 theme_color: '#404040',
                 background_color: '#d9d9d9',
                 display: 'standalone',
