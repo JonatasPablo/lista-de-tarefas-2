@@ -628,6 +628,66 @@ button:disabled:hover,
 }
 
 /* =========================
+   Tela de erro
+========================= */
+
+.error-page {
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background-color: #d9d9d9;
+}
+
+.error-card {
+    width: min(520px, 100%);
+    display: grid;
+    gap: 14px;
+    padding: 24px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #404040;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.error-card h1,
+.error-card p {
+    margin: 0;
+}
+
+.error-card h1 {
+    font-size: 26px;
+}
+
+.error-card details {
+    padding: 10px;
+    border-radius: 10px;
+    background-color: rgba(64, 64, 64, 0.08);
+}
+
+.error-card summary {
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.error-card code {
+    display: block;
+    margin-top: 8px;
+    word-break: break-word;
+}
+
+.error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.error-actions button {
+    flex: 1;
+    min-width: 160px;
+}
+
+/* =========================
    Responsivo
 ========================= */
 
