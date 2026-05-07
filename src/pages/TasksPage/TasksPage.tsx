@@ -46,14 +46,15 @@ interface TasksPageProps {
     onRequestRenameFile: (taskId: string, file: TaskFile) => void
 }
 
-const compactScreenQuery = '(max-height: 850px) and (min-width: 901px)'
+const collapsibleFormQuery =
+    '(max-height: 850px) and (min-width: 901px), (max-width: 700px)'
 
-const isCompactScreen = () => {
+const isCollapsibleFormScreen = () => {
     if (typeof window === 'undefined') {
         return false
     }
 
-    return window.matchMedia(compactScreenQuery).matches
+    return window.matchMedia(collapsibleFormQuery).matches
 }
 
 const getInitialFormVisibility = () => {
@@ -61,7 +62,7 @@ const getInitialFormVisibility = () => {
         return true
     }
 
-    return !window.matchMedia(compactScreenQuery).matches
+    return !window.matchMedia(collapsibleFormQuery).matches
 }
 
 export const TasksPage = ({
@@ -85,13 +86,13 @@ export const TasksPage = ({
     const [priorityFilter, setPriorityFilter] =
         useState<PriorityFilter>('todas')
     const [sortOption, setSortOption] =
-        useState<TaskSortOption>('prioridade')
+        useState<TaskSortOption>('Filtros')
     const [isTaskFormVisible, setIsTaskFormVisible] = useState(
         getInitialFormVisibility
     )
 
     useEffect(() => {
-        const mediaQuery = window.matchMedia(compactScreenQuery)
+        const mediaQuery = window.matchMedia(collapsibleFormQuery)
 
         const handleScreenChange = () => {
             setIsTaskFormVisible(!mediaQuery.matches)
@@ -119,7 +120,7 @@ export const TasksPage = ({
     const hasActiveFilters =
         searchTerm.trim() !== '' ||
         priorityFilter !== 'todas' ||
-        sortOption !== 'prioridade'
+        sortOption !== 'Filtros'
 
     const handleToggleTaskForm = () => {
         setIsTaskFormVisible((currentValue) => !currentValue)
@@ -132,7 +133,7 @@ export const TasksPage = ({
     ) => {
         onAddTask(title, description, priority)
 
-        if (isCompactScreen()) {
+        if (isCollapsibleFormScreen()) {
             setIsTaskFormVisible(false)
         }
     }
@@ -140,7 +141,7 @@ export const TasksPage = ({
     const handleClearFilters = () => {
         setSearchTerm('')
         setPriorityFilter('todas')
-        setSortOption('prioridade')
+        setSortOption('Filtros')
         onClearSelectedTasks()
     }
 

@@ -91,7 +91,7 @@ export const sortTasks = (tasks: Task[], sortOption: TaskSortOption) => {
                 getTaskTitle(taskB).localeCompare(getTaskTitle(taskA))
             )
 
-        case 'prioridade':
+        case 'Filtros':
         default:
             return sortedTasks.sort(
                 (taskA, taskB) =>

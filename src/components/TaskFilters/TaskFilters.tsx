@@ -3,7 +3,7 @@ import type { TaskPriority } from '../../types/task'
 export type PriorityFilter = 'todas' | TaskPriority
 
 export type TaskSortOption =
-    | 'prioridade'
+    | 'Filtros'
     | 'mais-recentes'
     | 'mais-antigas'
     | 'ultimas-editadas'
@@ -56,7 +56,7 @@ export const TaskFilters = ({
                     onSortChange(event.target.value as TaskSortOption)
                 }
             >
-                <option value="prioridade">Prioridade</option>
+                <option value="Filtros">Filtros</option>
                 <option value="mais-recentes">Mais recentes</option>
                 <option value="mais-antigas">Mais antigas</option>
                 <option value="ultimas-editadas">Últimas editadas</option>
