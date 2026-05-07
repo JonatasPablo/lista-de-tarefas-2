@@ -1,12 +1,18 @@
-import { useState } from 'react'
+import {
+    useState,
+    type ChangeEvent,
+    type KeyboardEvent,
+} from 'react'
 import type { Task, TaskFile, TaskPriority } from '../../types/task'
 import { MAX_FILE_SIZE_BYTES, formatFileSize } from '../../utils/file'
 import { TaskFiles } from '../TaskFiles/TaskFiles'
 
 interface TaskItemProps {
     task: Task
+    expanded: boolean
     selectable?: boolean
     selected?: boolean
+    onToggleExpanded: () => void
     onSelectTask?: (taskId: string) => void
     onToggleTask: (taskId: string) => void | Promise<void>
     onDeleteTask: (taskId: string) => void | Promise<void>
@@ -28,9 +34,11 @@ interface TaskItemProps {
 
 export const TaskItem = ({
     task,
+    expanded,
     onRequestRenameFile,
     selectable = false,
     selected = false,
+    onToggleExpanded,
     onSelectTask,
     onToggleTask,
     onDeleteTask,
@@ -48,6 +56,8 @@ export const TaskItem = ({
     )
 
     const isTaskCompleted = task.completed
+    const hasAttachments = task.files.length > 0
+    const shouldShowDetails = expanded || isEditing
 
     const handleSave = () => {
         if (isTaskCompleted) {
@@ -64,13 +74,20 @@ export const TaskItem = ({
         setIsEditing(false)
     }
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             handleSave()
         }
     }
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSummaryKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            onToggleExpanded()
+        }
+    }
+
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = Array.from(event.target.files || [])
 
         if (isTaskCompleted) {
@@ -93,10 +110,7 @@ export const TaskItem = ({
 
         if (invalidFiles.length > 0) {
             const invalidFilesText = invalidFiles
-                .map(
-                    (file) =>
-                        `${file.name} (${formatFileSize(file.size)})`
-                )
+                .map((file) => `${file.name} (${formatFileSize(file.size)})`)
                 .join('\n')
 
             alert(
@@ -115,7 +129,9 @@ export const TaskItem = ({
 
     return (
         <li
-            className={`task-item ${task.completed ? 'completed' : ''}`}
+            className={`task-item ${task.completed ? 'completed' : ''} ${
+                shouldShowDetails ? 'expanded' : 'compact'
+            }`}
             data-priority={task.priority}
         >
             {isEditing ? (
@@ -124,9 +140,7 @@ export const TaskItem = ({
                         type="text"
                         value={editedTitle}
                         disabled={isTaskCompleted}
-                        onChange={(event) =>
-                            setEditedTitle(event.target.value)
-                        }
+                        onChange={(event) => setEditedTitle(event.target.value)}
                         onKeyDown={handleKeyDown}
                     />
 
@@ -143,9 +157,7 @@ export const TaskItem = ({
                         value={editedPriority}
                         disabled={isTaskCompleted}
                         onChange={(event) =>
-                            setEditedPriority(
-                                event.target.value as TaskPriority
-                            )
+                            setEditedPriority(event.target.value as TaskPriority)
                         }
                     >
                         <option value="alta">Alta</option>
@@ -161,108 +173,146 @@ export const TaskItem = ({
                         Salvar
                     </button>
 
-                    <button
-                        type="button"
-                        onClick={() => setIsEditing(false)}
-                    >
+                    <button type="button" onClick={() => setIsEditing(false)}>
                         Cancelar
                     </button>
                 </div>
             ) : (
                 <>
-                    <div className="task-header-row">
-                        {selectable && !task.completed && (
-                            <label className="export-selection">
-                                <input
-                                    type="checkbox"
-                                    checked={selected}
-                                    onChange={() => onSelectTask?.(task.id)}
-                                />
-                                Exportar
-                            </label>
-                        )}
+                    <div
+                        className="task-summary-row"
+                        role="button"
+                        tabIndex={0}
+                        aria-expanded={expanded}
+                        onClick={onToggleExpanded}
+                        onKeyDown={handleSummaryKeyDown}
+                    >
+                        <div className="task-summary-main">
+                            {selectable && !task.completed && (
+                                <label
+                                    className="export-selection compact-export-selection"
+                                    onClick={(event) => event.stopPropagation()}
+                                    title="Selecionar para exportação"
+                                >
+                                    <span>Sel.</span>
 
-                        <div className="task-main-info">
-                            {!isTaskCompleted && (
-                                <input
-                                    type="checkbox"
-                                    checked={task.completed}
-                                    onChange={() => onToggleTask(task.id)}
-                                    title="Concluir tarefa"
-                                />
+                                    <input
+                                        type="checkbox"
+                                        checked={selected}
+                                        onChange={() => onSelectTask?.(task.id)}
+                                    />
+                                </label>
                             )}
 
-                            <span className="task-text">
-                                <strong>{task.title}</strong>
+                            <strong className="task-summary-title">
+                                {task.title}
+                            </strong>
+                        </div>
 
-                                {task.description && (
-                                    <small>{task.description}</small>
-                                )}
+                        <div className="task-summary-indicators">
+                            {hasAttachments && (
+                                <span
+                                    className="task-attachment-indicator"
+                                    title={`${task.files.length} anexo(s)`}
+                                    aria-label={`${task.files.length} anexo(s)`}
+                                >
+                                    📎
+                                </span>
+                            )}
 
-                                <em>
-                                    Criada em: {task.createdAt} | Prioridade:{' '}
-                                    {task.priority}
-                                    {task.updatedAt &&
-                                        ` | Editada em: ${task.updatedAt}`}
-                                    {task.completedAt &&
-                                        ` | Concluída em: ${task.completedAt}`}
-                                </em>
+                            <span
+                                className="task-expand-indicator"
+                                aria-hidden="true"
+                            >
+                                {expanded ? '▲' : '▼'}
                             </span>
                         </div>
                     </div>
 
-                    <div className="task-actions">
-                        {isTaskCompleted ? (
-                            <button
-                                type="button"
-                                onClick={() => onToggleTask(task.id)}
-                            >
-                                Reabrir tarefa
-                            </button>
-                        ) : (
-                            <>
+                    {shouldShowDetails && (
+                        <div className="task-details">
+                            <div className="task-header-row">
+                                <div className="task-main-info">
+                                    <span className="task-text">
+                                        {task.description && (
+                                            <small>{task.description}</small>
+                                        )}
+
+                                        <em>
+                                            Criada em: {task.createdAt} |
+                                            Prioridade: {task.priority}
+                                            {task.updatedAt &&
+                                                ` | Editada em: ${task.updatedAt}`}
+                                            {task.completedAt &&
+                                                ` | Concluída em: ${task.completedAt}`}
+                                        </em>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="task-actions">
+                                {isTaskCompleted ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => onToggleTask(task.id)}
+                                    >
+                                        Reabrir tarefa
+                                    </button>
+                                ) : (
+                                    <>
+                                        <button
+                                            type="button"
+                                            onClick={() => onToggleTask(task.id)}
+                                        >
+                                            Concluir
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsEditing(true)}
+                                        >
+                                            Editar
+                                        </button>
+
+                                        <label className="file-upload-button">
+                                            Anexar arquivo
+                                            <input
+                                                type="file"
+                                                multiple
+                                                onChange={handleFileChange}
+                                                hidden
+                                            />
+                                        </label>
+                                    </>
+                                )}
+
                                 <button
                                     type="button"
-                                    onClick={() => setIsEditing(true)}
+                                    onClick={() => onDeleteTask(task.id)}
                                 >
-                                    Editar
+                                    Excluir
                                 </button>
+                            </div>
 
-                                <label className="file-upload-button">
-                                    Anexar arquivo
-                                    <input
-                                        type="file"
-                                        multiple
-                                        onChange={handleFileChange}
-                                        hidden
-                                    />
-                                </label>
-                            </>
-                        )}
+                            {isTaskCompleted && (
+                                <p className="task-locked-message">
+                                    Tarefa concluída. Edição e novos anexos
+                                    estão bloqueados.
+                                </p>
+                            )}
 
-                        <button
-                            type="button"
-                            onClick={() => onDeleteTask(task.id)}
-                        >
-                            Excluir
-                        </button>
-                    </div>
-
-                    {isTaskCompleted && (
-                        <p className="task-locked-message">
-                            Tarefa concluída. Edição e novos anexos estão
-                            bloqueados.
-                        </p>
+                            <TaskFiles
+                                files={task.files}
+                                isTaskCompleted={isTaskCompleted}
+                                onRequestRenameFile={(file) =>
+                                    onRequestRenameFile(task.id, file)
+                                }
+                                onDeleteFile={(fileId) =>
+                                    onDeleteFile(task.id, fileId)
+                                }
+                            />
+                        </div>
                     )}
-
-                    <TaskFiles
-                        files={task.files}
-                        isTaskCompleted={isTaskCompleted}
-                        onRequestRenameFile={(file) =>
-                            onRequestRenameFile(task.id, file)
-                        }
-                        onDeleteFile={(fileId) => onDeleteFile(task.id, fileId)}
-                    />
                 </>
             )}
         </li>

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Task, TaskFile, TaskPriority } from '../../types/task'
 import { TaskItem } from '../TaskItem/TaskItem'
 
@@ -39,8 +40,16 @@ export const TaskList = ({
     onRenameFile,
     onDeleteFile,
 }: TaskListProps) => {
+    const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null)
+
     if (tasks.length === 0) {
         return <p className="empty-message">{emptyMessage}</p>
+    }
+
+    const handleToggleExpandedTask = (taskId: string) => {
+        setExpandedTaskId((currentTaskId) =>
+            currentTaskId === taskId ? null : taskId
+        )
     }
 
     return (
@@ -49,8 +58,10 @@ export const TaskList = ({
                 <TaskItem
                     key={task.id}
                     task={task}
+                    expanded={expandedTaskId === task.id}
                     selected={selectedTaskIds.includes(task.id)}
                     selectable={selectable}
+                    onToggleExpanded={() => handleToggleExpandedTask(task.id)}
                     onToggleTask={onToggleTask}
                     onSelectTask={onSelectTask}
                     onUpdateTask={onUpdateTask}
