@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import * as XLSX from 'xlsx'
+import { API_URL } from '../../services/api'
 
 type TaskHistory = {
     id: number
@@ -211,22 +212,37 @@ export function LogPage() {
     const [endDate, setEndDate] = useState(todayDate)
 
     useEffect(() => {
+        let isMounted = true
+
         const loadHistory = async () => {
             try {
-                const response = await fetch(
-                    'http://localhost:3001/tasks/history'
-                )
-                const data = await response.json()
+                const response = await fetch(`${API_URL}/tasks/history`)
 
-                setHistory(data)
+                if (!response.ok) {
+                    throw new Error(
+                        `Erro ao carregar log: ${response.status}`
+                    )
+                }
+
+                const data = (await response.json()) as TaskHistory[]
+
+                if (isMounted) {
+                    setHistory(data)
+                }
             } catch (error) {
                 console.error('Erro ao carregar log:', error)
             } finally {
-                setIsLoading(false)
+                if (isMounted) {
+                    setIsLoading(false)
+                }
             }
         }
 
         loadHistory()
+
+        return () => {
+            isMounted = false
+        }
     }, [])
 
     const filteredHistory = useMemo(() => {
@@ -234,8 +250,7 @@ export function LogPage() {
             const taskTitle = normalizeText(item.task_title || '')
             const search = normalizeText(searchTerm.trim())
 
-            const matchesSearch =
-                search === '' || taskTitle.includes(search)
+            const matchesSearch = search === '' || taskTitle.includes(search)
 
             const matchesAction =
                 actionFilter === 'todas' || item.action === actionFilter
