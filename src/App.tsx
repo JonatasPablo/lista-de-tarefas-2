@@ -2,6 +2,16 @@ import { useEffect, useState } from 'react'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import { Footer } from './components/Footer/Footer'
 import { APP_NAME, APP_VERSION } from './config/app'
+import { Toast } from './components/Toast/Toast'
+import { useToast } from './hooks/useToast'
+import { ConfirmModal } from './components/ConfirmModal/ConfirmModal'
+import { useConfirm } from './hooks/useConfirm'
+import { PromptModal } from './components/PromptModal/PromptModal'
+import { usePrompt } from './hooks/usePrompt'
+import {
+    buildFileNameWithOriginalExtension,
+    getFileNameWithoutExtension,
+} from './utils/file'
 
 import { Header } from './components/Header/Header'
 import { CompletedTasksPage } from './pages/CompletedTasksPage/CompletedTasksPage'
@@ -42,6 +52,16 @@ function App() {
 
     const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
 
+    const { toasts, showToast, removeToast } = useToast()
+    const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm()
+
+    const {
+        prompt,
+        promptState,
+        handlePromptConfirm,
+        handlePromptCancel,
+    } = usePrompt()
+
     const pendingTasks = tasks.filter((task) => !task.completed)
     const completedTasks = tasks.filter((task) => task.completed)
 
@@ -63,18 +83,22 @@ function App() {
         setTasks((currentTasks) => [...currentTasks, newTask])
     }
 
-    const toggleTask = (taskId: string) => {
+    const toggleTask = async (taskId: string) => {
         const taskToToggle = tasks.find((task) => task.id === taskId)
 
         if (!taskToToggle) {
-            alert('Tarefa não encontrada.')
+            showToast('error', 'Tarefa não encontrada.')
             return
         }
 
         if (!taskToToggle.completed) {
-            const confirmComplete = window.confirm(
-                'Deseja concluir esta tarefa? Ela será enviada para o histórico de concluídas e ficará bloqueada para edição.'
-            )
+            const confirmComplete = await confirm({
+                title: 'Concluir tarefa',
+                message:
+                    'Deseja concluir esta tarefa? Ela será enviada para o histórico de concluídas e ficará bloqueada para edição.',
+                confirmText: 'Concluir',
+                cancelText: 'Cancelar',
+            })
 
             if (!confirmComplete) {
                 return
@@ -85,18 +109,25 @@ function App() {
             currentTasks.map((task) =>
                 task.id === taskId
                     ? {
-                            ...task,
-                            completed: !task.completed,
-                            completedAt: !task.completed
-                                ? getCurrentDateTime()
-                                : undefined,
-                        }
+                        ...task,
+                        completed: !task.completed,
+                        completedAt: !task.completed
+                            ? getCurrentDateTime()
+                            : undefined,
+                    }
                     : task
             )
         )
 
         setSelectedTaskIds((currentSelectedIds) =>
             currentSelectedIds.filter((id) => id !== taskId)
+        )
+
+        showToast(
+            taskToToggle.completed ? 'info' : 'success',
+            taskToToggle.completed
+                ? 'Tarefa reaberta com sucesso.'
+                : 'Tarefa concluída com sucesso.'
         )
     }
 
@@ -113,7 +144,7 @@ function App() {
                 }
 
                 if (task.completed) {
-                    alert('Não é possível editar uma tarefa concluída.')
+                    showToast('warning', 'Não é possível editar uma tarefa concluída.')
                     return task
                 }
 
@@ -128,17 +159,20 @@ function App() {
         )
     }
 
-    const deleteTask = (taskId: string) => {
+    const deleteTask = async (taskId: string) => {
         const taskToDelete = tasks.find((task) => task.id === taskId)
 
         if (!taskToDelete) {
-            alert('Tarefa não encontrada.')
+            showToast('error', 'Tarefa não encontrada.')
             return
         }
 
-        const confirmDelete = window.confirm(
-            `Tem certeza que deseja excluir a tarefa "${taskToDelete.title}"?`
-        )
+        const confirmDelete = await confirm({
+            title: 'Excluir tarefa',
+            message: `Tem certeza que deseja excluir a tarefa "${taskToDelete.title}"? Essa ação não poderá ser desfeita.`,
+            confirmText: 'Excluir',
+            cancelText: 'Cancelar',
+        })
 
         if (!confirmDelete) {
             return
@@ -151,6 +185,8 @@ function App() {
         setSelectedTaskIds((currentSelectedIds) =>
             currentSelectedIds.filter((id) => id !== taskId)
         )
+
+        showToast('success', 'Tarefa excluída com sucesso.')
     }
 
     const addFilesToTask = (taskId: string, files: File[]) => {
@@ -170,7 +206,7 @@ function App() {
                 }
 
                 if (task.completed) {
-                    alert('Não é possível anexar arquivo em uma tarefa concluída.')
+                    showToast('warning', 'Não é possível anexar arquivo em uma tarefa concluída.')
                     return task
                 }
 
@@ -218,7 +254,7 @@ function App() {
                 }
 
                 if (task.completed) {
-                    alert('Não é possível deletar arquivo de uma tarefa concluída.')
+                    showToast('warning', 'Não é possível deletar arquivo de uma tarefa concluída.')
                     return task
                 }
 
@@ -246,20 +282,24 @@ function App() {
         setSelectedTaskIds([])
     }
 
-    const exportTasks = (tasksToExport: Task[]) => {
+    const exportTasks = async (tasksToExport: Task[]) => {
         if (tasksToExport.length === 0) {
-            alert('Não existem tarefas pendentes para exportar.')
+            showToast('warning', 'Não existem tarefas pendentes para exportar.')
             return
         }
 
-        const includeFiles = window.confirm(
-            'Deseja incluir os arquivos anexados na exportação também?'
-        )
+        const includeFiles = await confirm({
+            title: 'Incluir arquivos',
+            message: 'Deseja incluir os arquivos anexados na exportação também?',
+            confirmText: 'Incluir',
+            cancelText: 'Somente lista',
+        })
 
         if (includeFiles) {
-            alert(
-                'A exportação dos arquivos será implementada quando o backend estiver pronto. Futuramente, o sistema baixará um arquivo .zip com a lista e os anexos.'
-            )
+        showToast(
+            'info',
+            'A exportação dos arquivos será implementada quando o backend estiver pronto. Futuramente, o sistema baixará um arquivo .zip com a lista e os anexos.'
+        )
         }
 
         const taskText = tasksToExport
@@ -311,7 +351,31 @@ function App() {
 
     useEffect(() => {
     document.title = `${APP_NAME} v${APP_VERSION}`
-}, [])
+    }, [])
+
+    const requestRenameTaskFile = async (taskId: string, file: TaskFile) => {
+        const currentNameWithoutExtension = getFileNameWithoutExtension(
+            file.displayName
+        )
+
+        const newName = await prompt({
+            title: 'Renomear arquivo',
+            message:
+                'Digite o novo nome do arquivo. A extensão original será mantida automaticamente.',
+            initialValue: currentNameWithoutExtension,
+            confirmText: 'Renomear',
+            cancelText: 'Cancelar',
+        })
+
+        if (!newName?.trim()) {
+            return
+        }
+
+    const displayNameWithOriginalExtension =
+        buildFileNameWithOriginalExtension(newName, file.originalName)
+
+        renameTaskFile(taskId, file.id, displayNameWithOriginalExtension)
+    }
 
     return (
     <HashRouter>
@@ -323,6 +387,7 @@ function App() {
                     path="/"
                     element={
                         <TasksPage
+                            onRequestRenameFile={requestRenameTaskFile}
                             pendingTasks={pendingTasks}
                             selectedTaskIds={selectedTaskIds}
                             onSelectTask={selectTaskForExport}
@@ -336,6 +401,7 @@ function App() {
                             onRenameFile={renameTaskFile}
                             onDeleteFile={deleteTaskFile}
                             onExportTasks={exportTasks}
+                            onConfirm={confirm}
                         />
                     }
                 />
@@ -344,6 +410,7 @@ function App() {
                     path="/historico"
                     element={
                         <CompletedTasksPage
+                            onRequestRenameFile={requestRenameTaskFile}
                             completedTasks={completedTasks}
                             onToggleTask={toggleTask}
                             onDeleteTask={deleteTask}
@@ -359,6 +426,30 @@ function App() {
             </Routes>
 
             <Footer />
+
+            <Toast messages={toasts} onRemoveToast={removeToast} />
+
+            <ConfirmModal
+                isOpen={confirmState.isOpen}
+                title={confirmState.title}
+                message={confirmState.message}
+                confirmText={confirmState.confirmText}
+                cancelText={confirmState.cancelText}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
+
+            <PromptModal
+                key={promptState.isOpen ? promptState.initialValue : 'closed'}
+                isOpen={promptState.isOpen}
+                title={promptState.title}
+                message={promptState.message}
+                initialValue={promptState.initialValue}
+                confirmText={promptState.confirmText}
+                cancelText={promptState.cancelText}
+                onConfirm={handlePromptConfirm}
+                onCancel={handlePromptCancel}
+            />
         </main>
     </HashRouter>
 )

@@ -1,21 +1,17 @@
 import type { TaskFile } from '../../types/task'
-import {
-    buildFileNameWithOriginalExtension,
-    formatFileSize,
-    getFileNameWithoutExtension,
-} from '../../utils/file'
+import { formatFileSize } from '../../utils/file'
 
 interface TaskFilesProps {
     files: TaskFile[]
     isTaskCompleted: boolean
-    onRenameFile: (fileId: string, displayName: string) => void
+    onRequestRenameFile: (file: TaskFile) => void
     onDeleteFile: (fileId: string) => void
 }
 
 export const TaskFiles = ({
     files,
     isTaskCompleted,
-    onRenameFile,
+    onRequestRenameFile,
     onDeleteFile,
 }: TaskFilesProps) => {
     if (files.length === 0) {
@@ -39,28 +35,7 @@ export const TaskFiles = ({
                             <button
                                 type="button"
                                 disabled={isTaskCompleted}
-                                onClick={() => {
-                                    const currentNameWithoutExtension = getFileNameWithoutExtension(
-                                        file.displayName
-                                    )
-
-                                    const newName = window.prompt(
-                                    'Digite o novo nome do arquivo:',
-                                    currentNameWithoutExtension
-                                    )
-
-                                    if (!newName?.trim()) {
-                                        return 
-                                    }
-
-                                    const displayNameWithOriginalExtension =
-                                    buildFileNameWithOriginalExtension(
-                                        newName,
-                                        file.originalName
-                                    )
-
-                                    onRenameFile(file.id, displayNameWithOriginalExtension)
-                                }}
+                                onClick={() => onRequestRenameFile(file)}
                             >
                                 Renomear
                             </button>

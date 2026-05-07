@@ -1,4 +1,4 @@
-import type { Task, TaskPriority } from '../../types/task'
+import type { Task, TaskFile, TaskPriority } from '../../types/task'
 import { TaskItem } from '../TaskItem/TaskItem'
 
 interface TaskListProps {
@@ -7,8 +7,8 @@ interface TaskListProps {
     selectable?: boolean
     selectedTaskIds?: string[]
     onSelectTask?: (taskId: string) => void
-    onToggleTask: (taskId: string) => void
-    onDeleteTask: (taskId: string) => void
+    onToggleTask: (taskId: string) => void | Promise<void>
+    onDeleteTask: (taskId: string) => void | Promise<void>
     onUpdateTask: (
         taskId: string,
         title: string,
@@ -22,9 +22,11 @@ interface TaskListProps {
         displayName: string
     ) => void
     onDeleteFile: (taskId: string, fileId: string) => void
+    onRequestRenameFile: (taskId: string, file: TaskFile) => void
 }
 
 export const TaskList = ({
+    onRequestRenameFile,
     tasks,
     emptyMessage = 'Nenhuma tarefa cadastrada.',
     selectable = false,
@@ -47,15 +49,16 @@ export const TaskList = ({
                 <TaskItem
                     key={task.id}
                     task={task}
-                    selectable={selectable}
                     selected={selectedTaskIds.includes(task.id)}
-                    onSelectTask={onSelectTask}
+                    selectable={selectable}
                     onToggleTask={onToggleTask}
-                    onDeleteTask={onDeleteTask}
+                    onSelectTask={onSelectTask}
                     onUpdateTask={onUpdateTask}
+                    onDeleteTask={onDeleteTask}
+                    onRequestRenameFile={onRequestRenameFile}
                     onAddFiles={onAddFiles}
-                    onRenameFile={onRenameFile}
                     onDeleteFile={onDeleteFile}
+                    onRenameFile={onRenameFile}
                 />
             ))}
         </ul>

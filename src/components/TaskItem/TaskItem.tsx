@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Task, TaskPriority } from '../../types/task'
+import type { Task, TaskFile, TaskPriority } from '../../types/task'
 import { MAX_FILE_SIZE_BYTES, formatFileSize } from '../../utils/file'
 import { TaskFiles } from '../TaskFiles/TaskFiles'
 
@@ -8,8 +8,8 @@ interface TaskItemProps {
     selectable?: boolean
     selected?: boolean
     onSelectTask?: (taskId: string) => void
-    onToggleTask: (taskId: string) => void
-    onDeleteTask: (taskId: string) => void
+    onToggleTask: (taskId: string) => void | Promise<void>
+    onDeleteTask: (taskId: string) => void | Promise<void>
     onUpdateTask: (
         taskId: string,
         title: string,
@@ -23,10 +23,12 @@ interface TaskItemProps {
         displayName: string
     ) => void
     onDeleteFile: (taskId: string, fileId: string) => void
+    onRequestRenameFile: (taskId: string, file: TaskFile) => void
 }
 
 export const TaskItem = ({
     task,
+    onRequestRenameFile,
     selectable = false,
     selected = false,
     onSelectTask,
@@ -34,7 +36,6 @@ export const TaskItem = ({
     onDeleteTask,
     onUpdateTask,
     onAddFiles,
-    onRenameFile,
     onDeleteFile,
 }: TaskItemProps) => {
     const [isEditing, setIsEditing] = useState(false)
@@ -257,12 +258,10 @@ export const TaskItem = ({
                     <TaskFiles
                         files={task.files}
                         isTaskCompleted={isTaskCompleted}
-                        onRenameFile={(fileId, displayName) =>
-                            onRenameFile(task.id, fileId, displayName)
+                        onRequestRenameFile={(file) =>
+                            onRequestRenameFile(task.id, file)
                         }
-                        onDeleteFile={(fileId) =>
-                            onDeleteFile(task.id, fileId)
-                        }
+                        onDeleteFile={(fileId) => onDeleteFile(task.id, fileId)}
                     />
                 </>
             )}

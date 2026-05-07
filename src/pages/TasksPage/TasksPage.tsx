@@ -7,7 +7,7 @@ import type {
 import { TaskForm } from '../../components/TaskForm/TaskForm'
 import { TaskList } from '../../components/TaskList/TaskList'
 import { TaskStats } from '../../components/TaskStats/TaskStats'
-import type { Task, TaskPriority } from '../../types/task'
+import type { Task, TaskFile, TaskPriority } from '../../types/task'
 import { filterTasks, sortTasks } from '../../utils/tasks'
 
 interface TasksPageProps {
@@ -21,8 +21,8 @@ interface TasksPageProps {
         description: string,
         priority: TaskPriority
     ) => void
-    onToggleTask: (taskId: string) => void
-    onDeleteTask: (taskId: string) => void
+    onToggleTask: (taskId: string) => void | Promise<void>
+    onDeleteTask: (taskId: string) => void | Promise<void>
     onUpdateTask: (
         taskId: string,
         title: string,
@@ -36,10 +36,18 @@ interface TasksPageProps {
         displayName: string
     ) => void
     onDeleteFile: (taskId: string, fileId: string) => void
-    onExportTasks: (tasksToExport: Task[]) => void
+    onExportTasks: (tasksToExport: Task[]) => void | Promise<void>
+    onConfirm: (options: {
+    title: string
+    message: string
+    confirmText?: string
+    cancelText?: string
+    }) => Promise<boolean>
+    onRequestRenameFile: (taskId: string, file: TaskFile) => void
 }
 
 export const TasksPage = ({
+    onRequestRenameFile,
     pendingTasks,
     selectedTaskIds,
     onSelectTask,
@@ -53,6 +61,7 @@ export const TasksPage = ({
     onRenameFile,
     onDeleteFile,
     onExportTasks,
+    onConfirm,  
 }: TasksPageProps) => {
     const [searchTerm, setSearchTerm] = useState('')
     const [priorityFilter, setPriorityFilter] =
@@ -82,15 +91,19 @@ export const TasksPage = ({
         onClearSelectedTasks()
     }
 
-    const handleExport = () => {
+    const handleExport = async () => {
         if (selectedTaskIds.length > 0) {
             onExportTasks(selectedVisibleTasks)
             return
         }
 
-        const confirmExportAll = window.confirm(
-            'Nenhuma tarefa foi selecionada. Deseja exportar todas as tarefas pendentes filtradas?'
-        )
+        const confirmExportAll = await onConfirm({
+            title: 'Exportar tarefas',
+            message:
+                'Nenhuma tarefa foi selecionada. Deseja exportar todas as tarefas pendentes filtradas?',
+            confirmText: 'Exportar',
+            cancelText: 'Cancelar',
+        })
 
         if (!confirmExportAll) {
             return
@@ -172,6 +185,7 @@ export const TasksPage = ({
 
                 <div className="tasks-scroll-area">
                     <TaskList
+                        onRequestRenameFile={onRequestRenameFile}
                         tasks={filteredTasks}
                         selectable
                         selectedTaskIds={selectedTaskIds}

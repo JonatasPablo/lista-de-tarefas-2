@@ -6,13 +6,13 @@ import type {
 } from '../../components/TaskFilters/TaskFilters'
 import { TaskList } from '../../components/TaskList/TaskList'
 import { TaskStats } from '../../components/TaskStats/TaskStats'
-import type { Task, TaskPriority } from '../../types/task'
+import type { Task, TaskFile, TaskPriority } from '../../types/task'
 import { filterTasks, sortTasks } from '../../utils/tasks'
 
 interface CompletedTasksPageProps {
     completedTasks: Task[]
-    onToggleTask: (taskId: string) => void
-    onDeleteTask: (taskId: string) => void
+    onToggleTask: (taskId: string) => void | Promise<void>
+    onDeleteTask: (taskId: string) => void | Promise<void>
     onUpdateTask: (
         taskId: string,
         title: string,
@@ -26,9 +26,11 @@ interface CompletedTasksPageProps {
         displayName: string
     ) => void
     onDeleteFile: (taskId: string, fileId: string) => void
+    onRequestRenameFile: (taskId: string, file: TaskFile) => void
 }
 
 export const CompletedTasksPage = ({
+    onRequestRenameFile,
     completedTasks,
     onToggleTask,
     onDeleteTask,
@@ -74,6 +76,7 @@ export const CompletedTasksPage = ({
 
                 <div className="tasks-scroll-area">
                     <TaskList
+                        onRequestRenameFile={onRequestRenameFile}
                         tasks={filteredTasks}
                         emptyMessage="Nenhuma tarefa concluída encontrada."
                         onToggleTask={onToggleTask}
