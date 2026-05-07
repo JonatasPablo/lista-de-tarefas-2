@@ -1,7 +1,9 @@
 const { Router } = require('express')
 
 const tasksController = require('../controllers/tasks.controller')
+const taskFilesController = require('../controllers/taskFiles.controller')
 const asyncHandler = require('../helpers/asyncHandler')
+const uploadTaskFile = require('../middlewares/uploadTaskFile')
 
 const tasksRoutes = Router()
 
@@ -9,6 +11,30 @@ tasksRoutes.get('/', asyncHandler(tasksController.listTasks))
 tasksRoutes.post('/', asyncHandler(tasksController.createTask))
 
 tasksRoutes.get('/history', asyncHandler(tasksController.listUserHistory))
+
+tasksRoutes.get('/:id/files', asyncHandler(taskFilesController.listTaskFiles))
+
+tasksRoutes.post(
+    '/:id/files',
+    uploadTaskFile.single('file'),
+    asyncHandler(taskFilesController.createTaskFile)
+)
+
+tasksRoutes.get(
+    '/:id/files/:fileId/download',
+    asyncHandler(taskFilesController.downloadTaskFile)
+)
+
+tasksRoutes.patch(
+    '/:id/files/:fileId',
+    asyncHandler(taskFilesController.renameTaskFile)
+)
+
+tasksRoutes.delete(
+    '/:id/files/:fileId',
+    asyncHandler(taskFilesController.deleteTaskFile)
+)
+
 tasksRoutes.get('/:id/history', asyncHandler(tasksController.listTaskHistory))
 
 tasksRoutes.put('/:id', asyncHandler(tasksController.updateTask))

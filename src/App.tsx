@@ -20,38 +20,14 @@ import { TasksPage } from './pages/TasksPage/TasksPage'
 import { LogPage } from './pages/LogPage/LogPage'
 
 import type { Task, TaskFile, TaskPriority } from './types/task'
-import { getCurrentDateTime } from './utils/date'
+import { tasksApi } from './services/tasksApi'
+import { taskFilesApi } from './services/taskFilesApi'
 import './styles/global.css'
 
-const LOCAL_STORAGE_KEY = 'tasks'
-
 function App() {
-    const [tasks, setTasks] = useState<Task[]>(() => {
-    try {
-        const storedTasks = localStorage.getItem(LOCAL_STORAGE_KEY)
-
-        if (!storedTasks) {
-            return []
-        }
-
-        const parsedTasks = JSON.parse(storedTasks) as Task[]
-
-        return parsedTasks.map((task) => ({
-            ...task,
-            title: task.title || task.text || 'Tarefa sem título',
-            description: task.description || '',
-            priority: task.priority || 'media',
-            completed: Boolean(task.completed),
-            completedAt: task.completedAt,
-            files: task.files || [],
-        }))
-    } catch {
-        localStorage.removeItem(LOCAL_STORAGE_KEY)
-        return []
-    }
-})
-
+    const [tasks, setTasks] = useState<Task[]>([])
     const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
+    const [isLoadingTasks, setIsLoadingTasks] = useState(true)
 
     const { toasts, showToast, removeToast } = useToast()
     const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm()
@@ -66,22 +42,25 @@ function App() {
     const pendingTasks = tasks.filter((task) => !task.completed)
     const completedTasks = tasks.filter((task) => task.completed)
 
-    const addTask = (
+    const addTask = async (
         title: string,
         description: string,
         priority: TaskPriority
     ) => {
-        const newTask: Task = {
-            id: crypto.randomUUID(),
-            title,
-            description,
-            priority,
-            completed: false,
-            createdAt: getCurrentDateTime(),
-            files: [],
-        }
+        try {
+            const newTask = await tasksApi.createTask({
+                title,
+                description,
+                priority,
+            })
 
-        setTasks((currentTasks) => [...currentTasks, newTask])
+            setTasks((currentTasks) => [newTask, ...currentTasks])
+
+            showToast('success', 'Tarefa criada com sucesso.')
+        } catch (error) {
+            console.error('Erro ao criar tarefa:', error)
+            showToast('error', 'Não foi possível criar a tarefa.')
+        }
     }
 
     const toggleTask = async (taskId: string) => {
@@ -106,58 +85,83 @@ function App() {
             }
         }
 
-        setTasks((currentTasks) =>
-            currentTasks.map((task) =>
-                task.id === taskId
-                    ? {
-                        ...task,
-                        completed: !task.completed,
-                        completedAt: !task.completed
-                            ? getCurrentDateTime()
-                            : undefined,
-                    }
-                    : task
+        try {
+            const updatedTask = await tasksApi.toggleTask(taskId)
+
+            setTasks((currentTasks) =>
+                currentTasks.map((task) =>
+                    task.id === taskId
+                        ? {
+                              ...updatedTask,
+                              files: task.files,
+                          }
+                        : task
+                )
             )
-        )
 
-        setSelectedTaskIds((currentSelectedIds) =>
-            currentSelectedIds.filter((id) => id !== taskId)
-        )
+            setSelectedTaskIds((currentSelectedIds) =>
+                currentSelectedIds.filter((id) => id !== taskId)
+            )
 
-        showToast(
-            taskToToggle.completed ? 'info' : 'success',
-            taskToToggle.completed
-                ? 'Tarefa reaberta com sucesso.'
-                : 'Tarefa concluída com sucesso.'
-        )
+            showToast(
+                taskToToggle.completed ? 'info' : 'success',
+                taskToToggle.completed
+                    ? 'Tarefa reaberta com sucesso.'
+                    : 'Tarefa concluída com sucesso.'
+            )
+        } catch (error) {
+            console.error('Erro ao alterar status da tarefa:', error)
+            showToast(
+                'error',
+                'Não foi possível alterar o status da tarefa.'
+            )
+        }
     }
 
-    const updateTask = (
+    const updateTask = async (
         taskId: string,
         title: string,
         description: string,
         priority: TaskPriority
     ) => {
-        setTasks((currentTasks) =>
-            currentTasks.map((task) => {
-                if (task.id !== taskId) {
-                    return task
-                }
+        const taskToUpdate = tasks.find((task) => task.id === taskId)
 
-                if (task.completed) {
-                    showToast('warning', 'Não é possível editar uma tarefa concluída.')
-                    return task
-                }
+        if (!taskToUpdate) {
+            showToast('error', 'Tarefa não encontrada.')
+            return
+        }
 
-                return {
-                    ...task,
-                    title,
-                    description,
-                    priority,
-                    updatedAt: getCurrentDateTime(),
-                }
+        if (taskToUpdate.completed) {
+            showToast(
+                'warning',
+                'Não é possível editar uma tarefa concluída.'
+            )
+            return
+        }
+
+        try {
+            const updatedTask = await tasksApi.updateTask(taskId, {
+                title,
+                description,
+                priority,
             })
-        )
+
+            setTasks((currentTasks) =>
+                currentTasks.map((task) =>
+                    task.id === taskId
+                        ? {
+                              ...updatedTask,
+                              files: task.files,
+                          }
+                        : task
+                )
+            )
+
+            showToast('success', 'Tarefa editada com sucesso.')
+        } catch (error) {
+            console.error('Erro ao editar tarefa:', error)
+            showToast('error', 'Não foi possível editar a tarefa.')
+        }
     }
 
     const deleteTask = async (taskId: string) => {
@@ -179,92 +183,174 @@ function App() {
             return
         }
 
-        setTasks((currentTasks) =>
-            currentTasks.filter((task) => task.id !== taskId)
-        )
+        try {
+            await tasksApi.deleteTask(taskId)
 
-        setSelectedTaskIds((currentSelectedIds) =>
-            currentSelectedIds.filter((id) => id !== taskId)
-        )
+            setTasks((currentTasks) =>
+                currentTasks.filter((task) => task.id !== taskId)
+            )
 
-        showToast('success', 'Tarefa excluída com sucesso.')
+            setSelectedTaskIds((currentSelectedIds) =>
+                currentSelectedIds.filter((id) => id !== taskId)
+            )
+
+            showToast('success', 'Tarefa excluída com sucesso.')
+        } catch (error) {
+            console.error('Erro ao excluir tarefa:', error)
+            showToast('error', 'Não foi possível excluir a tarefa.')
+        }
     }
 
-    const addFilesToTask = (taskId: string, files: File[]) => {
-        const newFiles: TaskFile[] = files.map((file) => ({
-            id: crypto.randomUUID(),
-            originalName: file.name,
-            displayName: file.name,
-            mimeType: file.type,
-            sizeBytes: file.size,
-            createdAt: getCurrentDateTime(),
-        }))
+    const addFilesToTask = async (taskId: string, files: File[]) => {
+        const taskToUpdate = tasks.find((task) => task.id === taskId)
 
-        setTasks((currentTasks) =>
-            currentTasks.map((task) => {
-                if (task.id !== taskId) {
-                    return task
-                }
+        if (!taskToUpdate) {
+            showToast('error', 'Tarefa não encontrada.')
+            return
+        }
 
-                if (task.completed) {
-                    showToast('warning', 'Não é possível anexar arquivo em uma tarefa concluída.')
-                    return task
-                }
+        if (taskToUpdate.completed) {
+            showToast(
+                'warning',
+                'Não é possível anexar arquivo em uma tarefa concluída.'
+            )
+            return
+        }
 
-                return {
-                    ...task,
-                    files: [...task.files, ...newFiles],
-                }
-            })
-        )
+        try {
+            const uploadedFiles = await Promise.all(
+                files.map((file) => taskFilesApi.uploadTaskFile(taskId, file))
+            )
+
+            setTasks((currentTasks) =>
+                currentTasks.map((task) => {
+                    if (task.id !== taskId) {
+                        return task
+                    }
+
+                    return {
+                        ...task,
+                        files: [...task.files, ...uploadedFiles],
+                    }
+                })
+            )
+
+            showToast(
+                'success',
+                uploadedFiles.length === 1
+                    ? 'Arquivo anexado com sucesso.'
+                    : 'Arquivos anexados com sucesso.'
+            )
+        } catch (error) {
+            console.error('Erro ao anexar arquivo:', error)
+
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Não foi possível anexar o arquivo.'
+
+            showToast('error', message)
+        }
     }
 
-    const renameTaskFile = (
+    const renameTaskFile = async (
         taskId: string,
         fileId: string,
         displayName: string
     ) => {
-        setTasks((currentTasks) =>
-            currentTasks.map((task) => {
-                if (task.id !== taskId) {
-                    return task
-                }
+        const taskToUpdate = tasks.find((task) => task.id === taskId)
 
-                if (task.completed) {
-                    alert(
-                        'Não é possível renomear arquivo de uma tarefa concluída.'
-                    )
-                    return task
-                }
+        if (!taskToUpdate) {
+            showToast('error', 'Tarefa não encontrada.')
+            return
+        }
 
-                return {
-                    ...task,
-                    files: task.files.map((file) =>
-                        file.id === fileId ? { ...file, displayName } : file
-                    ),
-                }
-            })
-        )
+        if (taskToUpdate.completed) {
+            showToast(
+                'warning',
+                'Não é possível renomear arquivo de uma tarefa concluída.'
+            )
+            return
+        }
+
+        try {
+            const renamedFile = await taskFilesApi.renameTaskFile(
+                taskId,
+                fileId,
+                displayName
+            )
+
+            setTasks((currentTasks) =>
+                currentTasks.map((task) => {
+                    if (task.id !== taskId) {
+                        return task
+                    }
+
+                    return {
+                        ...task,
+                        files: task.files.map((file) =>
+                            file.id === fileId ? renamedFile : file
+                        ),
+                    }
+                })
+            )
+
+            showToast('success', 'Arquivo renomeado com sucesso.')
+        } catch (error) {
+            console.error('Erro ao renomear arquivo:', error)
+
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Não foi possível renomear o arquivo.'
+
+            showToast('error', message)
+        }
     }
 
-    const deleteTaskFile = (taskId: string, fileId: string) => {
-        setTasks((currentTasks) =>
-            currentTasks.map((task) => {
-                if (task.id !== taskId) {
-                    return task
-                }
+    const deleteTaskFile = async (taskId: string, fileId: string) => {
+        const taskToUpdate = tasks.find((task) => task.id === taskId)
 
-                if (task.completed) {
-                    showToast('warning', 'Não é possível deletar arquivo de uma tarefa concluída.')
-                    return task
-                }
+        if (!taskToUpdate) {
+            showToast('error', 'Tarefa não encontrada.')
+            return
+        }
 
-                return {
-                    ...task,
-                    files: task.files.filter((file) => file.id !== fileId),
-                }
-            })
-        )
+        if (taskToUpdate.completed) {
+            showToast(
+                'warning',
+                'Não é possível deletar arquivo de uma tarefa concluída.'
+            )
+            return
+        }
+
+        try {
+            await taskFilesApi.deleteTaskFile(taskId, fileId)
+
+            setTasks((currentTasks) =>
+                currentTasks.map((task) => {
+                    if (task.id !== taskId) {
+                        return task
+                    }
+
+                    return {
+                        ...task,
+                        files: task.files.filter((file) => file.id !== fileId),
+                    }
+                })
+            )
+
+            showToast('success', 'Arquivo excluído com sucesso.')
+        } catch (error) {
+            console.error('Erro ao excluir arquivo:', error)
+
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Não foi possível excluir o arquivo.'
+
+            showToast('error', message)
+        }
     }
 
     const selectTaskForExport = (taskId: string) => {
@@ -297,10 +383,10 @@ function App() {
         })
 
         if (includeFiles) {
-        showToast(
-            'info',
-            'A exportação dos arquivos será implementada quando o backend estiver pronto. Futuramente, o sistema baixará um arquivo .zip com a lista e os anexos.'
-        )
+            showToast(
+                'info',
+                'A exportação dos arquivos em .zip será implementada em uma próxima etapa.'
+            )
         }
 
         const taskText = tasksToExport
@@ -346,14 +432,6 @@ function App() {
         clearSelectedTasks()
     }
 
-    useEffect(() => {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(tasks))
-    }, [tasks])
-
-    useEffect(() => {
-    document.title = `${APP_NAME} v${APP_VERSION}`
-    }, [])
-
     const requestRenameTaskFile = async (taskId: string, file: TaskFile) => {
         const currentNameWithoutExtension = getFileNameWithoutExtension(
             file.displayName
@@ -372,90 +450,141 @@ function App() {
             return
         }
 
-    const displayNameWithOriginalExtension =
-        buildFileNameWithOriginalExtension(newName, file.originalName)
+        const displayNameWithOriginalExtension =
+            buildFileNameWithOriginalExtension(newName, file.originalName)
 
         renameTaskFile(taskId, file.id, displayNameWithOriginalExtension)
     }
 
+    useEffect(() => {
+        document.title = `${APP_NAME} v${APP_VERSION}`
+    }, [])
+
+    useEffect(() => {
+        let isMounted = true
+
+        const loadTasks = async () => {
+            try {
+                const apiTasks = await tasksApi.listTasks()
+
+                if (isMounted) {
+                    setTasks(apiTasks)
+                }
+            } catch (error) {
+                console.error('Erro ao carregar tarefas:', error)
+
+                if (isMounted) {
+                    showToast(
+                        'error',
+                        'Não foi possível carregar as tarefas do backend.'
+                    )
+                }
+            } finally {
+                if (isMounted) {
+                    setIsLoadingTasks(false)
+                }
+            }
+        }
+
+        loadTasks()
+
+        return () => {
+            isMounted = false
+        }
+    }, [showToast])
+
     return (
-    <HashRouter>
-        <main className="container">
-            <Header />
+        <HashRouter>
+            <main className="container">
+                <Header />
 
-            <Routes>
-                <Route
-                    path="/"
-                    element={
-                        <TasksPage
-                            onRequestRenameFile={requestRenameTaskFile}
-                            pendingTasks={pendingTasks}
-                            selectedTaskIds={selectedTaskIds}
-                            onSelectTask={selectTaskForExport}
-                            onSelectAllVisibleTasks={selectAllVisibleTasks}
-                            onClearSelectedTasks={clearSelectedTasks}
-                            onAddTask={addTask}
-                            onToggleTask={toggleTask}
-                            onDeleteTask={deleteTask}
-                            onUpdateTask={updateTask}
-                            onAddFiles={addFilesToTask}
-                            onRenameFile={renameTaskFile}
-                            onDeleteFile={deleteTaskFile}
-                            onExportTasks={exportTasks}
-                            onConfirm={confirm}
+                {isLoadingTasks ? (
+                    <p className="empty-message">Carregando tarefas...</p>
+                ) : (
+                    <Routes>
+                        <Route
+                            path="/"
+                            element={
+                                <TasksPage
+                                    onRequestRenameFile={
+                                        requestRenameTaskFile
+                                    }
+                                    pendingTasks={pendingTasks}
+                                    selectedTaskIds={selectedTaskIds}
+                                    onSelectTask={selectTaskForExport}
+                                    onSelectAllVisibleTasks={
+                                        selectAllVisibleTasks
+                                    }
+                                    onClearSelectedTasks={clearSelectedTasks}
+                                    onAddTask={addTask}
+                                    onToggleTask={toggleTask}
+                                    onDeleteTask={deleteTask}
+                                    onUpdateTask={updateTask}
+                                    onAddFiles={addFilesToTask}
+                                    onRenameFile={renameTaskFile}
+                                    onDeleteFile={deleteTaskFile}
+                                    onExportTasks={exportTasks}
+                                    onConfirm={confirm}
+                                />
+                            }
                         />
-                    }
+
+                        <Route
+                            path="/historico"
+                            element={
+                                <CompletedTasksPage
+                                    onRequestRenameFile={
+                                        requestRenameTaskFile
+                                    }
+                                    completedTasks={completedTasks}
+                                    onToggleTask={toggleTask}
+                                    onDeleteTask={deleteTask}
+                                    onUpdateTask={updateTask}
+                                    onAddFiles={addFilesToTask}
+                                    onRenameFile={renameTaskFile}
+                                    onDeleteFile={deleteTaskFile}
+                                />
+                            }
+                        />
+
+                        <Route path="/ajuda" element={<HelpPage />} />
+
+                        <Route path="/log" element={<LogPage />} />
+                    </Routes>
+                )}
+
+                <Footer />
+
+                <Toast messages={toasts} onRemoveToast={removeToast} />
+
+                <ConfirmModal
+                    isOpen={confirmState.isOpen}
+                    title={confirmState.title}
+                    message={confirmState.message}
+                    confirmText={confirmState.confirmText}
+                    cancelText={confirmState.cancelText}
+                    onConfirm={handleConfirm}
+                    onCancel={handleCancel}
                 />
 
-                <Route
-                    path="/historico"
-                    element={
-                        <CompletedTasksPage
-                            onRequestRenameFile={requestRenameTaskFile}
-                            completedTasks={completedTasks}
-                            onToggleTask={toggleTask}
-                            onDeleteTask={deleteTask}
-                            onUpdateTask={updateTask}
-                            onAddFiles={addFilesToTask}
-                            onRenameFile={renameTaskFile}
-                            onDeleteFile={deleteTaskFile}
-                        />
+                <PromptModal
+                    key={
+                        promptState.isOpen
+                            ? promptState.initialValue
+                            : 'closed'
                     }
+                    isOpen={promptState.isOpen}
+                    title={promptState.title}
+                    message={promptState.message}
+                    initialValue={promptState.initialValue}
+                    confirmText={promptState.confirmText}
+                    cancelText={promptState.cancelText}
+                    onConfirm={handlePromptConfirm}
+                    onCancel={handlePromptCancel}
                 />
-
-                <Route path="/ajuda" element={<HelpPage />} />
-
-                <Route path="/log" element={<LogPage />} />
-            </Routes>
-
-            <Footer />
-
-            <Toast messages={toasts} onRemoveToast={removeToast} />
-
-            <ConfirmModal
-                isOpen={confirmState.isOpen}
-                title={confirmState.title}
-                message={confirmState.message}
-                confirmText={confirmState.confirmText}
-                cancelText={confirmState.cancelText}
-                onConfirm={handleConfirm}
-                onCancel={handleCancel}
-            />
-
-            <PromptModal
-                key={promptState.isOpen ? promptState.initialValue : 'closed'}
-                isOpen={promptState.isOpen}
-                title={promptState.title}
-                message={promptState.message}
-                initialValue={promptState.initialValue}
-                confirmText={promptState.confirmText}
-                cancelText={promptState.cancelText}
-                onConfirm={handlePromptConfirm}
-                onCancel={handlePromptCancel}
-            />
-        </main>
-    </HashRouter>
-)
+            </main>
+        </HashRouter>
+    )
 }
 
 export default App

@@ -302,6 +302,7 @@ export const TaskItem = ({
                             )}
 
                             <TaskFiles
+                                taskId={task.id}
                                 files={task.files}
                                 isTaskCompleted={isTaskCompleted}
                                 onRequestRenameFile={(file) =>
