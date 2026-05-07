@@ -227,6 +227,8 @@ button:disabled:hover,
 .task-edit textarea,
 .task-filters input,
 .task-filters select,
+.log-filters input,
+.log-filters select,
 .confirm-modal input {
     width: 100%;
     padding: 8px 10px;
@@ -405,22 +407,29 @@ button:disabled:hover,
 }
 
 .tasks-scroll-area,
-.help-page {
+.help-page,
+.log-page {
     min-height: 0;
     overflow-y: auto;
     padding-right: 6px;
 }
 
-.tasks-scroll-area::-webkit-scrollbar {
+.tasks-scroll-area::-webkit-scrollbar,
+.help-page::-webkit-scrollbar,
+.log-page::-webkit-scrollbar {
     width: 8px;
 }
 
-.tasks-scroll-area::-webkit-scrollbar-thumb {
+.tasks-scroll-area::-webkit-scrollbar-thumb,
+.help-page::-webkit-scrollbar-thumb,
+.log-page::-webkit-scrollbar-thumb {
     background-color: rgba(64, 64, 64, 0.35);
     border-radius: 999px;
 }
 
-.tasks-scroll-area::-webkit-scrollbar-track {
+.tasks-scroll-area::-webkit-scrollbar-track,
+.help-page::-webkit-scrollbar-track,
+.log-page::-webkit-scrollbar-track {
     background-color: transparent;
 }
 
@@ -539,10 +548,10 @@ button:disabled:hover,
 }
 
 .compact-export-selection span {
+    color: #ffffff;
     font-size: 11px;
     font-weight: 700;
     line-height: 1;
-    color: #ffffff;
 }
 
 .compact-export-selection input {
@@ -704,6 +713,202 @@ button:disabled:hover,
     background-color: rgba(255, 255, 255, 0.16);
     color: #ffffff;
     font-size: 14px;
+}
+
+/* =========================
+   LogPage
+========================= */
+
+.log-page {
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    gap: 12px;
+    min-height: 0;
+}
+
+.log-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.35);
+}
+
+.log-page-header h2 {
+    margin: 0;
+    color: #404040;
+    font-size: 24px;
+}
+
+.log-page-header p {
+    margin: 4px 0 0;
+    color: #404040;
+    line-height: 1.4;
+    font-size: 14px;
+}
+
+.log-page-header span {
+    flex: 0 0 auto;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background-color: #404040;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.log-filters {
+    display: grid;
+    grid-template-columns:
+        minmax(220px, 2fr)
+        minmax(150px, 1fr)
+        minmax(130px, 1fr)
+        minmax(130px, 1fr)
+        minmax(120px, auto);
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.28);
+}
+
+.log-filters button {
+    width: 100%;
+    min-height: 34px;
+    white-space: nowrap;
+}
+
+.log-list {
+    display: grid;
+    gap: 10px;
+    min-height: 0;
+}
+
+.log-card {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.42);
+    color: #404040;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.log-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.log-card-header h3 {
+    margin: 0;
+    color: #404040;
+    font-size: 18px;
+    line-height: 1.25;
+    word-break: break-word;
+}
+
+.log-card-header small {
+    display: block;
+    margin-top: 4px;
+    color: rgba(64, 64, 64, 0.78);
+    font-size: 12px;
+}
+
+.log-action-badge {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.log-action-created {
+    background-color: rgba(5, 116, 1, 0.9);
+}
+
+.log-action-updated {
+    background-color: rgba(191, 162, 0, 0.95);
+}
+
+.log-action-status {
+    background-color: #404040;
+}
+
+.log-action-deleted {
+    background-color: rgb(129, 1, 1);
+}
+
+.log-action-default {
+    background-color: #404040;
+}
+
+.log-values-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.log-value-card {
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+    padding: 12px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.52);
+}
+
+.log-value-card > strong {
+    color: #404040;
+    font-size: 13px;
+}
+
+.log-value-card > span {
+    color: #404040;
+    font-size: 14px;
+    word-break: break-word;
+}
+
+.log-empty-value {
+    opacity: 0.7;
+    font-style: italic;
+}
+
+.log-value-list {
+    display: grid;
+    gap: 5px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.log-value-list li {
+    color: #404040;
+    font-size: 13px;
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.log-value-list strong {
+    color: #404040;
+}
+
+.log-card-footer {
+    display: flex;
+    justify-content: flex-end;
+    color: rgba(64, 64, 64, 0.78);
+    font-size: 12px;
+    font-weight: 700;
 }
 
 /* =========================
@@ -1091,6 +1296,8 @@ button:disabled:hover,
     .task-edit textarea,
     .task-filters input,
     .task-filters select,
+    .log-filters input,
+    .log-filters select,
     .confirm-modal input {
         padding: 6px 9px;
         font-size: 13px;
@@ -1116,13 +1323,15 @@ button:disabled:hover,
         font-size: 12px;
     }
 
-    .task-filters {
+    .task-filters,
+    .log-filters {
         gap: 8px;
         padding: 8px 10px;
         border-radius: 12px;
     }
 
-    .task-filters button {
+    .task-filters button,
+    .log-filters button {
         min-height: 30px;
     }
 
@@ -1186,6 +1395,41 @@ button:disabled:hover,
 
     .task-text em {
         font-size: 11px;
+    }
+
+    .log-page {
+        gap: 8px;
+    }
+
+    .log-page-header {
+        padding: 10px 12px;
+        border-radius: 12px;
+    }
+
+    .log-page-header h2 {
+        font-size: 20px;
+    }
+
+    .log-page-header p {
+        font-size: 12px;
+    }
+
+    .log-card {
+        gap: 10px;
+        padding: 11px;
+        border-radius: 12px;
+    }
+
+    .log-card-header h3 {
+        font-size: 16px;
+    }
+
+    .log-values-grid {
+        gap: 8px;
+    }
+
+    .log-value-card {
+        padding: 10px;
     }
 
     .app-footer {
@@ -1252,6 +1496,14 @@ button:disabled:hover,
     .page-section {
         grid-template-rows: auto auto auto auto auto 1fr;
     }
+
+    .log-filters {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .log-filters input:first-child {
+        grid-column: 1 / -1;
+    }
 }
 
 @media only screen and (max-width: 900px) {
@@ -1289,6 +1541,18 @@ button:disabled:hover,
 
     .task-form select {
         max-width: 100%;
+    }
+
+    .log-page-header {
+        flex-direction: column;
+    }
+
+    .log-page-header span {
+        width: fit-content;
+    }
+
+    .log-values-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -1372,11 +1636,16 @@ button:disabled:hover,
         width: 100%;
     }
 
-    .task-filters {
+    .task-filters,
+    .log-filters {
         grid-template-columns: 1fr;
         gap: 7px;
         padding: 7px;
         border-radius: 12px;
+    }
+
+    .log-filters input:first-child {
+        grid-column: auto;
     }
 
     .stats-grid {
@@ -1401,6 +1670,9 @@ button:disabled:hover,
     .task-filters input,
     .task-filters select,
     .task-filters button,
+    .log-filters input,
+    .log-filters select,
+    .log-filters button,
     .task-actions button,
     .task-file-actions button,
     .file-upload-button {
@@ -1442,7 +1714,9 @@ button:disabled:hover,
         font-size: 17px;
     }
 
-    .tasks-scroll-area {
+    .tasks-scroll-area,
+    .help-page,
+    .log-page {
         overflow: visible;
         padding-right: 0;
     }
@@ -1567,6 +1841,69 @@ button:disabled:hover,
         font-size: 12px;
     }
 
+    .log-page {
+        gap: 8px;
+    }
+
+    .log-page-header {
+        gap: 8px;
+        padding: 10px;
+        border-radius: 12px;
+    }
+
+    .log-page-header h2 {
+        font-size: 20px;
+    }
+
+    .log-page-header p {
+        font-size: 12px;
+    }
+
+    .log-page-header span {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+
+    .log-list {
+        gap: 8px;
+    }
+
+    .log-card {
+        gap: 10px;
+        padding: 10px;
+        border-radius: 12px;
+    }
+
+    .log-card-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .log-card-header h3 {
+        font-size: 15px;
+    }
+
+    .log-action-badge {
+        min-height: 26px;
+        padding: 5px 9px;
+        font-size: 11px;
+    }
+
+    .log-value-card {
+        gap: 6px;
+        padding: 9px;
+    }
+
+    .log-value-list li,
+    .log-value-card > span {
+        font-size: 12px;
+    }
+
+    .log-card-footer {
+        justify-content: flex-start;
+        font-size: 11px;
+    }
+
     .help-card {
         padding: 12px;
     }
@@ -1642,5 +1979,191 @@ button:disabled:hover,
 
     .header h1 {
         font-size: 24px;
+    }
+}
+
+/* =========================
+   LogPage - Impressão / Exportação
+========================= */
+
+.log-actions-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+.log-actions-toolbar button {
+    min-width: 130px;
+}
+
+/* =========================
+   Impressão
+========================= */
+
+@media print {
+    html,
+    body,
+    #root {
+        height: auto;
+    }
+
+    body {
+        overflow: visible;
+        background: #ffffff;
+    }
+
+    .container {
+        width: 100%;
+        height: auto;
+        margin: 0;
+        padding: 0;
+        display: block;
+        overflow: visible;
+        background: #ffffff;
+        border-radius: 0;
+    }
+
+    .header,
+    .app-footer,
+    .log-filters,
+    .log-actions-toolbar {
+        display: none;
+    }
+
+    .log-page {
+        display: block;
+        overflow: visible;
+        padding: 0;
+    }
+
+    .log-page-header {
+        margin-bottom: 12px;
+        padding: 0 0 10px;
+        border-radius: 0;
+        background: #ffffff;
+        border-bottom: 1px solid #404040;
+    }
+
+    .log-page-header h2,
+    .log-page-header p {
+        color: #000000;
+    }
+
+    .log-page-header span {
+        background: #ffffff;
+        color: #000000;
+        border: 1px solid #000000;
+    }
+
+    .log-list {
+        display: block;
+    }
+
+    .log-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #ffffff;
+        color: #000000;
+        border: 1px solid #000000;
+        border-radius: 0;
+    }
+
+    .log-card-header h3,
+    .log-card-header small,
+    .log-value-card,
+    .log-value-card > strong,
+    .log-value-card > span,
+    .log-value-list li,
+    .log-value-list strong,
+    .log-card-footer {
+        color: #000000;
+    }
+
+    .log-action-badge {
+        background: #ffffff;
+        color: #000000;
+        border: 1px solid #000000;
+    }
+
+    .log-values-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .log-value-card {
+        background: #ffffff;
+        border: 1px solid #cccccc;
+    }
+}
+
+/* =========================
+   Mobile - LogPage ações
+========================= */
+
+@media only screen and (max-width: 700px) {
+    .log-actions-toolbar {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        padding: 7px;
+        border-radius: 12px;
+    }
+
+    .log-actions-toolbar button {
+        width: 100%;
+        min-width: 0;
+        min-height: 36px;
+        padding: 5px 3px;
+        font-size: 12px;
+    }
+}
+
+/* =========================
+   LogPage - Resumo de impressão
+========================= */
+
+.print-report-summary {
+    display: none;
+}
+
+/* =========================
+   Impressão - resumo e filtros do relatório
+========================= */
+
+@media print {
+    .print-report-summary {
+        display: block;
+        margin-bottom: 12px;
+        padding: 10px;
+        border: 1px solid #000000;
+        background: #ffffff;
+        color: #000000;
+    }
+
+    .print-report-summary h3 {
+        margin: 0 0 8px;
+        color: #000000;
+        font-size: 16px;
+    }
+
+    .print-summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px 12px;
+    }
+
+    .print-summary-grid p {
+        margin: 0;
+        color: #000000;
+        font-size: 12px;
+        line-height: 1.35;
+    }
+
+    .print-summary-grid strong {
+        color: #000000;
     }
 }
