@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { HashRouter, Route, Routes } from 'react-router-dom'
+import { Footer } from './components/Footer/Footer'
 
 import { Header } from './components/Header/Header'
 import { CompletedTasksPage } from './pages/CompletedTasksPage/CompletedTasksPage'
@@ -83,12 +84,12 @@ function App() {
             currentTasks.map((task) =>
                 task.id === taskId
                     ? {
-                          ...task,
-                          completed: !task.completed,
-                          completedAt: !task.completed
-                              ? getCurrentDateTime()
-                              : undefined,
-                      }
+                            ...task,
+                            completed: !task.completed,
+                            completedAt: !task.completed
+                                ? getCurrentDateTime()
+                                : undefined,
+                        }
                     : task
             )
         )
@@ -350,9 +351,9 @@ function App() {
                 />
 
                 <Route path="/ajuda" element={<HelpPage />} />
-
-                <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
+
+            <Footer />
         </main>
     </HashRouter>
 )
