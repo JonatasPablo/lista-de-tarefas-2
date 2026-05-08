@@ -552,9 +552,7 @@ function AppContent() {
                 setIsLoadingTasks(true)
                 setUser(authenticatedUser)
                 }
-            } catch (error) {
-                console.error('Erro ao validar sessão:', error)
-
+            } catch {
                 if (isMounted) {
                     setUser(null)
                     setTasks([])
