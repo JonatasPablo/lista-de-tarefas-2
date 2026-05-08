@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import * as XLSX from 'xlsx'
-import { API_URL, getAuthToken } from '../../services/api'
+import { API_URL } from '../../services/api'
 
 type TaskHistory = {
     id: number
@@ -201,6 +201,20 @@ const getFilePeriodLabel = (startDate: string, endDate: string) => {
     return 'todos_os_periodos'
 }
 
+const getErrorMessage = async (response: Response) => {
+    try {
+        const data = await response.json()
+
+        if (data?.message) {
+            return data.message
+        }
+    } catch {
+        return `Erro ao carregar log: ${response.status}`
+    }
+
+    return `Erro ao carregar log: ${response.status}`
+}
+
 export function LogPage() {
     const todayDate = getTodayDate()
 
@@ -216,23 +230,15 @@ export function LogPage() {
 
         const loadHistory = async () => {
             try {
-                const token = getAuthToken()
-
-                if (!token) {
-                    throw new Error('Usuário não autenticado.')
-                }
-
                 const response = await fetch(`${API_URL}/tasks/history`, {
                     method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    credentials: 'include',
                 })
 
                 if (!response.ok) {
-                    throw new Error(
-                        `Erro ao carregar log: ${response.status}`
-                    )
+                    const errorMessage = await getErrorMessage(response)
+
+                    throw new Error(errorMessage)
                 }
 
                 const data = (await response.json()) as TaskHistory[]

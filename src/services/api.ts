@@ -1,5 +1,3 @@
-const AUTH_TOKEN_KEY = 'lista_tarefas_token'
-
 const getApiUrl = () => {
     const apiUrl = import.meta.env.VITE_API_URL
 
@@ -20,18 +18,6 @@ type RequestOptions = {
     auth?: boolean
 }
 
-export const getAuthToken = () => {
-    return localStorage.getItem(AUTH_TOKEN_KEY)
-}
-
-export const setAuthToken = (token: string) => {
-    localStorage.setItem(AUTH_TOKEN_KEY, token)
-}
-
-export const removeAuthToken = () => {
-    localStorage.removeItem(AUTH_TOKEN_KEY)
-}
-
 export const apiRequest = async <ResponseData>(
     endpoint: string,
     options: RequestOptions = {}
@@ -40,16 +26,10 @@ export const apiRequest = async <ResponseData>(
         'Content-Type': 'application/json',
     }
 
-    const shouldUseAuth = options.auth !== false
-    const token = getAuthToken()
-
-    if (shouldUseAuth && token) {
-        headers.Authorization = `Bearer ${token}`
-    }
-
     const response = await fetch(`${API_URL}${endpoint}`, {
         method: options.method || 'GET',
         headers,
+        credentials: 'include',
         body: options.body ? JSON.stringify(options.body) : undefined,
     })
 

@@ -1,42 +1,47 @@
-const jwt = require('jsonwebtoken')
-
+const authService = require('../services/auth.service')
 const AppError = require('../errors/AppError')
 
-const getJwtSecret = () => {
-    if (!process.env.JWT_SECRET) {
-        throw new Error('Variável de ambiente JWT_SECRET não configurada.')
+const SESSION_COOKIE_NAME = 'lista_tarefas_session'
+
+const parseCookies = (cookieHeader) => {
+    if (!cookieHeader) {
+        return {}
     }
 
-    return process.env.JWT_SECRET
-}
+    return cookieHeader.split(';').reduce((cookies, cookie) => {
+        const [rawName, ...rawValue] = cookie.split('=')
+        const name = rawName?.trim()
+        const value = rawValue.join('=').trim()
 
-const authMiddleware = (req, res, next) => {
-    const authHeader = req.headers.authorization
-
-    if (!authHeader) {
-        throw new AppError('Token de autenticação não informado.', 401)
-    }
-
-    const [type, token] = authHeader.split(' ')
-
-    if (type !== 'Bearer' || !token) {
-        throw new AppError('Token de autenticação inválido.', 401)
-    }
-
-    try {
-        const decoded = jwt.verify(token, getJwtSecret())
-
-        req.user = {
-            id: decoded.id,
-            name: decoded.name,
-            email: decoded.email,
-            role: decoded.role || 'user',
+        if (!name) {
+            return cookies
         }
 
-        return next()
-    } catch {
-        throw new AppError('Token de autenticação inválido ou expirado.', 401)
+        cookies[name] = decodeURIComponent(value)
+
+        return cookies
+    }, {})
+}
+
+const authMiddleware = async (req, res, next) => {
+    const cookies = parseCookies(req.headers.cookie)
+    const sessionToken = cookies[SESSION_COOKIE_NAME]
+
+    if (!sessionToken) {
+        throw new AppError('Sessão de autenticação não informada.', 401)
     }
+
+    const session = await authService.findUserBySessionToken(sessionToken)
+
+    if (!session) {
+        throw new AppError('Sessão inválida ou expirada.', 401)
+    }
+
+    req.sessionToken = sessionToken
+    req.sessionId = session.sessionId
+    req.user = session.user
+
+    return next()
 }
 
 module.exports = authMiddleware

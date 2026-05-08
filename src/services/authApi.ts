@@ -12,7 +12,6 @@ export type AuthUser = {
 
 type AuthResponse = {
     user: AuthUser
-    token: string
 }
 
 type LoginPayload = {
@@ -40,6 +39,12 @@ export const authApi = {
             method: 'POST',
             body: payload,
             auth: false,
+        })
+    },
+
+    async logout() {
+        return apiRequest<null>('/auth/logout', {
+            method: 'POST',
         })
     },
 

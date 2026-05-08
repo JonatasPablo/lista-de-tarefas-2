@@ -31,7 +31,6 @@ import type { Task, TaskFile, TaskPriority } from './types/task'
 import { tasksApi } from './services/tasksApi'
 import { taskFilesApi } from './services/taskFilesApi'
 import { authApi, type AuthUser } from './services/authApi'
-import { getAuthToken, removeAuthToken, setAuthToken } from './services/api'
 import './styles/global.css'
 
 function AppContent() {
@@ -63,7 +62,6 @@ function AppContent() {
                 password,
             })
 
-            setAuthToken(response.token)
             setIsLoadingTasks(true)
             setUser(response.user)
 
@@ -93,7 +91,6 @@ function AppContent() {
                 password,
             })
 
-            setAuthToken(response.token)
             setIsLoadingTasks(true)
             setUser(response.user)
 
@@ -111,14 +108,19 @@ function AppContent() {
         }
     }
 
-    const handleLogout = () => {
-        removeAuthToken()
-        setUser(null)
-        setTasks([])
-        setSelectedTaskIds([])
-        setIsLoadingTasks(false)
-        showToast('info', 'Você saiu do sistema.')
-        navigate('/login')
+    const handleLogout = async () => {
+        try {
+            await authApi.logout()
+        } catch (error) {
+            console.error('Erro ao encerrar sessão:', error)
+        } finally {
+            setUser(null)
+            setTasks([])
+            setSelectedTaskIds([])
+            setIsLoadingTasks(false)
+            showToast('info', 'Você saiu do sistema.')
+            navigate('/login')
+        }
     }
 
     const addTask = async (
@@ -171,9 +173,9 @@ function AppContent() {
                 currentTasks.map((task) =>
                     task.id === taskId
                         ? {
-                              ...updatedTask,
-                              files: task.files,
-                          }
+                                ...updatedTask,
+                                files: task.files,
+                            }
                         : task
                 )
             )
@@ -229,9 +231,9 @@ function AppContent() {
                 currentTasks.map((task) =>
                     task.id === taskId
                         ? {
-                              ...updatedTask,
-                              files: task.files,
-                          }
+                                ...updatedTask,
+                                files: task.files,
+                            }
                         : task
                 )
             )
@@ -543,28 +545,15 @@ function AppContent() {
         let isMounted = true
 
         const checkAuth = async () => {
-            await Promise.resolve()
-
-            const token = getAuthToken()
-
-            if (!token) {
-                if (isMounted) {
-                    setIsCheckingAuth(false)
-                }
-
-                return
-            }
-
             try {
                 const authenticatedUser = await authApi.me()
 
                 if (isMounted) {
-                    setIsLoadingTasks(true)
-                    setUser(authenticatedUser)
+                setIsLoadingTasks(true)
+                setUser(authenticatedUser)
                 }
             } catch (error) {
                 console.error('Erro ao validar sessão:', error)
-                removeAuthToken()
 
                 if (isMounted) {
                     setUser(null)

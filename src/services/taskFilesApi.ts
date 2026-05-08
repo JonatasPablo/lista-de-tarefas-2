@@ -1,4 +1,4 @@
-import { API_URL, apiRequest, getAuthToken } from './api'
+import { API_URL, apiRequest } from './api'
 import type { TaskFile } from '../types/task'
 
 type ApiTaskFile = {
@@ -57,17 +57,12 @@ export const taskFilesApi = {
 
     async uploadTaskFile(taskId: string, file: File) {
         const formData = new FormData()
-        const token = getAuthToken()
 
         formData.append('file', file)
 
         const response = await fetch(`${API_URL}/tasks/${taskId}/files`, {
             method: 'POST',
-            headers: token
-                ? {
-                        Authorization: `Bearer ${token}`,
-                    }
-                : undefined,
+            credentials: 'include',
             body: formData,
         })
 
@@ -107,17 +102,11 @@ export const taskFilesApi = {
     },
 
     async downloadTaskFile(taskId: string, file: TaskFile) {
-        const token = getAuthToken()
-
         const response = await fetch(
             `${API_URL}/tasks/${taskId}/files/${file.id}/download`,
             {
                 method: 'GET',
-                headers: token
-                    ? {
-                            Authorization: `Bearer ${token}`,
-                        }
-                    : undefined,
+                credentials: 'include',
             }
         )
 

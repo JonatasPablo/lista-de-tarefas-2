@@ -1,22 +1,11 @@
 const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
+const crypto = require('crypto')
 
 const connection = require('../database/connection')
 const AppError = require('../errors/AppError')
 
 const PASSWORD_MIN_LENGTH = 8
-
-const getJwtSecret = () => {
-    if (!process.env.JWT_SECRET) {
-        throw new Error('Variável de ambiente JWT_SECRET não configurada.')
-    }
-
-    return process.env.JWT_SECRET
-}
-
-const getJwtExpiresIn = () => {
-    return process.env.JWT_EXPIRES_IN || '7d'
-}
+const SESSION_DAYS = Number(process.env.SESSION_DAYS || 7)
 
 const normalizeEmail = (email) => {
     if (!email || typeof email !== 'string') {
@@ -87,19 +76,39 @@ const mapUser = (user) => {
     }
 }
 
-const generateToken = (user) => {
-    return jwt.sign(
-        {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role || 'user',
-        },
-        getJwtSecret(),
-        {
-            expiresIn: getJwtExpiresIn(),
-        }
+const hashToken = (token) => {
+    return crypto.createHash('sha256').update(token).digest('hex')
+}
+
+const createSessionExpirationDate = () => {
+    const expirationDate = new Date()
+
+    expirationDate.setDate(expirationDate.getDate() + SESSION_DAYS)
+
+    return expirationDate
+}
+
+const createSession = async (userId) => {
+    const token = crypto.randomBytes(64).toString('hex')
+    const tokenHash = hashToken(token)
+    const expiresAt = createSessionExpirationDate()
+
+    await connection.query(
+        `
+            INSERT INTO user_sessions (
+                user_id,
+                token_hash,
+                expires_at
+            )
+            VALUES (?, ?, ?)
+        `,
+        [userId, tokenHash, expiresAt]
     )
+
+    return {
+        token,
+        expiresAt,
+    }
 }
 
 const findUserByEmail = async (email) => {
@@ -145,6 +154,88 @@ const findUserById = async (id) => {
     return users[0] || null
 }
 
+const findUserBySessionToken = async (token) => {
+    if (!token) {
+        return null
+    }
+
+    const tokenHash = hashToken(token)
+
+    const [sessions] = await connection.query(
+        `
+            SELECT
+                us.id AS session_id,
+                us.user_id,
+                us.expires_at,
+                us.revoked_at,
+                u.id,
+                u.name,
+                u.email,
+                u.provider,
+                u.role,
+                u.created_at,
+                u.updated_at
+            FROM user_sessions us
+            INNER JOIN users u ON u.id = us.user_id
+            WHERE us.token_hash = ?
+                AND us.revoked_at IS NULL
+                AND us.expires_at > NOW()
+            LIMIT 1
+        `,
+        [tokenHash]
+    )
+
+    const session = sessions[0]
+
+    if (!session) {
+        return null
+    }
+
+    await connection.query(
+        `
+            UPDATE user_sessions
+            SET last_used_at = NOW()
+            WHERE id = ?
+        `,
+        [session.session_id]
+    )
+
+    return {
+        sessionId: session.session_id,
+        user: mapUser(session),
+    }
+}
+
+const revokeSession = async (token) => {
+    if (!token) {
+        return false
+    }
+
+    const tokenHash = hashToken(token)
+
+    const [result] = await connection.query(
+        `
+            UPDATE user_sessions
+            SET revoked_at = NOW()
+            WHERE token_hash = ?
+                AND revoked_at IS NULL
+        `,
+        [tokenHash]
+    )
+
+    return result.affectedRows > 0
+}
+
+const removeExpiredSessions = async () => {
+    await connection.query(
+        `
+            DELETE FROM user_sessions
+            WHERE expires_at <= NOW()
+                OR revoked_at IS NOT NULL
+        `
+    )
+}
+
 const register = async ({ name, email, password }) => {
     const validName = validateName(name)
     const validEmail = normalizeEmail(email)
@@ -173,12 +264,11 @@ const register = async ({ name, email, password }) => {
     )
 
     const user = await findUserById(result.insertId)
-
-    const token = generateToken(user)
+    const session = await createSession(user.id)
 
     return {
         user: mapUser(user),
-        token,
+        session,
     }
 }
 
@@ -201,11 +291,13 @@ const login = async ({ email, password }) => {
         throw new AppError('E-mail ou senha inválidos.', 401)
     }
 
-    const token = generateToken(user)
+    await removeExpiredSessions()
+
+    const session = await createSession(user.id)
 
     return {
         user: mapUser(user),
-        token,
+        session,
     }
 }
 
@@ -223,4 +315,6 @@ module.exports = {
     register,
     login,
     me,
+    findUserBySessionToken,
+    revokeSession,
 }

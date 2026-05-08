@@ -43,8 +43,9 @@ const corsOptions = {
 
         callback(new Error(`Origem não permitida pelo CORS: ${origin}`))
     },
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type'],
 }
 
 const apiLimiter = rateLimit({
