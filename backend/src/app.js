@@ -3,29 +3,47 @@ const cors = require('cors')
 const helmet = require('helmet')
 const rateLimit = require('express-rate-limit')
 
+const authRoutes = require('./routes/auth.routes')
 const tasksRoutes = require('./routes/tasks.routes')
+const authMiddleware = require('./middlewares/authMiddleware')
 const errorHandler = require('./middlewares/errorHandler')
 
 const app = express()
 
 app.set('trust proxy', 1)
 
-const allowedOrigins = [
-    process.env.CLIENT_URL,
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-].filter(Boolean)
+const getAllowedOrigins = () => {
+    const defaultOrigins = [
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+    ]
+
+    const clientUrl = process.env.CLIENT_URL
+
+    const clientUrls = process.env.CLIENT_URLS
+        ? process.env.CLIENT_URLS.split(',').map((url) => url.trim())
+        : []
+
+    return [...defaultOrigins, clientUrl, ...clientUrls].filter(Boolean)
+}
+
+const allowedOrigins = getAllowedOrigins()
 
 const corsOptions = {
     origin(origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin) {
             callback(null, true)
             return
         }
 
-        callback(new Error('Origem não permitida pelo CORS.'))
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true)
+            return
+        }
+
+        callback(new Error(`Origem não permitida pelo CORS: ${origin}`))
     },
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 }
 
@@ -58,7 +76,8 @@ app.get('/', (req, res) => {
     })
 })
 
-app.use('/tasks', tasksRoutes)
+app.use('/auth', authRoutes)
+app.use('/tasks', authMiddleware, tasksRoutes)
 
 app.use(errorHandler)
 

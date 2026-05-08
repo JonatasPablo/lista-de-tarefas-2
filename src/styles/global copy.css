@@ -2724,115 +2724,7 @@ body {
 }
 
 /* =========================
-   Ajuste fino — Login, Cadastro, Header e Contadores
-========================= */
-
-/* Evita que os contadores fiquem por cima do usuário no desktop */
-@media only screen and (min-width: 981px) {
-    .task-stats {
-        top: 78px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-}
-
-/* Header mais limpo e sem sobreposição */
-.header {
-    align-items: flex-start;
-    gap: 16px;
-}
-
-.header-brand {
-    min-width: 0;
-}
-
-.header-content {
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-end;
-    gap: 14px;
-    margin-left: auto;
-    min-width: 0;
-}
-
-.header-user {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 10px;
-    width: min(330px, 100%);
-    padding: 7px 8px;
-    border-radius: 999px;
-    background-color: rgba(255, 255, 255, 0.72);
-    border: 1px solid rgba(255, 255, 255, 0.85);
-    box-shadow:
-        0 10px 24px rgba(0, 0, 0, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.75);
-}
-
-.header-user-avatar {
-    width: 36px;
-    height: 36px;
-    display: grid;
-    place-items: center;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #3d3d3d 0%, #151515 100%);
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 0.02em;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18);
-}
-
-.header-user-info {
-    display: grid;
-    gap: 2px;
-    min-width: 0;
-}
-
-.header-user-info strong {
-    overflow: hidden;
-    color: #303030;
-    font-size: 13px;
-    line-height: 1.1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.header-user-info span {
-    overflow: hidden;
-    color: rgba(64, 64, 64, 0.68);
-    font-size: 11px;
-    line-height: 1.1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.header-logout-button {
-    min-width: 58px;
-    min-height: 34px;
-    padding: 7px 12px;
-    border-radius: 999px;
-    border: 1px solid rgba(64, 64, 64, 0.12);
-    background-color: #404040;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 800;
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
-}
-
-.header-logout-button:hover {
-    background-color: #111111;
-    color: #ffffff;
-    transform: translateY(-1px);
-}
-
-.main-nav {
-    margin-left: 0;
-}
-
-/* =========================
-   Login / Cadastro — versão limpa, compacta e sem cortes
+   Login / Cadastro — visual premium clean
 ========================= */
 
 .auth-page {
@@ -2841,78 +2733,66 @@ body {
     place-items: center;
     min-height: 0;
     max-height: 100%;
-    overflow: hidden;
-    padding: 8px 12px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 16px;
+}
+
+.auth-page::before {
+    content: '';
+    position: absolute;
+    inset: 5%;
+    border-radius: 36px;
+    background:
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.74), transparent 24%),
+        radial-gradient(circle at 78% 72%, rgba(64, 64, 64, 0.1), transparent 25%);
+    pointer-events: none;
 }
 
 .auth-card {
     position: relative;
-    width: min(860px, 100%);
-    height: min(500px, 100%);
-    min-height: 0;
+    width: min(920px, 100%);
+    min-height: min(560px, 100%);
     display: grid;
-    grid-template-columns: minmax(250px, 0.82fr) minmax(360px, 1.18fr);
-    grid-template-rows: auto auto auto;
+    grid-template-columns: 0.92fr 1.08fr;
     gap: 0;
     padding: 0;
     overflow: hidden;
-    border-radius: 30px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.92);
+    border-radius: 34px;
+    background-color: rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.86);
     box-shadow:
-        0 24px 56px rgba(0, 0, 0, 0.14),
-        inset 0 1px 0 rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(12px);
+        0 32px 80px rgba(0, 0, 0, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(14px);
 }
 
-/* Reset completo para remover o círculo antigo */
 .auth-card::before {
     content: 'Organize seu dia com leveza';
+    display: flex;
+    align-items: flex-end;
     position: relative;
-    inset: auto;
-    top: auto;
-    right: auto;
-    bottom: 22px;
-    left: auto;
-    grid-column: 1;
-    grid-row: 1 / 4;
-    width: auto;
-    height: auto;
     min-height: 100%;
-    display: grid;
-    align-content: end;
-    justify-items: start;
-    padding: 0 34px 48px 28px;
-    border-radius: 0;
+    padding: 34px;
     background:
-        radial-gradient(circle at 35% 18%, rgba(255, 255, 255, 0.16), transparent 32%),
-        linear-gradient(145deg, rgba(64, 64, 64, 0.96), rgba(24, 24, 24, 0.98));
+        linear-gradient(145deg, rgba(64, 64, 64, 0.96), rgba(28, 28, 28, 0.96)),
+        radial-gradient(circle at 35% 20%, rgba(255, 255, 255, 0.24), transparent 26%);
     color: #ffffff;
-    font-size: clamp(48px, 4.2vw, 64px);
-    font-weight: 900;
-    line-height: 0.94;
-    letter-spacing: -0.065em;
-    pointer-events: none;
-    overflow: hidden;
+    font-size: clamp(26px, 3vw, 38px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
 }
 
-/* Reset completo para remover o texto cortado antigo */
 .auth-card::after {
     content: 'Tarefas, histórico, logs e anexos em um só lugar.';
     position: absolute;
-    top: 44px;
-    left: 28px;
-    right: auto;
-    bottom: auto;
-    width: min(300px, calc(38% - 34px));
-    height: auto;
-    border-radius: 0;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.76);
-    font-size: 29px;
-    font-weight: 700;
-    line-height: 1.35;
-    pointer-events: none;
+    left: 34px;
+    top: 34px;
+    width: min(260px, 36%);
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 15px;
+    line-height: 1.55;
 }
 
 .auth-card > .auth-card-header,
@@ -2926,30 +2806,30 @@ body {
 .auth-card-header {
     align-self: end;
     display: grid;
-    gap: 8px;
-    padding: 46px 42px 0;
+    gap: 10px;
+    padding: 42px 42px 0;
 }
 
 .auth-card-header h2 {
     margin: 0;
     color: #242424;
-    font-size: clamp(36px, 4vw, 48px);
+    font-size: clamp(34px, 4vw, 48px);
     line-height: 0.95;
     letter-spacing: -0.055em;
 }
 
 .auth-card-header p {
-    max-width: 360px;
+    max-width: 380px;
     margin: 0;
     color: rgba(64, 64, 64, 0.68);
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 15px;
+    line-height: 1.55;
 }
 
 .auth-form {
     display: grid;
-    gap: 11px;
-    padding: 24px 42px 0;
+    gap: 13px;
+    padding: 28px 42px 0;
 }
 
 .auth-form label {
@@ -2961,15 +2841,15 @@ body {
 
 .auth-form input {
     width: 100%;
-    min-height: 46px;
-    padding: 12px 14px;
+    min-height: 50px;
+    padding: 13px 15px;
     border: 1px solid rgba(64, 64, 64, 0.08);
-    border-radius: 15px;
-    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    background-color: rgba(255, 255, 255, 0.92);
     color: #303030;
-    font-size: 14px;
+    font-size: 15px;
     box-shadow:
-        0 10px 22px rgba(0, 0, 0, 0.04),
+        0 10px 24px rgba(0, 0, 0, 0.04),
         inset 0 1px 2px rgba(0, 0, 0, 0.045);
     transition:
         border-color 0.2s ease,
@@ -2994,11 +2874,12 @@ body {
 
 .auth-form button {
     width: 100%;
-    min-height: 48px;
-    margin-top: 5px;
+    min-height: 52px;
+    margin-top: 6px;
     border: 0;
-    border-radius: 15px;
-    background: linear-gradient(135deg, #333333 0%, #111111 100%);
+    border-radius: 16px;
+    background:
+        linear-gradient(135deg, #333333 0%, #111111 100%);
     color: #ffffff;
     font-size: 15px;
     font-weight: 900;
@@ -3009,7 +2890,8 @@ body {
 }
 
 .auth-form button:hover {
-    background: linear-gradient(135deg, #202020 0%, #000000 100%);
+    background:
+        linear-gradient(135deg, #202020 0%, #000000 100%);
     color: #ffffff;
     transform: translateY(-2px);
     box-shadow:
@@ -3017,12 +2899,17 @@ body {
         inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
+.auth-form button:disabled {
+    opacity: 0.72;
+    transform: none;
+}
+
 .auth-footer-text {
     align-self: start;
     margin: 0;
-    padding: 16px 42px 36px;
+    padding: 18px 42px 42px;
     color: rgba(64, 64, 64, 0.64);
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.5;
     text-align: center;
 }
@@ -3038,81 +2925,7 @@ body {
 }
 
 /* =========================
-   Ajuste para notebooks e telas menores em altura
-========================= */
-
-@media only screen and (max-height: 820px) and (min-width: 901px) {
-    .auth-page {
-        padding: 2px 10px;
-        overflow: hidden;
-    }
-
-    .auth-card {
-        width: min(800px, 100%);
-        height: min(430px, 100%);
-        border-radius: 24px;
-        grid-template-columns: minmax(220px, 0.78fr) minmax(340px, 1.22fr);
-    }
-
-    .auth-card::before {
-        padding: 0 32px 42px 22px;
-        font-size: clamp(44px, 4vw, 54px);
-        line-height: 0.94;
-        letter-spacing: -0.065em;
-    }
-
-    .auth-card::after {
-        left: 24px;
-        top: 32px;
-        width: min(260px, calc(38% - 36px));
-        font-size: 28px;
-        line-height: 1.35;
-    }
-
-    .auth-card-header {
-        padding: 28px 34px 0;
-        gap: 6px;
-    }
-
-    .auth-card-header h2 {
-        font-size: 36px;
-    }
-
-    .auth-card-header p {
-        font-size: 12px;
-        line-height: 1.4;
-    }
-
-    .auth-form {
-        gap: 8px;
-        padding: 18px 34px 0;
-    }
-
-    .auth-form label {
-        font-size: 12px;
-    }
-
-    .auth-form input {
-        min-height: 39px;
-        padding: 9px 12px;
-        border-radius: 12px;
-        font-size: 13px;
-    }
-
-    .auth-form button {
-        min-height: 42px;
-        border-radius: 12px;
-        font-size: 13px;
-    }
-
-    .auth-footer-text {
-        padding: 12px 34px 24px;
-        font-size: 12px;
-    }
-}
-
-/* =========================
-   Responsivo tablets
+   Responsivo do Login / Header
 ========================= */
 
 @media only screen and (max-width: 980px) {
@@ -3121,59 +2934,33 @@ body {
     }
 
     .header-content {
-        width: 100%;
         flex-direction: column;
-        align-items: stretch;
+        align-items: flex-end;
         gap: 8px;
     }
 
     .header-user {
-        width: 100%;
         max-width: 100%;
-        border-radius: 18px;
-    }
-
-    .header-user-info {
-        flex: 1;
-    }
-
-    .main-nav {
-        justify-content: flex-start;
-    }
-
-    .auth-page {
-        place-items: center;
-        padding: 8px 0 16px;
-        overflow-y: auto;
     }
 
     .auth-card {
         width: min(520px, 100%);
-        height: auto;
-        max-height: none;
+        min-height: auto;
         grid-template-columns: 1fr;
-        border-radius: 24px;
     }
 
     .auth-card::before {
-        grid-column: 1;
-        grid-row: auto;
-        min-height: 180px;
-        display: grid;
-        align-content: end;
-        justify-items: start;
-        padding: 0 24px 26px;
-        font-size: clamp(40px, 8vw, 54px);
-        line-height: 0.94;
-        letter-spacing: -0.065em;
+        min-height: 150px;
+        padding: 24px;
+        align-items: flex-end;
+        font-size: 30px;
     }
 
     .auth-card::after {
         left: 24px;
         top: 22px;
         width: calc(100% - 48px);
-        font-size: 17px;
-        line-height: 1.35;
+        font-size: 14px;
     }
 
     .auth-card > .auth-card-header,
@@ -3183,57 +2970,73 @@ body {
     }
 
     .auth-card-header {
-        padding: 24px 24px 0;
+        padding: 28px 28px 0;
     }
 
     .auth-form {
-        padding: 20px 24px 0;
+        padding: 24px 28px 0;
     }
 
     .auth-footer-text {
-        padding: 16px 24px 26px;
+        padding: 18px 28px 30px;
     }
 }
 
-/* =========================
-   Responsivo mobile
-========================= */
-
 @media only screen and (max-width: 700px) {
+    .header-content {
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .header-user {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 18px;
+        padding: 8px;
+    }
+
+    .header-user-info {
+        flex: 1;
+    }
+
+    .header-logout-button {
+        min-width: 68px;
+    }
+
+    .main-nav {
+        justify-content: flex-start;
+    }
+
     .auth-page {
         place-items: start center;
-        padding: 4px 0 14px;
-        overflow-y: auto;
+        padding: 6px 0 14px;
     }
 
     .auth-card {
-        width: 100%;
-        border-radius: 20px;
+        border-radius: 22px;
     }
 
     .auth-card::before {
-        min-height: 160px;
-        padding: 0 18px 22px;
-        font-size: clamp(34px, 10vw, 46px);
-        line-height: 0.94;
-        letter-spacing: -0.065em;
+        min-height: 128px;
+        padding: 20px;
+        font-size: 25px;
     }
 
     .auth-card::after {
-        left: 18px;
+        left: 20px;
         top: 18px;
-        width: calc(100% - 36px);
+        width: calc(100% - 40px);
         font-size: 12px;
-        line-height: 1.35;
+        line-height: 1.45;
     }
 
     .auth-card-header {
-        padding: 20px 16px 0;
-        gap: 7px;
+        padding: 22px 18px 0;
+        gap: 8px;
     }
 
     .auth-card-header h2 {
-        font-size: 29px;
+        font-size: 32px;
     }
 
     .auth-card-header p {
@@ -3241,8 +3044,8 @@ body {
     }
 
     .auth-form {
-        gap: 9px;
-        padding: 18px 16px 0;
+        gap: 10px;
+        padding: 20px 18px 0;
     }
 
     .auth-form label {
@@ -3250,27 +3053,27 @@ body {
     }
 
     .auth-form input {
-        min-height: 44px;
-        border-radius: 13px;
+        min-height: 46px;
+        border-radius: 14px;
         font-size: 14px;
     }
 
     .auth-form button {
-        min-height: 46px;
-        border-radius: 13px;
+        min-height: 48px;
+        border-radius: 14px;
     }
 
     .auth-footer-text {
-        padding: 14px 16px 22px;
+        padding: 16px 18px 24px;
         font-size: 13px;
     }
 }
 
 @media only screen and (max-width: 500px) {
     .header-user {
+        display: grid;
         grid-template-columns: auto minmax(0, 1fr) auto;
         gap: 8px;
-        padding: 7px;
     }
 
     .header-user-avatar {
@@ -3289,993 +3092,16 @@ body {
 
     .header-logout-button {
         min-height: 32px;
-        min-width: 56px;
+        min-width: 58px;
         padding: 6px 10px;
         font-size: 11px;
     }
 
     .auth-card::before {
-        min-height: 142px;
-        padding: 0 16px 18px;
-        font-size: clamp(30px, 10vw, 40px);
-        line-height: 0.94;
-    }
-
-    .auth-card::after {
-        left: 16px;
-        top: 16px;
-        width: calc(100% - 32px);
-        font-size: 13px;
-        line-height: 1.35;
+        font-size: 23px;
     }
 
     .auth-card-header h2 {
-        font-size: 27px;
+        font-size: 29px;
     }
-}
-
-/* =========================
-   Ajuste fino — Tablet
-   701px até 980px
-========================= */
-
-@media only screen and (min-width: 701px) and (max-width: 980px) {
-    .container {
-        width: 100%;
-        height: 100dvh;
-        max-height: 100dvh;
-        padding: 14px 18px;
-        border-radius: 0;
-        overflow: hidden;
-    }
-
-    .header {
-        display: grid;
-        grid-template-columns: 1fr;
-        align-items: start;
-        gap: 12px;
-        min-height: auto;
-    }
-
-    .header-brand {
-        width: 100%;
-        min-width: 0;
-    }
-
-    .header h1 {
-        width: 100%;
-        font-size: clamp(34px, 6vw, 46px);
-        line-height: 1;
-        white-space: normal;
-        word-break: normal;
-    }
-
-    .header-content {
-        width: 100%;
-        display: grid;
-        grid-template-columns: 1fr;
-        justify-content: start;
-        align-items: start;
-        gap: 10px;
-        margin-left: 0;
-    }
-
-    .main-nav {
-        width: 100%;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 8px;
-        margin-left: 0;
-    }
-
-    .nav-link {
-        padding: 7px 13px;
-        font-size: 13px;
-    }
-
-    .header-user {
-        width: min(520px, 100%);
-        max-width: 100%;
-        border-radius: 18px;
-    }
-
-    .task-stats {
-        position: static;
-        width: 100%;
-        transform: none;
-        pointer-events: auto;
-    }
-
-    .stats-grid {
-        width: 100%;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 8px;
-    }
-
-    .auth-page {
-        place-items: start center;
-        padding: 8px 0 16px;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-
-    .auth-card {
-        width: min(620px, 100%);
-        height: auto;
-        max-height: none;
-        grid-template-columns: 1fr;
-        border-radius: 24px;
-    }
-
-    .auth-card::before {
-        grid-column: 1;
-        grid-row: auto;
-        min-height: 165px;
-        display: grid;
-        align-content: end;
-        justify-items: start;
-        padding: 0 28px 24px;
-        font-size: clamp(34px, 7vw, 46px);
-        line-height: 0.94;
-        letter-spacing: -0.065em;
-    }
-
-    .auth-card::after {
-        left: 28px;
-        top: 24px;
-        width: calc(100% - 56px);
-        font-size: 15px;
-        line-height: 1.35;
-    }
-
-    .auth-card > .auth-card-header,
-    .auth-card > .auth-form,
-    .auth-card > .auth-footer-text {
-        grid-column: 1;
-    }
-
-    .auth-card-header {
-        padding: 26px 28px 0;
-        gap: 8px;
-    }
-
-    .auth-card-header h2 {
-        font-size: 34px;
-        line-height: 0.95;
-    }
-
-    .auth-card-header p {
-        font-size: 14px;
-        line-height: 1.45;
-    }
-
-    .auth-form {
-        gap: 10px;
-        padding: 22px 28px 0;
-    }
-
-    .auth-form label {
-        font-size: 13px;
-    }
-
-    .auth-form input {
-        min-height: 44px;
-        padding: 10px 13px;
-        border-radius: 14px;
-        font-size: 14px;
-    }
-
-    .auth-form button {
-        min-height: 46px;
-        border-radius: 14px;
-        font-size: 14px;
-    }
-
-    .auth-footer-text {
-        padding: 16px 28px 28px;
-        font-size: 13px;
-    }
-}
-
-/* =========================
-   Ajuste específico — telas entre 521px e 700px
-   (caso do print 678px)
-========================= */
-
-@media only screen and (min-width: 521px) and (max-width: 700px) {
-    .container {
-        width: 100%;
-        height: 100dvh;
-        max-height: 100dvh;
-        padding: 12px 14px;
-        border-radius: 0;
-        overflow: hidden;
-    }
-
-    .header {
-        display: grid;
-        grid-template-columns: 1fr;
-        align-items: start;
-        gap: 10px;
-        min-height: auto;
-    }
-
-    .header-brand {
-        width: 100%;
-        min-width: 0;
-    }
-
-    .header h1 {
-        font-size: clamp(28px, 5.8vw, 40px);
-        line-height: 1;
-        white-space: normal;
-        word-break: normal;
-    }
-
-    .header-content {
-        width: 100%;
-        display: grid;
-        grid-template-columns: 1fr;
-        justify-content: start;
-        align-items: start;
-        gap: 8px;
-        margin-left: 0;
-    }
-
-    .main-nav {
-        width: 100%;
-        justify-content: flex-start;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-left: 0;
-    }
-
-    .nav-link {
-        padding: 7px 13px;
-        font-size: 13px;
-    }
-
-    .auth-page {
-        place-items: start center;
-        padding: 6px 0 14px;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-
-    .auth-card {
-        width: 100%;
-        height: auto;
-        max-height: none;
-        grid-template-columns: 1fr;
-        border-radius: 22px;
-    }
-
-    .auth-card::before {
-        grid-column: 1;
-        grid-row: auto;
-        min-height: 126px;
-        display: grid;
-        align-content: end;
-        justify-items: start;
-        padding: 0 20px 18px;
-        font-size: clamp(24px, 7vw, 36px);
-        line-height: 0.95;
-        letter-spacing: -0.05em;
-    }
-
-    .auth-card::after {
-        left: 20px;
-        top: 18px;
-        width: calc(100% - 40px);
-        font-size: 13px;
-        line-height: 1.35;
-    }
-
-    .auth-card > .auth-card-header,
-    .auth-card > .auth-form,
-    .auth-card > .auth-footer-text {
-        grid-column: 1;
-    }
-
-    .auth-card-header {
-        padding: 18px 20px 0;
-        gap: 6px;
-    }
-
-    .auth-card-header h2 {
-        font-size: 28px;
-        line-height: 0.95;
-    }
-
-    .auth-card-header p {
-        font-size: 13px;
-        line-height: 1.4;
-    }
-
-    .auth-form {
-        gap: 8px;
-        padding: 16px 20px 0;
-    }
-
-    .auth-form label {
-        font-size: 12px;
-    }
-
-    .auth-form input {
-        min-height: 42px;
-        padding: 10px 12px;
-        border-radius: 12px;
-        font-size: 14px;
-    }
-
-    .auth-form button {
-        min-height: 44px;
-        border-radius: 12px;
-        font-size: 14px;
-    }
-
-    .auth-footer-text {
-        padding: 14px 20px 22px;
-        font-size: 13px;
-    }
-}
-
-/* =========================
-   Ajuste específico — telas até 520px
-========================= */
-
-@media only screen and (max-width: 520px) {
-    .header {
-        display: grid;
-        grid-template-columns: 1fr;
-        align-items: start;
-        gap: 10px;
-        min-height: auto;
-    }
-
-    .header h1 {
-        font-size: clamp(26px, 8vw, 36px);
-        line-height: 1;
-        white-space: normal;
-    }
-
-    .header-content {
-        width: 100%;
-        display: grid;
-        grid-template-columns: 1fr;
-        justify-content: start;
-        align-items: start;
-        gap: 8px;
-        margin-left: 0;
-    }
-
-    .main-nav {
-        width: 100%;
-        justify-content: flex-start;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-left: 0;
-    }
-
-    .nav-link {
-        padding: 7px 12px;
-        font-size: 12px;
-    }
-
-    .auth-card::before {
-        min-height: 112px;
-        padding: 0 16px 16px;
-        font-size: clamp(20px, 9vw, 30px);
-        line-height: 0.95;
-        letter-spacing: -0.045em;
-    }
-
-    .auth-card::after {
-        left: 16px;
-        top: 14px;
-        width: calc(100% - 32px);
-        font-size: 11px;
-        line-height: 1.3;
-    }
-
-    .auth-card-header {
-        padding: 16px 16px 0;
-    }
-
-    .auth-card-header h2 {
-        font-size: 26px;
-    }
-
-    .auth-form {
-        padding: 14px 16px 0;
-    }
-
-    .auth-footer-text {
-        padding: 12px 16px 20px;
-        font-size: 12px;
-    }
-}
-
-/* =========================
-   Ajuste fino — Centralizar título em notebook/desktop
-========================= */
-
-@media only screen and (min-width: 981px) {
-    .header {
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        align-items: center;
-        gap: 16px;
-    }
-
-    .header-brand {
-        grid-column: 2;
-        justify-self: center;
-        text-align: center;
-    }
-
-    .header h1 {
-        text-align: center;
-    }
-
-    .header-content {
-        grid-column: 3;
-        justify-self: end;
-        margin-left: 0;
-    }
-}
-
-/* =========================
-   Ajuste fino — Header desktop / notebook logado
-========================= */
-
-@media only screen and (min-width: 981px) {
-    .header {
-        display: grid;
-        grid-template-columns: minmax(220px, 1fr) auto minmax(320px, 1fr);
-        align-items: start;
-        column-gap: 24px;
-        row-gap: 10px;
-    }
-
-    .header-brand {
-        grid-column: 2;
-        justify-self: center;
-        text-align: center;
-        min-width: 0;
-    }
-
-    .header h1 {
-        margin: 0;
-        font-size: clamp(44px, 4vw, 60px);
-        line-height: 1;
-        text-align: center;
-        white-space: nowrap;
-    }
-
-    .header-content {
-        grid-column: 3;
-        justify-self: end;
-        width: min(360px, 100%);
-        margin-left: 0;
-        display: grid;
-        justify-items: end;
-        align-items: start;
-        gap: 10px;
-    }
-
-    .header-user {
-        width: 100%;
-        max-width: 360px;
-        padding: 8px 10px;
-        border-radius: 999px;
-    }
-
-    .header-user-avatar {
-        width: 44px;
-        height: 44px;
-        font-size: 16px;
-    }
-
-    .header-user-info strong {
-        font-size: 13px;
-        line-height: 1.1;
-    }
-
-    .header-user-info span {
-        font-size: 11px;
-        line-height: 1.1;
-    }
-
-    .header-logout-button {
-        min-width: 74px;
-        min-height: 38px;
-        padding: 8px 14px;
-        font-size: 13px;
-    }
-
-    .main-nav {
-        width: 100%;
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-left: 0;
-    }
-
-    .nav-link {
-        padding: 8px 14px;
-        font-size: 13px;
-    }
-
-    .task-stats {
-        position: static;
-        transform: none;
-        width: 100%;
-        margin: 10px 0 18px;
-        display: flex;
-        justify-content: center;
-        pointer-events: auto;
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(74px, 82px));
-        justify-content: center;
-        gap: 10px;
-        width: auto;
-    }
-}
-
-/* =========================
-   Ajuste extra — notebooks menores
-========================= */
-
-@media only screen and (min-width: 981px) and (max-width: 1280px) {
-    .header {
-        grid-template-columns: minmax(180px, 1fr) auto minmax(300px, 1fr);
-        column-gap: 18px;
-    }
-
-    .header h1 {
-        font-size: clamp(38px, 3.5vw, 50px);
-    }
-
-    .header-content {
-        width: min(330px, 100%);
-    }
-
-    .header-user {
-        max-width: 330px;
-    }
-
-    .header-user-avatar {
-        width: 40px;
-        height: 40px;
-        font-size: 15px;
-    }
-
-    .header-logout-button {
-        min-width: 68px;
-        min-height: 36px;
-        font-size: 12px;
-    }
-
-    .nav-link {
-        padding: 7px 12px;
-        font-size: 12px;
-    }
-
-    .stats-grid {
-        grid-template-columns: repeat(4, minmax(68px, 78px));
-        gap: 8px;
-    }
-}
-
-/* =========================
-   Ajuste fino — Header notebook/desktop em layout dashboard
-========================= */
-
-@media only screen and (min-width: 981px) {
-    .header {
-        display: grid;
-        grid-template-columns: minmax(190px, 1fr) auto minmax(330px, 1fr);
-        grid-template-areas: 'left center right';
-        align-items: start;
-        column-gap: 24px;
-        min-height: 116px;
-        padding: 6px 0 0;
-    }
-
-    .header-brand {
-        grid-area: center;
-        justify-self: center;
-        text-align: center;
-    }
-
-    .header h1 {
-        margin: 0;
-        font-size: clamp(40px, 3.8vw, 58px);
-        line-height: 0.95;
-        text-align: center;
-        white-space: nowrap;
-    }
-
-    .header-content {
-        grid-area: right;
-        justify-self: end;
-        width: min(390px, 100%);
-        display: grid;
-        justify-items: end;
-        gap: 10px;
-        margin-left: 0;
-    }
-
-    .header-user {
-        width: 100%;
-        max-width: 390px;
-        padding: 8px 10px;
-        border-radius: 999px;
-    }
-
-    .main-nav {
-        width: 100%;
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-left: 0;
-    }
-
-    .nav-link {
-        padding: 8px 14px;
-        font-size: 13px;
-    }
-
-    .task-form-panel {
-        margin-top: -84px;
-        width: fit-content;
-        align-self: start;
-        justify-self: start;
-        position: relative;
-        z-index: 4;
-    }
-
-    .new-task-toggle {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 150px;
-        min-height: 42px;
-        padding: 10px 18px;
-        border-radius: 10px;
-        font-size: 14px;
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
-    }
-
-    .task-stats {
-        position: absolute;
-        top: 84px;
-        left: 50%;
-        width: auto;
-        margin: 0;
-        transform: translateX(-50%);
-        display: flex;
-        justify-content: center;
-        pointer-events: auto;
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 84px);
-        justify-content: center;
-        gap: 10px;
-        width: auto;
-    }
-
-    .stats-grid div {
-        min-height: 44px;
-        border-radius: 10px;
-    }
-
-    .stats-grid strong {
-        font-size: 18px;
-    }
-
-    .stats-grid span {
-        font-size: 10px;
-    }
-}
-
-/* =========================
-   Ajuste fino — Notebook menor
-========================= */
-
-@media only screen and (min-width: 981px) and (max-width: 1280px) {
-    .header {
-        grid-template-columns: minmax(160px, 1fr) auto minmax(300px, 1fr);
-        column-gap: 18px;
-        min-height: 108px;
-    }
-
-    .header h1 {
-        font-size: clamp(36px, 3.4vw, 50px);
-    }
-
-    .header-content {
-        width: min(350px, 100%);
-        gap: 8px;
-    }
-
-    .header-user {
-        max-width: 350px;
-        padding: 7px 9px;
-    }
-
-    .header-user-avatar {
-        width: 40px;
-        height: 40px;
-        font-size: 15px;
-    }
-
-    .header-user-info strong {
-        font-size: 13px;
-    }
-
-    .header-user-info span {
-        font-size: 11px;
-    }
-
-    .header-logout-button {
-        min-width: 68px;
-        min-height: 36px;
-        padding: 7px 12px;
-        font-size: 12px;
-    }
-
-    .nav-link {
-        padding: 7px 12px;
-        font-size: 12px;
-    }
-
-    .task-form-panel {
-        margin-top: -76px;
-    }
-
-    .new-task-toggle {
-        min-width: 135px;
-        min-height: 38px;
-        padding: 8px 14px;
-        font-size: 13px;
-    }
-
-    .task-stats {
-        top: 78px;
-    }
-
-    .stats-grid {
-        grid-template-columns: repeat(4, 74px);
-        gap: 8px;
-    }
-
-    .stats-grid div {
-        min-height: 40px;
-    }
-
-    .stats-grid strong {
-        font-size: 16px;
-    }
-
-    .stats-grid span {
-        font-size: 9px;
-    }
-}
-
-/* =======================================================================
-   CORREÇÕES E MELHORIAS — cole estes blocos no FINAL do seu CSS atual
-   (eles sobrescrevem as regras conflitantes sem quebrar nada)
-   ======================================================================= */
-
-
-/* -----------------------------------------------------------------------
-   1. CORREÇÃO CRÍTICA — botão "Nova Tarefa" sumido no desktop/notebook
-      Causa: overflow:hidden no .page-section cortava o elemento com
-      margin-top negativo. Solução: liberar overflow no desktop e
-      garantir z-index adequado.
-   ----------------------------------------------------------------------- */
-
-@media only screen and (min-width: 981px) {
-
-    .page-section {
-        overflow: visible;          /* ← o clipping era o culpado */
-    }
-
-    /* Para o scroll da lista não vazar, o controle de overflow fica
-       apenas na área de scroll, que já tem overflow-y:auto */
-    .tasks-scroll-area {
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-
-    .task-form-panel {
-        position: relative;
-        z-index: 10;                /* acima do header (z-index 4) */
-        margin-top: -88px;          /* empurra para dentro da faixa do header */
-        width: fit-content;
-        align-self: start;
-        justify-self: start;
-    }
-
-    .new-task-toggle {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 148px;
-        min-height: 42px;
-        padding: 10px 20px;
-        border-radius: 12px;
-        font-size: 14px;
-        font-weight: 800;
-        letter-spacing: -0.01em;
-        background: linear-gradient(135deg, #2e2e2e 0%, #111111 100%);
-        color: #ffffff;
-        border: 0;
-        box-shadow:
-            0 14px 28px rgba(0, 0, 0, 0.18),
-            inset 0 1px 0 rgba(255, 255, 255, 0.12);
-        transition:
-            transform 0.15s ease,
-            box-shadow 0.2s ease,
-            background 0.2s ease;
-    }
-
-    .new-task-toggle:hover {
-        background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
-        color: #ffffff;
-        transform: translateY(-2px);
-        box-shadow:
-            0 20px 36px rgba(0, 0, 0, 0.24),
-            inset 0 1px 0 rgba(255, 255, 255, 0.12);
-    }
-
-    /* Quando o formulário está aberto, volta para o fluxo normal */
-    .task-form-panel.is-open {
-        position: relative;
-        z-index: 10;
-        margin-top: 0;
-        width: 100%;
-    }
-}
-
-/* Mesmo ajuste para o breakpoint de notebook menor */
-@media only screen and (min-width: 981px) and (max-width: 1280px) {
-
-    .task-form-panel {
-        margin-top: -80px;
-    }
-}
-
-
-/* -----------------------------------------------------------------------
-   2. POLIMENTO VISUAL — refinamentos sem quebrar responsividade
-   ----------------------------------------------------------------------- */
-
-/* Fundo levemente mais suave e com mais profundidade */
-body {
-    background:
-        radial-gradient(ellipse at 8% 12%, rgba(255,255,255,0.90) 0, transparent 22%),
-        radial-gradient(ellipse at 88% 6%,  rgba(255,255,255,0.45) 0, transparent 26%),
-        linear-gradient(145deg, #e4e4e4 0%, #d2d2d2 50%, #c2c2c2 100%);
-}
-
-/* Container com borda mais nítida e vidro mais limpo */
-.container {
-    background: linear-gradient(
-        160deg,
-        rgba(255, 255, 255, 0.40) 0%,
-        rgba(255, 255, 255, 0.14) 100%
-    );
-    border: 1px solid rgba(255, 255, 255, 0.48);
-    box-shadow:
-        0 28px 80px rgba(0, 0, 0, 0.10),
-        0  4px 16px rgba(0, 0, 0, 0.06),
-        inset 0 1px 0 rgba(255, 255, 255, 0.55);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-}
-
-/* Contadores — mais espaçosos e com sombra apurada */
-.stats-grid div {
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow:
-        0 8px 20px rgba(0, 0, 0, 0.18),
-        inset 0 1px 0 rgba(255, 255, 255, 0.20);
-    transition: transform 0.15s ease, box-shadow 0.2s ease;
-}
-
-.stats-grid div:hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 14px 28px rgba(0, 0, 0, 0.22),
-        inset 0 1px 0 rgba(255, 255, 255, 0.20);
-}
-
-/* Barra de filtros com mais contraste */
-.task-filters {
-    background-color: rgba(255, 255, 255, 0.38);
-    border: 1px solid rgba(255, 255, 255, 0.45);
-    box-shadow:
-        0 6px 16px rgba(0, 0, 0, 0.05),
-        inset 0 1px 0 rgba(255, 255, 255, 0.45);
-}
-
-/* Barra de exportação */
-.export-toolbar {
-    background-color: rgba(255, 255, 255, 0.28);
-    border: 1px solid rgba(255, 255, 255, 0.38);
-}
-
-/* Cards de tarefa — sombra mais presente */
-.task-item {
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
-    transition:
-        transform 0.15s ease,
-        box-shadow 0.2s ease;
-}
-
-.task-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.11);
-}
-
-/* Botões globais com transição mais fluida */
-button,
-.file-upload-button {
-    transition:
-        background-color 0.18s ease,
-        color 0.18s ease,
-        transform 0.15s ease,
-        box-shadow 0.18s ease,
-        border-color 0.18s ease;
-}
-
-/* Header — separação visual suave da área de conteúdo */
-.header {
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.28);
-}
-
-/* Chip de usuário — mais refinado */
-.header-user {
-    background-color: rgba(255, 255, 255, 0.78);
-    border: 1px solid rgba(255, 255, 255, 0.90);
-    box-shadow:
-        0 12px 30px rgba(0, 0, 0, 0.09),
-        inset 0 1px 0 rgba(255, 255, 255, 0.85);
-}
-
-/* Nav links — anel de foco mais sutil */
-.nav-link:focus-visible {
-    outline: 2px solid rgba(64, 64, 64, 0.30);
-    outline-offset: 3px;
-}
-
-/* Formulário de nova tarefa — card levemente mais contrastado */
-.task-form {
-    background-color: rgba(255, 255, 255, 0.42);
-    border: 1px solid rgba(255, 255, 255, 0.50);
-    box-shadow:
-        0 8px 24px rgba(0, 0, 0, 0.07),
-        inset 0 1px 0 rgba(255, 255, 255, 0.55);
-}
-
-/* Footer mais discreto */
-.app-footer {
-    background-color: rgba(255, 255, 255, 0.32);
-    border: 1px solid rgba(255, 255, 255, 0.38);
 }

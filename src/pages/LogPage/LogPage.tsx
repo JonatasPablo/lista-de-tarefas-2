@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import * as XLSX from 'xlsx'
-import { API_URL } from '../../services/api'
+import { API_URL, getAuthToken } from '../../services/api'
 
 type TaskHistory = {
     id: number
@@ -216,7 +216,18 @@ export function LogPage() {
 
         const loadHistory = async () => {
             try {
-                const response = await fetch(`${API_URL}/tasks/history`)
+                const token = getAuthToken()
+
+                if (!token) {
+                    throw new Error('Usuário não autenticado.')
+                }
+
+                const response = await fetch(`${API_URL}/tasks/history`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
 
                 if (!response.ok) {
                     throw new Error(
@@ -231,6 +242,10 @@ export function LogPage() {
                 }
             } catch (error) {
                 console.error('Erro ao carregar log:', error)
+
+                if (isMounted) {
+                    setHistory([])
+                }
             } finally {
                 if (isMounted) {
                     setIsLoading(false)

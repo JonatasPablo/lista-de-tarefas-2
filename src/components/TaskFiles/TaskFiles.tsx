@@ -17,10 +17,8 @@ export const TaskFiles = ({
     onRequestRenameFile,
     onDeleteFile,
 }: TaskFilesProps) => {
-    const handleDownloadFile = (fileId: string) => {
-        const downloadUrl = taskFilesApi.getDownloadUrl(taskId, fileId)
-
-        window.open(downloadUrl, '_blank', 'noopener,noreferrer')
+    const handleDownloadFile = async (file: TaskFile) => {
+        await taskFilesApi.downloadTaskFile(taskId, file)
     }
 
     if (files.length === 0) {
@@ -43,7 +41,7 @@ export const TaskFiles = ({
                         <div className="task-file-actions">
                             <button
                                 type="button"
-                                onClick={() => handleDownloadFile(file.id)}
+                                onClick={() => handleDownloadFile(file)}
                             >
                                 Baixar
                             </button>

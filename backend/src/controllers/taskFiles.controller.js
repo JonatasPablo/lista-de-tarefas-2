@@ -17,7 +17,7 @@ const listTaskFiles = async (req, res) => {
 
     const taskId = validateTaskId(id)
 
-    const files = await taskFilesService.listTaskFiles(taskId)
+    const files = await taskFilesService.listTaskFiles(taskId, req.user.id)
 
     return res.json(files)
 }
@@ -27,7 +27,11 @@ const createTaskFile = async (req, res) => {
 
     const taskId = validateTaskId(id)
 
-    const file = await taskFilesService.createTaskFile(taskId, req.file)
+    const file = await taskFilesService.createTaskFile(
+        taskId,
+        req.user.id,
+        req.file
+    )
 
     return res.status(201).json(file)
 }
@@ -42,6 +46,7 @@ const renameTaskFile = async (req, res) => {
     const file = await taskFilesService.renameTaskFile(
         taskId,
         validFileId,
+        req.user.id,
         displayName
     )
 
@@ -54,7 +59,7 @@ const deleteTaskFile = async (req, res) => {
     const taskId = validateTaskId(id)
     const validFileId = validateFileId(fileId)
 
-    await taskFilesService.deleteTaskFile(taskId, validFileId)
+    await taskFilesService.deleteTaskFile(taskId, validFileId, req.user.id)
 
     return res.status(204).send()
 }
@@ -67,7 +72,8 @@ const downloadTaskFile = async (req, res) => {
 
     const file = await taskFilesService.getTaskFileForDownload(
         taskId,
-        validFileId
+        validFileId,
+        req.user.id
     )
 
     return res.download(file.filePath, file.display_name)

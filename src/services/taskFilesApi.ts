@@ -1,4 +1,4 @@
-import { API_URL, apiRequest } from './api'
+import { API_URL, apiRequest, getAuthToken } from './api'
 import type { TaskFile } from '../types/task'
 
 type ApiTaskFile = {
@@ -57,11 +57,17 @@ export const taskFilesApi = {
 
     async uploadTaskFile(taskId: string, file: File) {
         const formData = new FormData()
+        const token = getAuthToken()
 
         formData.append('file', file)
 
         const response = await fetch(`${API_URL}/tasks/${taskId}/files`, {
             method: 'POST',
+            headers: token
+                ? {
+                        Authorization: `Bearer ${token}`,
+                    }
+                : undefined,
             body: formData,
         })
 
@@ -100,7 +106,35 @@ export const taskFilesApi = {
         })
     },
 
-    getDownloadUrl(taskId: string, fileId: string) {
-        return `${API_URL}/tasks/${taskId}/files/${fileId}/download`
+    async downloadTaskFile(taskId: string, file: TaskFile) {
+        const token = getAuthToken()
+
+        const response = await fetch(
+            `${API_URL}/tasks/${taskId}/files/${file.id}/download`,
+            {
+                method: 'GET',
+                headers: token
+                    ? {
+                            Authorization: `Bearer ${token}`,
+                        }
+                    : undefined,
+            }
+        )
+
+        if (!response.ok) {
+            const errorMessage = await getErrorMessage(response)
+
+            throw new Error(errorMessage)
+        }
+
+        const blob = await response.blob()
+        const url = URL.createObjectURL(blob)
+
+        const link = document.createElement('a')
+        link.href = url
+        link.download = file.displayName
+        link.click()
+
+        URL.revokeObjectURL(url)
     },
 }

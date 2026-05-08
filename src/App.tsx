@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react'
-import { HashRouter, Route, Routes } from 'react-router-dom'
+import {
+    HashRouter,
+    Navigate,
+    Route,
+    Routes,
+    useNavigate,
+} from 'react-router-dom'
 import { Footer } from './components/Footer/Footer'
 import { APP_NAME, APP_VERSION } from './config/app'
 import { Toast } from './components/Toast/Toast'
@@ -16,18 +22,26 @@ import {
 import { Header } from './components/Header/Header'
 import { CompletedTasksPage } from './pages/CompletedTasksPage/CompletedTasksPage'
 import { HelpPage } from './pages/HelpPage/HelpPage'
+import { LoginPage } from './pages/LoginPage/LoginPage'
+import { RegisterPage } from './pages/RegisterPage/RegisterPage'
 import { TasksPage } from './pages/TasksPage/TasksPage'
 import { LogPage } from './pages/LogPage/LogPage'
 
 import type { Task, TaskFile, TaskPriority } from './types/task'
 import { tasksApi } from './services/tasksApi'
 import { taskFilesApi } from './services/taskFilesApi'
+import { authApi, type AuthUser } from './services/authApi'
+import { getAuthToken, removeAuthToken, setAuthToken } from './services/api'
 import './styles/global.css'
 
-function App() {
+function AppContent() {
+    const navigate = useNavigate()
+
+    const [user, setUser] = useState<AuthUser | null>(null)
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true)
     const [tasks, setTasks] = useState<Task[]>([])
     const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
-    const [isLoadingTasks, setIsLoadingTasks] = useState(true)
+    const [isLoadingTasks, setIsLoadingTasks] = useState(false)
 
     const { toasts, showToast, removeToast } = useToast()
     const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm()
@@ -41,6 +55,71 @@ function App() {
 
     const pendingTasks = tasks.filter((task) => !task.completed)
     const completedTasks = tasks.filter((task) => task.completed)
+
+    const handleLogin = async (email: string, password: string) => {
+        try {
+            const response = await authApi.login({
+                email,
+                password,
+            })
+
+            setAuthToken(response.token)
+            setIsLoadingTasks(true)
+            setUser(response.user)
+
+            showToast('success', 'Login realizado com sucesso.')
+            navigate('/')
+        } catch (error) {
+            console.error('Erro ao fazer login:', error)
+
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Não foi possível fazer login.'
+
+            showToast('error', message)
+        }
+    }
+
+    const handleRegister = async (
+        name: string,
+        email: string,
+        password: string
+    ) => {
+        try {
+            const response = await authApi.register({
+                name,
+                email,
+                password,
+            })
+
+            setAuthToken(response.token)
+            setIsLoadingTasks(true)
+            setUser(response.user)
+
+            showToast('success', 'Cadastro criado com sucesso.')
+            navigate('/')
+        } catch (error) {
+            console.error('Erro ao criar cadastro:', error)
+
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Não foi possível criar o cadastro.'
+
+            showToast('error', message)
+        }
+    }
+
+    const handleLogout = () => {
+        removeAuthToken()
+        setUser(null)
+        setTasks([])
+        setSelectedTaskIds([])
+        setIsLoadingTasks(false)
+        showToast('info', 'Você saiu do sistema.')
+        navigate('/login')
+    }
 
     const addTask = async (
         title: string,
@@ -463,7 +542,59 @@ function App() {
     useEffect(() => {
         let isMounted = true
 
-        const loadTasks = async () => {
+        const checkAuth = async () => {
+            await Promise.resolve()
+
+            const token = getAuthToken()
+
+            if (!token) {
+                if (isMounted) {
+                    setIsCheckingAuth(false)
+                }
+
+                return
+            }
+
+            try {
+                const authenticatedUser = await authApi.me()
+
+                if (isMounted) {
+                    setIsLoadingTasks(true)
+                    setUser(authenticatedUser)
+                }
+            } catch (error) {
+                console.error('Erro ao validar sessão:', error)
+                removeAuthToken()
+
+                if (isMounted) {
+                    setUser(null)
+                    setTasks([])
+                    setSelectedTaskIds([])
+                }
+            } finally {
+                if (isMounted) {
+                    setIsCheckingAuth(false)
+                }
+            }
+        }
+
+        checkAuth()
+
+        return () => {
+            isMounted = false
+        }
+    }, [])
+
+    useEffect(() => {
+        let isMounted = true
+
+        if (!user) {
+            return () => {
+                isMounted = false
+            }
+        }
+
+        const loadUserTasks = async () => {
             try {
                 const apiTasks = await tasksApi.listTasks()
 
@@ -486,103 +617,160 @@ function App() {
             }
         }
 
-        loadTasks()
+        loadUserTasks()
 
         return () => {
             isMounted = false
         }
-    }, [showToast])
+    }, [showToast, user])
 
     return (
+        <main className="container">
+            <Header user={user} onLogout={handleLogout} />
+
+            {isCheckingAuth ? (
+                <p className="empty-message">Validando sessão...</p>
+            ) : (
+                <Routes>
+                    <Route
+                        path="/login"
+                        element={
+                            user ? (
+                                <Navigate to="/" replace />
+                            ) : (
+                                <LoginPage onLogin={handleLogin} />
+                            )
+                        }
+                    />
+
+                    <Route
+                        path="/cadastro"
+                        element={
+                            user ? (
+                                <Navigate to="/" replace />
+                            ) : (
+                                <RegisterPage onRegister={handleRegister} />
+                            )
+                        }
+                    />
+
+                    <Route path="/ajuda" element={<HelpPage />} />
+
+                    <Route
+                        path="/"
+                        element={
+                            user ? (
+                                isLoadingTasks ? (
+                                    <p className="empty-message">
+                                        Carregando tarefas...
+                                    </p>
+                                ) : (
+                                    <TasksPage
+                                        onRequestRenameFile={
+                                            requestRenameTaskFile
+                                        }
+                                        pendingTasks={pendingTasks}
+                                        selectedTaskIds={selectedTaskIds}
+                                        onSelectTask={selectTaskForExport}
+                                        onSelectAllVisibleTasks={
+                                            selectAllVisibleTasks
+                                        }
+                                        onClearSelectedTasks={
+                                            clearSelectedTasks
+                                        }
+                                        onAddTask={addTask}
+                                        onToggleTask={toggleTask}
+                                        onDeleteTask={deleteTask}
+                                        onUpdateTask={updateTask}
+                                        onAddFiles={addFilesToTask}
+                                        onRenameFile={renameTaskFile}
+                                        onDeleteFile={deleteTaskFile}
+                                        onExportTasks={exportTasks}
+                                        onConfirm={confirm}
+                                    />
+                                )
+                            ) : (
+                                <Navigate to="/login" replace />
+                            )
+                        }
+                    />
+
+                    <Route
+                        path="/historico"
+                        element={
+                            user ? (
+                                isLoadingTasks ? (
+                                    <p className="empty-message">
+                                        Carregando tarefas...
+                                    </p>
+                                ) : (
+                                    <CompletedTasksPage
+                                        onRequestRenameFile={
+                                            requestRenameTaskFile
+                                        }
+                                        completedTasks={completedTasks}
+                                        onToggleTask={toggleTask}
+                                        onDeleteTask={deleteTask}
+                                        onUpdateTask={updateTask}
+                                        onAddFiles={addFilesToTask}
+                                        onRenameFile={renameTaskFile}
+                                        onDeleteFile={deleteTaskFile}
+                                    />
+                                )
+                            ) : (
+                                <Navigate to="/login" replace />
+                            )
+                        }
+                    />
+
+                    <Route
+                        path="/log"
+                        element={
+                            user ? (
+                                <LogPage />
+                            ) : (
+                                <Navigate to="/login" replace />
+                            )
+                        }
+                    />
+
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+            )}
+
+            <Footer />
+
+            <Toast messages={toasts} onRemoveToast={removeToast} />
+
+            <ConfirmModal
+                isOpen={confirmState.isOpen}
+                title={confirmState.title}
+                message={confirmState.message}
+                confirmText={confirmState.confirmText}
+                cancelText={confirmState.cancelText}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
+
+            <PromptModal
+                key={promptState.isOpen ? promptState.initialValue : 'closed'}
+                isOpen={promptState.isOpen}
+                title={promptState.title}
+                message={promptState.message}
+                initialValue={promptState.initialValue}
+                confirmText={promptState.confirmText}
+                cancelText={promptState.cancelText}
+                onConfirm={handlePromptConfirm}
+                onCancel={handlePromptCancel}
+            />
+        </main>
+    )
+}
+
+function App() {
+    return (
         <HashRouter>
-            <main className="container">
-                <Header />
-
-                {isLoadingTasks ? (
-                    <p className="empty-message">Carregando tarefas...</p>
-                ) : (
-                    <Routes>
-                        <Route
-                            path="/"
-                            element={
-                                <TasksPage
-                                    onRequestRenameFile={
-                                        requestRenameTaskFile
-                                    }
-                                    pendingTasks={pendingTasks}
-                                    selectedTaskIds={selectedTaskIds}
-                                    onSelectTask={selectTaskForExport}
-                                    onSelectAllVisibleTasks={
-                                        selectAllVisibleTasks
-                                    }
-                                    onClearSelectedTasks={clearSelectedTasks}
-                                    onAddTask={addTask}
-                                    onToggleTask={toggleTask}
-                                    onDeleteTask={deleteTask}
-                                    onUpdateTask={updateTask}
-                                    onAddFiles={addFilesToTask}
-                                    onRenameFile={renameTaskFile}
-                                    onDeleteFile={deleteTaskFile}
-                                    onExportTasks={exportTasks}
-                                    onConfirm={confirm}
-                                />
-                            }
-                        />
-
-                        <Route
-                            path="/historico"
-                            element={
-                                <CompletedTasksPage
-                                    onRequestRenameFile={
-                                        requestRenameTaskFile
-                                    }
-                                    completedTasks={completedTasks}
-                                    onToggleTask={toggleTask}
-                                    onDeleteTask={deleteTask}
-                                    onUpdateTask={updateTask}
-                                    onAddFiles={addFilesToTask}
-                                    onRenameFile={renameTaskFile}
-                                    onDeleteFile={deleteTaskFile}
-                                />
-                            }
-                        />
-
-                        <Route path="/ajuda" element={<HelpPage />} />
-
-                        <Route path="/log" element={<LogPage />} />
-                    </Routes>
-                )}
-
-                <Footer />
-
-                <Toast messages={toasts} onRemoveToast={removeToast} />
-
-                <ConfirmModal
-                    isOpen={confirmState.isOpen}
-                    title={confirmState.title}
-                    message={confirmState.message}
-                    confirmText={confirmState.confirmText}
-                    cancelText={confirmState.cancelText}
-                    onConfirm={handleConfirm}
-                    onCancel={handleCancel}
-                />
-
-                <PromptModal
-                    key={
-                        promptState.isOpen
-                            ? promptState.initialValue
-                            : 'closed'
-                    }
-                    isOpen={promptState.isOpen}
-                    title={promptState.title}
-                    message={promptState.message}
-                    initialValue={promptState.initialValue}
-                    confirmText={promptState.confirmText}
-                    cancelText={promptState.cancelText}
-                    onConfirm={handlePromptConfirm}
-                    onCancel={handlePromptCancel}
-                />
-            </main>
+            <AppContent />
         </HashRouter>
     )
 }

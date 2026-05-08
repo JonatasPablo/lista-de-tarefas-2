@@ -4,7 +4,6 @@ const path = require('path')
 const connection = require('../database/connection')
 const AppError = require('../errors/AppError')
 
-const DEFAULT_USER_ID = 1
 const uploadsDirectory = path.resolve(__dirname, '../../uploads/tasks')
 
 const mapTaskFile = (file) => {
@@ -51,7 +50,7 @@ const sanitizeDisplayName = (displayName) => {
     return sanitizedName
 }
 
-const getTaskById = async (taskId) => {
+const getTaskById = async (taskId, userId) => {
     const [tasks] = await connection.query(
         `
             SELECT
@@ -64,14 +63,14 @@ const getTaskById = async (taskId) => {
                 AND user_id = ?
                 AND deleted_at IS NULL
         `,
-        [taskId, DEFAULT_USER_ID]
+        [taskId, userId]
     )
 
     return tasks[0] || null
 }
 
-const ensureTaskExistsAndIsPending = async (taskId) => {
-    const task = await getTaskById(taskId)
+const ensureTaskExistsAndIsPending = async (taskId, userId) => {
+    const task = await getTaskById(taskId, userId)
 
     if (!task) {
         throw new AppError('Tarefa não encontrada.', 404)
@@ -87,7 +86,7 @@ const ensureTaskExistsAndIsPending = async (taskId) => {
     return task
 }
 
-const getTaskFileById = async (taskId, fileId) => {
+const getTaskFileById = async (taskId, fileId, userId) => {
     const [files] = await connection.query(
         `
             SELECT
@@ -108,14 +107,14 @@ const getTaskFileById = async (taskId, fileId) => {
                 AND user_id = ?
                 AND deleted_at IS NULL
         `,
-        [fileId, taskId, DEFAULT_USER_ID]
+        [fileId, taskId, userId]
     )
 
     return files[0] || null
 }
 
-const listTaskFiles = async (taskId) => {
-    const task = await getTaskById(taskId)
+const listTaskFiles = async (taskId, userId) => {
+    const task = await getTaskById(taskId, userId)
 
     if (!task) {
         throw new AppError('Tarefa não encontrada.', 404)
@@ -141,14 +140,14 @@ const listTaskFiles = async (taskId) => {
                 AND deleted_at IS NULL
             ORDER BY id DESC
         `,
-        [taskId, DEFAULT_USER_ID]
+        [taskId, userId]
     )
 
     return files.map(mapTaskFile)
 }
 
-const createTaskFile = async (taskId, uploadedFile) => {
-    await ensureTaskExistsAndIsPending(taskId)
+const createTaskFile = async (taskId, userId, uploadedFile) => {
+    await ensureTaskExistsAndIsPending(taskId, userId)
 
     if (!uploadedFile) {
         throw new AppError('Nenhum arquivo enviado.', 400)
@@ -173,7 +172,7 @@ const createTaskFile = async (taskId, uploadedFile) => {
             `,
             [
                 taskId,
-                DEFAULT_USER_ID,
+                userId,
                 originalName,
                 uploadedFile.filename,
                 displayName,
@@ -182,7 +181,7 @@ const createTaskFile = async (taskId, uploadedFile) => {
             ]
         )
 
-        const file = await getTaskFileById(taskId, result.insertId)
+        const file = await getTaskFileById(taskId, result.insertId, userId)
 
         return mapTaskFile(file)
     } catch (error) {
@@ -194,10 +193,10 @@ const createTaskFile = async (taskId, uploadedFile) => {
     }
 }
 
-const renameTaskFile = async (taskId, fileId, displayName) => {
-    await ensureTaskExistsAndIsPending(taskId)
+const renameTaskFile = async (taskId, fileId, userId, displayName) => {
+    await ensureTaskExistsAndIsPending(taskId, userId)
 
-    const file = await getTaskFileById(taskId, fileId)
+    const file = await getTaskFileById(taskId, fileId, userId)
 
     if (!file) {
         throw new AppError('Arquivo não encontrado.', 404)
@@ -216,18 +215,18 @@ const renameTaskFile = async (taskId, fileId, displayName) => {
                 AND user_id = ?
                 AND deleted_at IS NULL
         `,
-        [sanitizedDisplayName, fileId, taskId, DEFAULT_USER_ID]
+        [sanitizedDisplayName, fileId, taskId, userId]
     )
 
-    const updatedFile = await getTaskFileById(taskId, fileId)
+    const updatedFile = await getTaskFileById(taskId, fileId, userId)
 
     return mapTaskFile(updatedFile)
 }
 
-const deleteTaskFile = async (taskId, fileId) => {
-    await ensureTaskExistsAndIsPending(taskId)
+const deleteTaskFile = async (taskId, fileId, userId) => {
+    await ensureTaskExistsAndIsPending(taskId, userId)
 
-    const file = await getTaskFileById(taskId, fileId)
+    const file = await getTaskFileById(taskId, fileId, userId)
 
     if (!file) {
         throw new AppError('Arquivo não encontrado.', 404)
@@ -242,7 +241,7 @@ const deleteTaskFile = async (taskId, fileId) => {
                 AND user_id = ?
                 AND deleted_at IS NULL
         `,
-        [fileId, taskId, DEFAULT_USER_ID]
+        [fileId, taskId, userId]
     )
 
     if (result.affectedRows === 0) {
@@ -256,14 +255,14 @@ const deleteTaskFile = async (taskId, fileId) => {
     return true
 }
 
-const getTaskFileForDownload = async (taskId, fileId) => {
-    const task = await getTaskById(taskId)
+const getTaskFileForDownload = async (taskId, fileId, userId) => {
+    const task = await getTaskById(taskId, userId)
 
     if (!task) {
         throw new AppError('Tarefa não encontrada.', 404)
     }
 
-    const file = await getTaskFileById(taskId, fileId)
+    const file = await getTaskFileById(taskId, fileId, userId)
 
     if (!file) {
         throw new AppError('Arquivo não encontrado.', 404)

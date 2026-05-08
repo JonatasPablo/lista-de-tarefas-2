@@ -1,9 +1,7 @@
 const connection = require('../database/connection')
 const taskHistoryService = require('./taskHistory.service')
 
-const DEFAULT_USER_ID = 1
-
-const getTaskById = async (id) => {
+const getTaskById = async (id, userId) => {
     const [tasks] = await connection.query(
         `
             SELECT
@@ -22,13 +20,13 @@ const getTaskById = async (id) => {
                 AND user_id = ?
                 AND deleted_at IS NULL
         `,
-        [id, DEFAULT_USER_ID]
+        [id, userId]
     )
 
     return tasks[0] || null
 }
 
-const listTasks = async () => {
+const listTasks = async (userId) => {
     const [tasks] = await connection.query(
         `
             SELECT
@@ -47,13 +45,13 @@ const listTasks = async () => {
                 AND deleted_at IS NULL
             ORDER BY id DESC
         `,
-        [DEFAULT_USER_ID]
+        [userId]
     )
 
     return tasks
 }
 
-const createTask = async ({ title, description, priority }) => {
+const createTask = async (userId, { title, description, priority }) => {
     const [result] = await connection.query(
         `
             INSERT INTO tasks (
@@ -64,29 +62,29 @@ const createTask = async ({ title, description, priority }) => {
             )
             VALUES (?, ?, ?, ?)
         `,
-        [DEFAULT_USER_ID, title, description, priority]
+        [userId, title, description, priority]
     )
 
-    const task = await getTaskById(result.insertId)
+    const task = await getTaskById(result.insertId, userId)
 
     await taskHistoryService.createHistory({
         taskId: task.id,
-        userId: DEFAULT_USER_ID,
+        userId,
         action: 'created',
         oldValue: null,
         newValue: JSON.stringify({
             title: task.title,
             description: task.description,
             priority: task.priority,
-            status: task.status
-        })
+            status: task.status,
+        }),
     })
 
     return task
 }
 
-const updateTask = async (id, { title, description, priority }) => {
-    const oldTask = await getTaskById(id)
+const updateTask = async (userId, id, { title, description, priority }) => {
+    const oldTask = await getTaskById(id, userId)
 
     if (!oldTask) {
         return null
@@ -98,37 +96,38 @@ const updateTask = async (id, { title, description, priority }) => {
             SET
                 title = ?,
                 description = ?,
-                priority = ?
+                priority = ?,
+                updated_at = NOW()
             WHERE id = ?
                 AND user_id = ?
                 AND deleted_at IS NULL
         `,
-        [title, description, priority, id, DEFAULT_USER_ID]
+        [title, description, priority, id, userId]
     )
 
-    const updatedTask = await getTaskById(id)
+    const updatedTask = await getTaskById(id, userId)
 
     await taskHistoryService.createHistory({
         taskId: id,
-        userId: DEFAULT_USER_ID,
+        userId,
         action: 'updated',
         oldValue: JSON.stringify({
             title: oldTask.title,
             description: oldTask.description,
-            priority: oldTask.priority
+            priority: oldTask.priority,
         }),
         newValue: JSON.stringify({
             title: updatedTask.title,
             description: updatedTask.description,
-            priority: updatedTask.priority
-        })
+            priority: updatedTask.priority,
+        }),
     })
 
     return updatedTask
 }
 
-const toggleTask = async (id) => {
-    const task = await getTaskById(id)
+const toggleTask = async (userId, id) => {
+    const task = await getTaskById(id, userId)
 
     if (!task) {
         return null
@@ -142,29 +141,30 @@ const toggleTask = async (id) => {
             UPDATE tasks
             SET
                 status = ?,
-                completed_at = ?
+                completed_at = ?,
+                updated_at = NOW()
             WHERE id = ?
                 AND user_id = ?
                 AND deleted_at IS NULL
         `,
-        [newStatus, completedAt, id, DEFAULT_USER_ID]
+        [newStatus, completedAt, id, userId]
     )
 
-    const updatedTask = await getTaskById(id)
+    const updatedTask = await getTaskById(id, userId)
 
     await taskHistoryService.createHistory({
         taskId: id,
-        userId: DEFAULT_USER_ID,
+        userId,
         action: 'status_changed',
         oldValue: task.status,
-        newValue: updatedTask.status
+        newValue: updatedTask.status,
     })
 
     return updatedTask
 }
 
-const updateTaskStatus = async (id, status) => {
-    const task = await getTaskById(id)
+const updateTaskStatus = async (userId, id, status) => {
+    const task = await getTaskById(id, userId)
 
     if (!task) {
         return null
@@ -177,29 +177,30 @@ const updateTaskStatus = async (id, status) => {
             UPDATE tasks
             SET
                 status = ?,
-                completed_at = ?
+                completed_at = ?,
+                updated_at = NOW()
             WHERE id = ?
                 AND user_id = ?
                 AND deleted_at IS NULL
         `,
-        [status, completedAt, id, DEFAULT_USER_ID]
+        [status, completedAt, id, userId]
     )
 
-    const updatedTask = await getTaskById(id)
+    const updatedTask = await getTaskById(id, userId)
 
     await taskHistoryService.createHistory({
         taskId: id,
-        userId: DEFAULT_USER_ID,
+        userId,
         action: 'status_changed',
         oldValue: task.status,
-        newValue: updatedTask.status
+        newValue: updatedTask.status,
     })
 
     return updatedTask
 }
 
-const deleteTask = async (id) => {
-    const task = await getTaskById(id)
+const deleteTask = async (userId, id) => {
+    const task = await getTaskById(id, userId)
 
     if (!task) {
         return false
@@ -208,12 +209,14 @@ const deleteTask = async (id) => {
     const [result] = await connection.query(
         `
             UPDATE tasks
-            SET deleted_at = NOW()
+            SET
+                deleted_at = NOW(),
+                updated_at = NOW()
             WHERE id = ?
                 AND user_id = ?
                 AND deleted_at IS NULL
         `,
-        [id, DEFAULT_USER_ID]
+        [id, userId]
     )
 
     if (result.affectedRows === 0) {
@@ -222,34 +225,34 @@ const deleteTask = async (id) => {
 
     await taskHistoryService.createHistory({
         taskId: id,
-        userId: DEFAULT_USER_ID,
+        userId,
         action: 'deleted',
         oldValue: JSON.stringify({
             title: task.title,
             description: task.description,
             priority: task.priority,
-            status: task.status
+            status: task.status,
         }),
-        newValue: null
+        newValue: null,
     })
 
     return true
 }
 
-const listTaskHistory = async (id) => {
-    const task = await getTaskById(id)
+const listTaskHistory = async (userId, id) => {
+    const task = await getTaskById(id, userId)
 
     if (!task) {
         return null
     }
 
-    const history = await taskHistoryService.listTaskHistory(id, DEFAULT_USER_ID)
+    const history = await taskHistoryService.listTaskHistory(id, userId)
 
     return history
 }
 
-const listUserHistory = async () => {
-    const history = await taskHistoryService.listUserHistory(DEFAULT_USER_ID)
+const listUserHistory = async (userId) => {
+    const history = await taskHistoryService.listUserHistory(userId)
 
     return history
 }
@@ -262,5 +265,5 @@ module.exports = {
     updateTaskStatus,
     deleteTask,
     listTaskHistory,
-    listUserHistory
+    listUserHistory,
 }

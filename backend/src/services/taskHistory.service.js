@@ -5,7 +5,7 @@ const createHistory = async ({
     userId,
     action,
     oldValue = null,
-    newValue = null
+    newValue = null,
 }) => {
     await connection.query(
         `
@@ -18,13 +18,7 @@ const createHistory = async ({
             )
             VALUES (?, ?, ?, ?, ?)
         `,
-        [
-            taskId,
-            userId,
-            action,
-            oldValue,
-            newValue
-        ]
+        [taskId, userId, action, oldValue, newValue]
     )
 }
 
@@ -76,7 +70,5 @@ const listUserHistory = async (userId) => {
 module.exports = {
     createHistory,
     listTaskHistory,
-    createHistory,
-    listTaskHistory,
-    listUserHistory
+    listUserHistory,
 }
