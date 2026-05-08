@@ -18,6 +18,7 @@ import {
     buildFileNameWithOriginalExtension,
     getFileNameWithoutExtension,
 } from './utils/file'
+import { ConfirmEmailPage } from './pages/ConfirmEmailPage/ConfirmEmailPage'
 
 import { Header } from './components/Header/Header'
 import { CompletedTasksPage } from './pages/CompletedTasksPage/CompletedTasksPage'
@@ -82,20 +83,28 @@ function AppContent() {
     const handleRegister = async (
         name: string,
         email: string,
-        password: string
+        password: string,
+        termsAccepted: boolean
     ) => {
         try {
-            const response = await authApi.register({
+        const response = await authApi.register({
                 name,
                 email,
                 password,
+                termsAccepted,
             })
 
-            setIsLoadingTasks(true)
-            setUser(response.user)
+            showToast(
+                'success',
+                response.message ||
+                    'Cadastro criado com sucesso. Verifique seu e-mail para confirmar a conta.'
+            )
 
-            showToast('success', 'Cadastro criado com sucesso.')
-            navigate('/')
+            navigate('/confirmar-email', {
+                state: {
+                    email,
+                },
+            })
         } catch (error) {
             console.error('Erro ao criar cadastro:', error)
 
@@ -107,6 +116,63 @@ function AppContent() {
             showToast('error', message)
         }
     }
+
+    const handleConfirmEmail = async (email: string, code: string) => {
+        try {
+            const response = await authApi.confirmEmail({
+                email,
+                code,
+            })
+
+            showToast(
+                'success',
+                response.message ||
+                    'E-mail confirmado com sucesso. Agora você já pode entrar.'
+            )
+
+            navigate('/login')
+        } catch (error) {
+            console.error('Erro ao confirmar e-mail:', error)
+
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Não foi possível confirmar o e-mail.'
+
+            showToast('error', message)
+        }
+    }
+
+    const handleResendConfirmation = async (email: string) => {
+        try {
+            const response = await authApi.resendConfirmation({
+                email,
+            })
+
+            showToast(
+                'success',
+                response.message ||
+                    'Enviamos um novo código de confirmação para seu e-mail.'
+            )
+        } catch (error) {
+            console.error('Erro ao reenviar código:', error)
+
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Não foi possível reenviar o código.'
+
+            showToast('error', message)
+        }
+    }
+
+    const handleCheckEmailConfirmationStatus = async (email: string) => {
+    const response = await authApi.getEmailConfirmationStatus({
+        email,
+    })
+
+    return response.confirmed
+}
 
     const handleLogout = async () => {
         try {
@@ -637,6 +703,23 @@ function AppContent() {
                                 <Navigate to="/" replace />
                             ) : (
                                 <RegisterPage onRegister={handleRegister} />
+                            )
+                        }
+                    />
+
+                    <Route
+                        path="/confirmar-email"
+                        element={
+                            user ? (
+                                <Navigate to="/" replace />
+                            ) : (
+                                <ConfirmEmailPage
+                                    onConfirmEmail={handleConfirmEmail}
+                                    onResendConfirmation={handleResendConfirmation}
+                                    onCheckEmailConfirmationStatus={
+                                        handleCheckEmailConfirmationStatus
+                                    }
+                                />
                             )
                         }
                     />

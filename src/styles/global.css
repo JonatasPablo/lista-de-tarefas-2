@@ -4370,3 +4370,453 @@ button,
         height: 21px;
     }
 }
+
+/* =========================
+   Cadastro — Termos de Uso e Política de Privacidade
+========================= */
+
+.auth-page-register {
+    align-items: flex-start;
+    min-height: 100%;
+    max-height: none;
+    overflow-y: auto;
+    padding: 18px 12px 28px;
+}
+
+.auth-card-register {
+    width: min(980px, 100%);
+    height: auto;
+    min-height: 650px;
+    grid-template-columns: minmax(260px, 0.72fr) minmax(430px, 1.28fr);
+}
+
+.auth-card-register .auth-form {
+    gap: 10px;
+    padding-top: 20px;
+}
+
+.auth-card-register .auth-footer-text {
+    padding-bottom: 28px;
+}
+
+.terms-box {
+    display: grid;
+    gap: 10px;
+    margin-top: 4px;
+    padding: 14px;
+    border: 1px solid rgba(64, 64, 64, 0.1);
+    border-radius: 18px;
+    background-color: rgba(255, 255, 255, 0.72);
+    box-shadow:
+        0 12px 26px rgba(0, 0, 0, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.terms-box-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.terms-box-header div {
+    display: grid;
+    gap: 2px;
+}
+
+.terms-box-header strong {
+    color: #242424;
+    font-size: 13px;
+    line-height: 1.2;
+}
+
+.terms-box-header span {
+    color: rgba(64, 64, 64, 0.62);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.terms-status {
+    flex: 0 0 auto;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background-color: rgba(64, 64, 64, 0.08);
+    color: rgba(64, 64, 64, 0.72) !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.terms-status-ok {
+    background-color: rgba(34, 197, 94, 0.12);
+    color: #15803d !important;
+}
+
+.terms-scroll {
+    height: 190px;
+    overflow-y: auto;
+    padding: 12px;
+    border: 1px solid rgba(64, 64, 64, 0.08);
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.92);
+    color: rgba(48, 48, 48, 0.82);
+    font-size: 12px;
+    line-height: 1.55;
+    outline: none;
+}
+
+.terms-scroll:focus {
+    border-color: rgba(64, 64, 64, 0.22);
+    box-shadow: 0 0 0 4px rgba(64, 64, 64, 0.08);
+}
+
+.terms-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.terms-scroll::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background-color: rgba(64, 64, 64, 0.28);
+}
+
+.terms-scroll::-webkit-scrollbar-track {
+    border-radius: 999px;
+    background-color: rgba(64, 64, 64, 0.06);
+}
+
+.terms-scroll h3 {
+    margin: 12px 0 6px;
+    color: #242424;
+    font-size: 13px;
+    line-height: 1.25;
+}
+
+.terms-scroll h3:first-child {
+    margin-top: 0;
+}
+
+.terms-scroll p {
+    margin: 0 0 10px;
+}
+
+.terms-final-text {
+    padding: 10px;
+    border-radius: 12px;
+    background-color: rgba(64, 64, 64, 0.06);
+    color: #242424;
+    font-weight: 800;
+}
+
+.terms-help {
+    color: rgba(64, 64, 64, 0.68);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.terms-checkbox {
+    display: grid !important;
+    grid-template-columns: auto 1fr;
+    align-items: flex-start;
+    gap: 10px;
+    color: #303030 !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+.terms-checkbox input {
+    width: 18px !important;
+    min-height: 18px !important;
+    height: 18px;
+    margin: 1px 0 0;
+    padding: 0 !important;
+    cursor: pointer;
+    accent-color: #242424;
+}
+
+.terms-checkbox input:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.terms-checkbox:has(input:disabled) {
+    cursor: not-allowed;
+    color: rgba(64, 64, 64, 0.5) !important;
+}
+
+.auth-card-register .auth-form > button:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+    transform: none;
+    box-shadow: none;
+}
+
+@media only screen and (max-height: 820px) and (min-width: 901px) {
+    .auth-card-register {
+        width: min(900px, 100%);
+        height: auto;
+        min-height: 620px;
+        grid-template-columns: minmax(230px, 0.68fr) minmax(410px, 1.32fr);
+    }
+
+    .auth-card-register .auth-card-header {
+        padding-top: 30px;
+    }
+
+    .auth-card-register .auth-form {
+        gap: 8px;
+        padding-top: 16px;
+    }
+
+    .terms-scroll {
+        height: 165px;
+    }
+}
+
+@media only screen and (max-width: 980px) {
+    .auth-page-register {
+        display: block;
+        padding: 12px 10px 24px;
+    }
+
+    .auth-card-register {
+        width: 100%;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .auth-card-register::before,
+    .auth-card-register::after {
+        display: none;
+    }
+
+    .auth-card-register > .auth-card-header,
+    .auth-card-register > .auth-form,
+    .auth-card-register > .auth-footer-text {
+        grid-column: 1;
+    }
+
+    .auth-card-register .auth-card-header {
+        padding: 26px 22px 0;
+    }
+
+    .auth-card-register .auth-form {
+        padding: 20px 22px 0;
+    }
+
+    .auth-card-register .auth-footer-text {
+        padding: 16px 22px 26px;
+    }
+
+    .terms-scroll {
+        height: 220px;
+    }
+}
+
+@media only screen and (max-width: 520px) {
+    .auth-page-register {
+        padding: 8px 8px 18px;
+    }
+
+    .auth-card-register {
+        border-radius: 22px;
+    }
+
+    .auth-card-register .auth-card-header {
+        padding: 22px 16px 0;
+    }
+
+    .auth-card-register .auth-card-header h2 {
+        font-size: 34px;
+    }
+
+    .auth-card-register .auth-card-header p {
+        font-size: 13px;
+    }
+
+    .auth-card-register .auth-form {
+        padding: 18px 16px 0;
+    }
+
+    .terms-box {
+        padding: 12px;
+        border-radius: 16px;
+    }
+
+    .terms-box-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .terms-status {
+        width: fit-content;
+    }
+
+    .terms-scroll {
+        height: 235px;
+        padding: 10px;
+        font-size: 11px;
+    }
+
+    .terms-checkbox {
+        font-size: 11px !important;
+    }
+}
+
+/* =========================
+   Confirmação de e-mail
+========================= */
+
+.confirm-email-page {
+    min-height: 100%;
+    padding: 18px 12px 28px;
+}
+
+.confirm-email-card {
+    width: min(860px, 100%);
+}
+
+.confirm-code-input {
+    text-align: center;
+    font-size: 22px !important;
+    font-weight: 900 !important;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+}
+
+.confirm-email-help {
+    margin-top: -4px;
+    color: rgba(64, 64, 64, 0.62);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.auth-secondary-button {
+    border: 1px solid rgba(64, 64, 64, 0.16) !important;
+    background: rgba(255, 255, 255, 0.88) !important;
+    color: #242424 !important;
+    box-shadow: none !important;
+}
+
+.auth-secondary-button:hover:not(:disabled) {
+    background: rgba(64, 64, 64, 0.08) !important;
+    transform: translateY(-1px);
+}
+
+.auth-secondary-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+    transform: none;
+    box-shadow: none;
+}
+
+.confirm-email-footer-link {
+    margin-top: -12px !important;
+    padding-top: 0 !important;
+}
+
+@media only screen and (max-width: 720px) {
+    .confirm-email-page {
+        display: block;
+        padding: 10px 8px 20px;
+    }
+
+    .confirm-email-card {
+        width: 100%;
+        min-height: auto;
+        grid-template-columns: 1fr;
+    }
+
+    .confirm-email-card::before,
+    .confirm-email-card::after {
+        display: none;
+    }
+
+    .confirm-email-card > .auth-card-header,
+    .confirm-email-card > .auth-form,
+    .confirm-email-card > .auth-footer-text {
+        grid-column: 1;
+    }
+
+    .confirm-email-card .auth-card-header {
+        padding: 28px 20px 0;
+    }
+
+    .confirm-email-card .auth-form {
+        padding: 22px 20px 0;
+    }
+
+    .confirm-email-card .auth-footer-text {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .confirm-code-input {
+        font-size: 20px !important;
+        letter-spacing: 6px;
+    }
+}
+
+@media only screen and (max-width: 420px) {
+    .confirm-email-card .auth-card-header h2 {
+        font-size: 34px;
+    }
+
+    .confirm-code-input {
+        font-size: 18px !important;
+        letter-spacing: 5px;
+    }
+}
+
+/* =========================
+   Confirmação de e-mail — e-mail mascarado
+========================= */
+
+.masked-email-box {
+    display: grid;
+    gap: 5px;
+    padding: 14px 16px;
+    border: 1px solid rgba(64, 64, 64, 0.1);
+    border-radius: 18px;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.96),
+            rgba(245, 245, 245, 0.9)
+        );
+    box-shadow:
+        0 12px 26px rgba(0, 0, 0, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+
+.masked-email-box span {
+    color: rgba(64, 64, 64, 0.62);
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.masked-email-box strong {
+    color: #242424;
+    font-size: 16px;
+    word-break: break-word;
+}
+
+.masked-email-box small {
+    color: rgba(64, 64, 64, 0.65);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.masked-email-box-warning {
+    border-color: rgba(161, 98, 7, 0.22);
+    background: rgba(254, 249, 195, 0.65);
+}

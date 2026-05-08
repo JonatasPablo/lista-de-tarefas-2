@@ -1,39 +1,64 @@
-import { useState, type SyntheticEvent } from 'react'
+import { useState, type SyntheticEvent, type UIEvent } from 'react'
 import { Link } from 'react-router-dom'
 
 interface RegisterPageProps {
     onRegister: (
         name: string,
         email: string,
-        password: string
+        password: string,
+        termsAccepted: boolean
     ) => Promise<void>
 }
+
+const TERMS_VERSION = '1.0'
 
 export const RegisterPage = ({ onRegister }: RegisterPageProps) => {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
+    const [hasScrolledTermsToEnd, setHasScrolledTermsToEnd] = useState(false)
+    const [termsAccepted, setTermsAccepted] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const handleTermsScroll = (event: UIEvent<HTMLDivElement>) => {
+        const element = event.currentTarget
+
+        const reachedBottom =
+            element.scrollTop + element.clientHeight >=
+            element.scrollHeight - 12
+
+        if (reachedBottom) {
+            setHasScrolledTermsToEnd(true)
+        }
+    }
 
     const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault()
 
+        if (!hasScrolledTermsToEnd || !termsAccepted) {
+            return
+        }
+
         try {
             setIsSubmitting(true)
 
-            await onRegister(name, email, password)
+            await onRegister(name, email, password, termsAccepted)
         } finally {
             setIsSubmitting(false)
         }
     }
 
     return (
-        <main className="auth-page">
-            <section className="auth-card">
+        <main className="auth-page auth-page-register">
+            <section className="auth-card auth-card-register">
                 <div className="auth-card-header">
                     <h2>Criar conta</h2>
-                    <p>Cadastre-se para acessar suas próprias tarefas.</p>
+                    <p>
+                        Cadastre-se para acessar suas próprias tarefas. Antes de
+                        concluir, leia e aceite os Termos de Uso e a Política de
+                        Privacidade.
+                    </p>
                 </div>
 
                 <form className="auth-form" onSubmit={handleSubmit}>
@@ -114,7 +139,200 @@ export const RegisterPage = ({ onRegister }: RegisterPageProps) => {
                         </button>
                     </div>
 
-                    <button type="submit" disabled={isSubmitting}>
+                    <section className="terms-box">
+                        <div className="terms-box-header">
+                            <div>
+                                <strong>
+                                    Termos de Uso e Política de Privacidade
+                                </strong>
+                                <span>Versão {TERMS_VERSION}</span>
+                            </div>
+
+                            {hasScrolledTermsToEnd ? (
+                                <span className="terms-status terms-status-ok">
+                                    Leitura liberada
+                                </span>
+                            ) : (
+                                <span className="terms-status">
+                                    Role até o final
+                                </span>
+                            )}
+                        </div>
+
+                        <div
+                            className="terms-scroll"
+                            onScroll={handleTermsScroll}
+                            tabIndex={0}
+                        >
+                            <h3>1. Identificação do sistema</h3>
+                            <p>
+                                A Lista de Tarefas é um sistema criado para
+                                organização de tarefas, histórico, logs e
+                                anexos. Ao criar uma conta, o usuário declara
+                                estar ciente das regras descritas nestes Termos
+                                de Uso e nesta Política de Privacidade.
+                            </p>
+
+                            <h3>2. Aceite dos termos</h3>
+                            <p>
+                                Para criar uma conta, é necessário ler estes
+                                termos até o final e marcar a opção de aceite.
+                                Ao marcar a opção, o usuário declara que leu,
+                                compreendeu e concorda com as condições de uso
+                                do sistema.
+                            </p>
+
+                            <h3>3. Conta do usuário</h3>
+                            <p>
+                                O usuário é responsável por informar dados
+                                corretos no cadastro, manter sua senha em
+                                segurança e não compartilhar o acesso com
+                                terceiros. O sistema poderá bloquear ou limitar
+                                acessos em caso de uso indevido.
+                            </p>
+
+                            <h3>4. Confirmação de e-mail</h3>
+                            <p>
+                                Após o cadastro, o sistema poderá enviar um
+                                código de confirmação para o e-mail informado.
+                                O login poderá ser liberado somente após a
+                                confirmação do e-mail.
+                            </p>
+
+                            <h3>5. Uso permitido</h3>
+                            <p>
+                                O sistema deve ser utilizado para fins lícitos,
+                                relacionados à organização pessoal ou
+                                profissional de tarefas. O usuário deve utilizar
+                                a plataforma de forma responsável e respeitando
+                                a legislação aplicável.
+                            </p>
+
+                            <h3>6. Uso proibido</h3>
+                            <p>
+                                É proibido tentar invadir, explorar falhas,
+                                copiar indevidamente dados, prejudicar o
+                                funcionamento do sistema, inserir conteúdo
+                                malicioso ou utilizar a plataforma para qualquer
+                                finalidade ilegal.
+                            </p>
+
+                            <h3>7. Dados coletados</h3>
+                            <p>
+                                Para funcionamento e segurança, o sistema poderá
+                                tratar dados como nome, e-mail, senha
+                                criptografada, tarefas, histórico de ações,
+                                anexos, data e hora de cadastro, data e hora de
+                                aceite dos termos, versão dos termos aceita,
+                                endereço IP e informações do navegador ou
+                                dispositivo.
+                            </p>
+
+                            <h3>8. Cookies e sessão</h3>
+                            <p>
+                                O sistema utiliza cookie de sessão com proteção
+                                HttpOnly para manter o usuário autenticado com
+                                mais segurança. Esse cookie é usado para
+                                identificar a sessão ativa e não deve ser
+                                manipulado diretamente pelo usuário.
+                            </p>
+
+                            <h3>9. Registros de acesso e segurança</h3>
+                            <p>
+                                O sistema poderá registrar informações técnicas,
+                                como IP, data, hora, navegador e ações
+                                realizadas, com a finalidade de segurança,
+                                auditoria, prevenção contra fraudes e melhoria
+                                do serviço.
+                            </p>
+
+                            <h3>10. Armazenamento e proteção</h3>
+                            <p>
+                                Serão adotadas medidas técnicas razoáveis para
+                                proteger os dados, como criptografia de senha,
+                                controle de sessão, restrição de acesso e
+                                validações no backend. Mesmo assim, nenhum
+                                sistema é totalmente imune a falhas ou ataques.
+                            </p>
+
+                            <h3>11. Redefinição de senha</h3>
+                            <p>
+                                O usuário poderá solicitar redefinição de senha
+                                por e-mail. O sistema poderá enviar um código
+                                temporário para confirmação antes de permitir a
+                                criação de uma nova senha.
+                            </p>
+
+                            <h3>12. Responsabilidades do usuário</h3>
+                            <p>
+                                O usuário deve manter seus dados corretos,
+                                proteger sua senha, utilizar dispositivos
+                                seguros e comunicar qualquer suspeita de acesso
+                                indevido.
+                            </p>
+
+                            <h3>13. Limitação de responsabilidade</h3>
+                            <p>
+                                O sistema é fornecido para auxiliar na
+                                organização de tarefas. Não há garantia de que o
+                                serviço estará disponível de forma ininterrupta
+                                ou livre de erros em todos os momentos.
+                            </p>
+
+                            <h3>14. Atualizações dos termos</h3>
+                            <p>
+                                Estes termos poderão ser atualizados. Quando
+                                houver alteração relevante, o sistema poderá
+                                solicitar novo aceite do usuário, registrando a
+                                nova versão aceita.
+                            </p>
+
+                            <h3>15. Contato</h3>
+                            <p>
+                                Em caso de dúvidas sobre estes Termos de Uso ou
+                                sobre a Política de Privacidade, o usuário
+                                poderá entrar em contato com o responsável pelo
+                                sistema pelos canais informados na aplicação.
+                            </p>
+
+                            <p className="terms-final-text">
+                                Ao marcar a opção de aceite, você declara que
+                                leu, compreendeu e concorda com estes Termos de
+                                Uso e com esta Política de Privacidade.
+                            </p>
+                        </div>
+
+                        {!hasScrolledTermsToEnd && (
+                            <small className="terms-help">
+                                Role o texto até o final para liberar o aceite.
+                            </small>
+                        )}
+
+                        <label className="terms-checkbox">
+                            <input
+                                type="checkbox"
+                                checked={termsAccepted}
+                                disabled={!hasScrolledTermsToEnd}
+                                onChange={(event) =>
+                                    setTermsAccepted(event.target.checked)
+                                }
+                            />
+
+                            <span>
+                                Li e aceito os Termos de Uso e a Política de
+                                Privacidade.
+                            </span>
+                        </label>
+                    </section>
+
+                    <button
+                        type="submit"
+                        disabled={
+                            isSubmitting ||
+                            !hasScrolledTermsToEnd ||
+                            !termsAccepted
+                        }
+                    >
                         {isSubmitting ? 'Criando conta...' : 'Criar conta'}
                     </button>
                 </form>

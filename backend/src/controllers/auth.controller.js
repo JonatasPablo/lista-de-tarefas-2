@@ -14,6 +14,20 @@ const getCookieOptions = (expiresAt) => {
     }
 }
 
+const getClientIp = (req) => {
+    const forwardedFor = req.headers['x-forwarded-for']
+
+    if (typeof forwardedFor === 'string') {
+        return forwardedFor.split(',')[0].trim()
+    }
+
+    return req.ip || req.socket?.remoteAddress || null
+}
+
+const getUserAgent = (req) => {
+    return req.get('user-agent') || null
+}
+
 const setSessionCookie = (res, session) => {
     res.cookie(
         SESSION_COOKIE_NAME,
@@ -32,19 +46,39 @@ const clearSessionCookie = (res) => {
 }
 
 const register = async (req, res) => {
-    const { name, email, password } = req.body
+    const { name, email, password, termsAccepted } = req.body
 
     const result = await authService.register({
         name,
         email,
         password,
+        termsAccepted,
+        termsAcceptedIp: getClientIp(req),
+        termsAcceptedUserAgent: getUserAgent(req),
     })
 
-    setSessionCookie(res, result.session)
+    return res.status(201).json(result)
+}
 
-    return res.status(201).json({
-        user: result.user,
+const confirmEmail = async (req, res) => {
+    const { email, code } = req.body
+
+    const result = await authService.confirmEmail({
+        email,
+        code,
     })
+
+    return res.json(result)
+}
+
+const resendEmailVerificationCode = async (req, res) => {
+    const { email } = req.body
+
+    const result = await authService.resendEmailVerificationCode({
+        email,
+    })
+
+    return res.json(result)
 }
 
 const login = async (req, res) => {
@@ -80,6 +114,8 @@ const me = async (req, res) => {
 
 module.exports = {
     register,
+    confirmEmail,
+    resendEmailVerificationCode,
     login,
     logout,
     me,
