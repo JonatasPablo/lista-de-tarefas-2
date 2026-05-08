@@ -26,6 +26,15 @@ const getSmtpConfig = () => {
         host,
         port,
         secure,
+
+        // Força IPv4 para evitar erro ENETUNREACH em ambientes cloud/Railway
+        family: 4,
+
+        // Evita ficar pendurado por muito tempo se o SMTP não responder
+        connectionTimeout: 15000,
+        greetingTimeout: 15000,
+        socketTimeout: 20000,
+
         auth: {
             user,
             pass,
