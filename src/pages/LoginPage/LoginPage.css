@@ -276,7 +276,7 @@
 }
 
 /* Tablet */
-@media only screen and (max-width: 768px) {
+/* @media only screen and (max-width: 768px) {
     .header {
         display: grid;
         grid-template-columns: 1fr auto;
@@ -324,7 +324,7 @@
         place-items: center;
         overflow: visible;
         /* padding: 12px 0 20px; */
-    }
+    /*} /*
 
     .login-card {
         width: min(480px, 100%);
@@ -354,22 +354,32 @@
         font-size: 25px;
     } */
 
-    .login-content {
+    /*.login-content {
         gap: 15px;
         padding: 36px 24px 35px;
     }
-}
+} */
 
-/* Celular / PWA
-@media only screen and (max-width: 600px) {
+/* 09/05/2026 - 11:45:57 */
+/* Tablet e mobile seguem o mesmo padrão visual */
+@media only screen and (max-width: 768px) {
     .login-page {
-        place-items: start center;
-        padding: 8px 0 16px;
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        display: grid;
+        place-items: center;
+        overflow: visible;
+        padding: 0 10px 10px;
     }
 
     .login-card {
-        width: 100%;
-        border-radius: 22px;
+        width: min(480px, 100%);
+        height: auto;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 1fr;
+        border-radius: 24px;
     }
 
     .login-hero {
@@ -378,7 +388,12 @@
 
     .login-content {
         gap: 20px;
-        padding: 28px 18px 26px;
+        padding: 28px 22px 28px;
+    }
+
+    .login-header {
+        gap: 8px;
+        text-align: left;
     }
 
     .login-header h2 {
@@ -389,6 +404,10 @@
         font-size: 14px;
     }
 
+    .login-form {
+        gap: 12px;
+    }
+
     .login-field input {
         min-height: 48px;
         font-size: 15px;
@@ -397,4 +416,4 @@
     .login-submit-button {
         min-height: 48px;
     }
-} */
+}
