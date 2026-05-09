@@ -13,6 +13,8 @@ import {
     useSearchParams,
 } from 'react-router-dom'
 
+import './ConfirmEmailPage.css'
+
 type ConfirmEmailLocationState = {
     email?: string
 }
@@ -199,18 +201,29 @@ export const ConfirmEmailPage = ({
 
     if (isAlreadyConfirmed) {
         return (
-            <main className="auth-page confirm-email-page">
-                <section className="auth-card confirm-email-card">
-                    <div className="auth-card-header">
-                        <h2>E-mail confirmado</h2>
-                        <p>
-                            Seu e-mail já foi confirmado com sucesso. Você será
-                            enviado para a tela de login em instantes.
+            <main className="confirm-email-page">
+                <section className="confirm-email-card">
+                    <aside className="confirm-email-hero" aria-hidden="true">
+                        <p className="confirm-email-hero-description">
+                            Seu e-mail foi confirmado e sua conta já está pronta
+                            para uso.
                         </p>
-                    </div>
 
-                    <div className="auth-form">
-                        <section className="masked-email-box">
+                        <strong className="confirm-email-hero-title">
+                            Confirmação concluída
+                        </strong>
+                    </aside>
+
+                    <section className="confirm-email-content">
+                        <header className="confirm-email-header">
+                            <h2>E-mail confirmado</h2>
+                            <p>
+                                Seu e-mail já foi confirmado com sucesso. Você
+                                será enviado para a tela de login em instantes.
+                            </p>
+                        </header>
+
+                        <section className="confirm-email-status-box">
                             <span>Status</span>
                             <strong>Confirmação concluída</strong>
                             <small>
@@ -221,101 +234,130 @@ export const ConfirmEmailPage = ({
 
                         <button
                             type="button"
+                            className="confirm-email-submit-button"
                             onClick={() => navigate('/login')}
                         >
                             Ir para login
                         </button>
-                    </div>
 
-                    <p className="auth-footer-text">
-                        Redirecionando para o login...
-                    </p>
+                        <footer className="confirm-email-footer">
+                            <p>Redirecionando para o login...</p>
+                        </footer>
+                    </section>
                 </section>
             </main>
         )
     }
 
     return (
-        <main className="auth-page confirm-email-page">
-            <section className="auth-card confirm-email-card">
-                <div className="auth-card-header">
-                    <h2>Confirmar e-mail</h2>
-                    <p>
-                        Enviamos um código de 6 caracteres para o e-mail
-                        cadastrado. Digite o código abaixo para liberar o login.
+        <main className="confirm-email-page">
+            <section className="confirm-email-card">
+                <aside className="confirm-email-hero" aria-hidden="true">
+                    <p className="confirm-email-hero-description">
+                        Confirme seu e-mail para proteger sua conta e liberar o
+                        acesso ao sistema.
                     </p>
-                </div>
 
-                <form className="auth-form" onSubmit={handleSubmit}>
-                    {hasEmail ? (
-                        <section className="masked-email-box">
-                            <span>E-mail cadastrado</span>
-                            <strong>{maskedEmail}</strong>
-                            <small>
-                                Este e-mail é apenas para visualização e não
-                                pode ser alterado nesta etapa.
-                            </small>
-                        </section>
-                    ) : (
-                        <section className="masked-email-box masked-email-box-warning">
-                            <span>E-mail não identificado</span>
-                            <strong>Abra o link enviado para seu e-mail</strong>
-                            <small>
-                                Para sua segurança, volte ao cadastro ou use o
-                                botão recebido no e-mail de confirmação.
-                            </small>
-                        </section>
-                    )}
+                    <strong className="confirm-email-hero-title">
+                        Falta só confirmar
+                    </strong>
+                </aside>
 
-                    <label htmlFor="confirm-code">Código de confirmação</label>
-                    <input
-                        id="confirm-code"
-                        className="confirm-code-input"
-                        type="text"
-                        placeholder="ABC123"
-                        value={code}
-                        onChange={(event) =>
-                            handleCodeChange(event.target.value)
-                        }
-                        maxLength={6}
-                        autoComplete="one-time-code"
-                        required
-                        disabled={!hasEmail}
-                    />
+                <section className="confirm-email-content">
+                    <header className="confirm-email-header">
+                        <h2>Confirmar e-mail</h2>
+                        <p>
+                            Enviamos um código de 6 caracteres para o e-mail
+                            cadastrado. Digite o código abaixo para liberar o
+                            login.
+                        </p>
+                    </header>
 
-                    <small className="confirm-email-help">
-                        O código possui 6 caracteres e pode conter letras e
-                        números.
-                    </small>
-
-                    <button
-                        type="submit"
-                        disabled={isSubmitting || !canSubmit}
+                    <form
+                        className="confirm-email-form"
+                        onSubmit={handleSubmit}
                     >
-                        {isSubmitting
-                            ? 'Confirmando...'
-                            : 'Confirmar e-mail'}
-                    </button>
+                        {hasEmail ? (
+                            <section className="confirm-email-status-box">
+                                <span>E-mail cadastrado</span>
+                                <strong>{maskedEmail}</strong>
+                                <small>
+                                    Este e-mail é apenas para visualização e não
+                                    pode ser alterado nesta etapa.
+                                </small>
+                            </section>
+                        ) : (
+                            <section className="confirm-email-status-box confirm-email-status-box-warning">
+                                <span>E-mail não identificado</span>
+                                <strong>
+                                    Abra o link enviado para seu e-mail
+                                </strong>
+                                <small>
+                                    Para sua segurança, volte ao cadastro ou use
+                                    o botão recebido no e-mail de confirmação.
+                                </small>
+                            </section>
+                        )}
 
-                    <button
-                        type="button"
-                        className="auth-secondary-button"
-                        onClick={handleResendCode}
-                        disabled={isResending || !hasEmail}
-                    >
-                        {isResending
-                            ? 'Reenviando código...'
-                            : 'Reenviar código'}
-                    </button>
-                </form>
+                        <div className="confirm-email-field">
+                            <label htmlFor="confirm-code">
+                                Código de confirmação
+                            </label>
 
-                <p className="auth-footer-text">
-                    Já confirmou? <Link to="/login">Entrar</Link>
-                </p>
+                            <input
+                                id="confirm-code"
+                                className="confirm-email-code-input"
+                                type="text"
+                                placeholder="ABC123"
+                                value={code}
+                                onChange={(event) =>
+                                    handleCodeChange(event.target.value)
+                                }
+                                maxLength={6}
+                                autoComplete="one-time-code"
+                                required
+                                disabled={!hasEmail}
+                            />
 
-                <p className="auth-footer-text confirm-email-footer-link">
-                    Ainda não tem conta? <Link to="/cadastro">Criar conta</Link>
-                </p>
+                            <small>
+                                O código possui 6 caracteres e pode conter
+                                letras e números.
+                            </small>
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="confirm-email-submit-button"
+                            disabled={isSubmitting || !canSubmit}
+                        >
+                            {isSubmitting
+                                ? 'Confirmando...'
+                                : 'Confirmar e-mail'}
+                        </button>
+
+                        <button
+                            type="button"
+                            className="confirm-email-secondary-button"
+                            onClick={handleResendCode}
+                            disabled={isResending || !hasEmail}
+                        >
+                            {isResending
+                                ? 'Reenviando código...'
+                                : 'Reenviar código'}
+                        </button>
+                    </form>
+
+                    <footer className="confirm-email-footer">
+                        <p>
+                            Já confirmou? <Link to="/login">Entrar</Link>
+                        </p>
+
+                        <p>
+                            Ainda não tem conta?{' '}
+                            <Link to="/cadastro">Criar conta</Link>
+                        </p>
+                    </footer>
+                </section>
             </section>
         </main>
     )

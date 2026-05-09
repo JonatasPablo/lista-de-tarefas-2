@@ -1,0 +1,612 @@
+.confirm-email-page {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    padding: 0 12px;
+}
+
+.confirm-email-card {
+    width: min(900px, 100%);
+    height: 500px;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(300px, 0.9fr) minmax(480px, 1.1fr);
+    overflow: hidden;
+    border-radius: 30px;
+    background-color: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.92);
+    box-shadow:
+        0 24px 56px rgba(0, 0, 0, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+}
+
+.confirm-email-hero {
+    min-height: 0;
+    display: grid;
+    align-content: space-between;
+    gap: 24px;
+    padding: 38px 34px 44px;
+    background:
+        radial-gradient(
+            circle at 38% 18%,
+            rgba(255, 255, 255, 0.14),
+            transparent 34%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(64, 64, 64, 0.96),
+            rgba(24, 24, 24, 0.98)
+        );
+    color: #ffffff;
+}
+
+.confirm-email-hero-description {
+    width: min(280px, 100%);
+    margin: 0;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 23px;
+    font-weight: 800;
+    line-height: 1.28;
+    letter-spacing: -0.035em;
+    padding-top: 30px;
+}
+
+.confirm-email-hero-title {
+    display: block;
+    width: min(310px, 100%);
+    color: #ffffff;
+    font-size: 48px;
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.065em;
+    padding-bottom: 30px;
+}
+
+.confirm-email-content {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    display: grid;
+    align-content: center;
+    gap: 18px;
+    padding: 34px 42px 32px;
+    overflow: hidden;
+}
+
+.confirm-email-header {
+    display: grid;
+    gap: 8px;
+}
+
+.confirm-email-header h2 {
+    margin: 0;
+    color: #202020;
+    font-size: 42px;
+    line-height: 1;
+    letter-spacing: -0.055em;
+}
+
+.confirm-email-header p {
+    margin: 0;
+    color: rgba(64, 64, 64, 0.72);
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.confirm-email-form {
+    display: grid;
+    gap: 12px;
+}
+
+.confirm-email-status-box {
+    display: grid;
+    gap: 4px;
+    padding: 13px 14px;
+    border-radius: 18px;
+    background-color: rgba(247, 247, 247, 0.96);
+    border: 1px solid rgba(64, 64, 64, 0.08);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        0 10px 24px rgba(0, 0, 0, 0.05);
+}
+
+.confirm-email-status-box span {
+    color: rgba(64, 64, 64, 0.62);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.confirm-email-status-box strong {
+    overflow: hidden;
+    color: #202020;
+    font-size: 15px;
+    font-weight: 900;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.confirm-email-status-box small {
+    color: rgba(64, 64, 64, 0.72);
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.confirm-email-status-box-warning {
+    background-color: rgba(155, 124, 0, 0.08);
+    border-color: rgba(155, 124, 0, 0.18);
+}
+
+.confirm-email-field {
+    display: grid;
+    gap: 6px;
+}
+
+.confirm-email-field label {
+    color: #303030;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.confirm-email-field input {
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 14px;
+    border: 1px solid rgba(64, 64, 64, 0.08);
+    border-radius: 14px;
+    background-color: rgba(250, 250, 250, 0.98);
+    color: #303030;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 0.22em;
+    text-align: center;
+    text-transform: uppercase;
+    box-shadow:
+        inset 0 1px 2px rgba(0, 0, 0, 0.04),
+        0 1px 0 rgba(255, 255, 255, 0.7);
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.15s ease;
+}
+
+.confirm-email-field input:focus {
+    border-color: rgba(64, 64, 64, 0.2);
+    box-shadow:
+        0 0 0 4px rgba(64, 64, 64, 0.08),
+        inset 0 1px 2px rgba(0, 0, 0, 0.04);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.confirm-email-field input:disabled {
+    cursor: not-allowed;
+    opacity: 0.62;
+}
+
+.confirm-email-field small {
+    color: rgba(64, 64, 64, 0.68);
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.confirm-email-submit-button,
+.confirm-email-secondary-button {
+    width: 100%;
+    min-height: 44px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+}
+
+.confirm-email-submit-button {
+    border: 1px solid #111111;
+    background: linear-gradient(135deg, #252525 0%, #050505 100%);
+    color: #ffffff;
+}
+
+.confirm-email-submit-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1f1f1f 0%, #000000 100%);
+    color: #ffffff;
+}
+
+.confirm-email-secondary-button {
+    border: 1px solid rgba(64, 64, 64, 0.12);
+    background-color: rgba(255, 255, 255, 0.82);
+    color: #303030;
+}
+
+.confirm-email-secondary-button:hover:not(:disabled) {
+    background-color: #404040;
+    color: #ffffff;
+}
+
+.confirm-email-submit-button:disabled,
+.confirm-email-secondary-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.confirm-email-footer {
+    display: grid;
+    place-items: center;
+    gap: 4px;
+}
+
+.confirm-email-footer p {
+    margin: 0;
+    color: rgba(64, 64, 64, 0.72);
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.confirm-email-footer a {
+    color: #303030;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.confirm-email-footer a:hover {
+    text-decoration: underline;
+}
+
+/* =========================
+   Desktop grande
+========================= */
+
+@media only screen and (min-width: 1367px) {
+    .confirm-email-card {
+        width: min(900px, 100%);
+        height: 500px;
+    }
+}
+
+/* =========================
+   Notebook
+========================= */
+
+@media only screen and (min-width: 1025px) and (max-width: 1366px) {
+    .confirm-email-card {
+        width: min(860px, 100%);
+        height: 470px;
+        grid-template-columns: minmax(280px, 0.88fr) minmax(460px, 1.12fr);
+    }
+
+    .confirm-email-hero {
+        padding: 32px 30px 36px;
+    }
+
+    .confirm-email-hero-description {
+        font-size: 21px;
+    }
+
+    .confirm-email-hero-title {
+        font-size: 42px;
+    }
+
+    .confirm-email-content {
+        gap: 15px;
+        padding: 28px 38px 26px;
+    }
+
+    .confirm-email-header h2 {
+        font-size: 38px;
+    }
+
+    .confirm-email-header p {
+        font-size: 13px;
+    }
+
+    .confirm-email-submit-button,
+    .confirm-email-secondary-button {
+        min-height: 42px;
+    }
+}
+
+/* =========================
+   Notebook com pouca altura
+========================= */
+
+@media only screen and (min-width: 1025px) and (max-height: 650px) {
+    .confirm-email-page {
+        padding: 0 10px;
+    }
+
+    .confirm-email-card {
+        width: min(830px, 100%);
+        height: 420px;
+    }
+
+    .confirm-email-hero {
+        gap: 18px;
+        padding: 26px 28px 30px;
+    }
+
+    .confirm-email-hero-description {
+        font-size: 19px;
+        padding-top: 22px;
+    }
+
+    .confirm-email-hero-title {
+        font-size: 38px;
+        padding-bottom: 22px;
+    }
+
+    .confirm-email-content {
+        gap: 11px;
+        padding: 22px 34px 20px;
+    }
+
+    .confirm-email-header {
+        gap: 6px;
+    }
+
+    .confirm-email-header h2 {
+        font-size: 34px;
+    }
+
+    .confirm-email-header p {
+        font-size: 12px;
+        line-height: 1.35;
+    }
+
+    .confirm-email-form {
+        gap: 9px;
+    }
+
+    .confirm-email-status-box {
+        padding: 10px 12px;
+    }
+
+    .confirm-email-status-box strong {
+        font-size: 14px;
+    }
+
+    .confirm-email-status-box small,
+    .confirm-email-field small {
+        font-size: 11px;
+    }
+
+    .confirm-email-field input {
+        min-height: 40px;
+        font-size: 16px;
+    }
+
+    .confirm-email-submit-button,
+    .confirm-email-secondary-button {
+        min-height: 38px;
+        font-size: 14px;
+    }
+
+    .confirm-email-footer p {
+        font-size: 12px;
+    }
+}
+
+/* =========================
+   Tablet e mobile
+   Mesmo visual: hero em cima, formulário embaixo
+========================= */
+
+@media only screen and (max-width: 1024px) {
+    .confirm-email-page {
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        display: grid;
+        place-items: center;
+        overflow: visible;
+        padding: 0 10px 10px;
+    }
+
+    .confirm-email-card {
+        width: min(480px, 100%);
+        height: auto;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 1fr;
+        border-radius: 24px;
+        overflow: hidden;
+    }
+
+    .confirm-email-hero {
+        min-height: 170px;
+        display: grid;
+        align-content: space-between;
+        gap: 18px;
+        padding: 26px 24px 28px;
+        border-radius: 0;
+    }
+
+    .confirm-email-hero-description {
+        width: min(360px, 100%);
+        padding-top: 0;
+        font-size: 20px;
+        line-height: 1.25;
+        letter-spacing: -0.035em;
+    }
+
+    .confirm-email-hero-title {
+        width: min(380px, 100%);
+        padding-bottom: 0;
+        font-size: 38px;
+        line-height: 0.95;
+        letter-spacing: -0.06em;
+    }
+
+    .confirm-email-content {
+        height: auto;
+        display: grid;
+        align-content: stretch;
+        gap: 18px;
+        padding: 28px 22px 28px;
+        overflow: visible;
+    }
+
+    .confirm-email-header {
+        gap: 8px;
+        text-align: left;
+    }
+
+    .confirm-email-header h2 {
+        font-size: 36px;
+    }
+
+    .confirm-email-header p {
+        font-size: 14px;
+    }
+
+    .confirm-email-form {
+        gap: 12px;
+    }
+
+    .confirm-email-status-box {
+        padding: 12px;
+        border-radius: 18px;
+    }
+
+    .confirm-email-status-box strong {
+        font-size: 15px;
+    }
+
+    .confirm-email-field input {
+        min-height: 48px;
+        font-size: 18px;
+    }
+
+    .confirm-email-submit-button,
+    .confirm-email-secondary-button {
+        min-height: 48px;
+    }
+}
+
+/* =========================
+   Tablet específico
+   Mesmo desenho do celular, só maior
+========================= */
+
+@media only screen and (min-width: 769px) and (max-width: 1024px) {
+    .confirm-email-card {
+        width: min(560px, 100%);
+        border-radius: 26px;
+    }
+
+    .confirm-email-hero {
+        min-height: 205px;
+        padding: 32px 30px 34px;
+    }
+
+    .confirm-email-hero-description {
+        width: min(430px, 100%);
+        font-size: 23px;
+    }
+
+    .confirm-email-hero-title {
+        width: min(450px, 100%);
+        font-size: 44px;
+    }
+
+    .confirm-email-content {
+        gap: 22px;
+        padding: 34px 30px 34px;
+    }
+
+    .confirm-email-header h2 {
+        font-size: 40px;
+    }
+
+    .confirm-email-header p {
+        font-size: 15px;
+    }
+
+    .confirm-email-status-box {
+        padding: 14px;
+    }
+
+    .confirm-email-status-box span,
+    .confirm-email-status-box small,
+    .confirm-email-field small {
+        font-size: 13px;
+    }
+
+    .confirm-email-status-box strong {
+        font-size: 16px;
+    }
+
+    .confirm-email-field label {
+        font-size: 14px;
+    }
+
+    .confirm-email-field input {
+        min-height: 52px;
+        font-size: 19px;
+    }
+
+    .confirm-email-submit-button,
+    .confirm-email-secondary-button {
+        min-height: 52px;
+        font-size: 16px;
+    }
+
+    .confirm-email-footer p {
+        font-size: 14px;
+    }
+}
+
+/* =========================
+   Celular
+========================= */
+
+@media only screen and (max-width: 768px) {
+    .confirm-email-card {
+        width: min(480px, 100%);
+    }
+}
+
+/* =========================
+   Celular menor
+========================= */
+
+@media only screen and (max-width: 480px) {
+    .confirm-email-card {
+        width: 100%;
+        border-radius: 22px;
+    }
+
+    .confirm-email-hero {
+        min-height: 150px;
+        padding: 22px 20px 24px;
+    }
+
+    .confirm-email-hero-description {
+        font-size: 17px;
+    }
+
+    .confirm-email-hero-title {
+        font-size: 32px;
+    }
+
+    .confirm-email-content {
+        gap: 18px;
+        padding: 26px 20px 26px;
+    }
+
+    .confirm-email-header h2 {
+        font-size: 34px;
+    }
+
+    .confirm-email-status-box strong {
+        white-space: normal;
+    }
+
+    .confirm-email-field input {
+        font-size: 17px;
+    }
+}
