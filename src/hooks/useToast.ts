@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import type { ToastMessage, ToastType } from '../components/Toast/Toast'
 
-const TOAST_DURATION_IN_MS = 4000
+const TOAST_DURATION_IN_MS = 9000
 
 export const useToast = () => {
     const [toasts, setToasts] = useState<ToastMessage[]>([])
