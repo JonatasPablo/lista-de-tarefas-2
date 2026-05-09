@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import * as XLSX from 'xlsx'
 import { API_URL } from '../../services/api'
 
+import './LogPage.css'
+
 type TaskHistory = {
     id: number
     task_id: number
@@ -266,15 +268,12 @@ export function LogPage() {
         }
     }, [])
 
-    const filteredHistory = useMemo(() => {
+    const summaryHistory = useMemo(() => {
         return history.filter((item) => {
             const taskTitle = normalizeText(item.task_title || '')
             const search = normalizeText(searchTerm.trim())
 
             const matchesSearch = search === '' || taskTitle.includes(search)
-
-            const matchesAction =
-                actionFilter === 'todas' || item.action === actionFilter
 
             const itemDate = new Date(item.created_at)
             const itemDateOnly = formatDateOnly(itemDate)
@@ -284,17 +283,18 @@ export function LogPage() {
 
             const matchesEndDate = endDate === '' || itemDateOnly <= endDate
 
-            return (
-                matchesSearch &&
-                matchesAction &&
-                matchesStartDate &&
-                matchesEndDate
-            )
+            return matchesSearch && matchesStartDate && matchesEndDate
         })
-    }, [actionFilter, endDate, history, searchTerm, startDate])
+    }, [endDate, history, searchTerm, startDate])
+
+    const filteredHistory = useMemo(() => {
+        return summaryHistory.filter((item) => {
+            return actionFilter === 'todas' || item.action === actionFilter
+        })
+    }, [actionFilter, summaryHistory])
 
     const logSummary = useMemo(() => {
-        return filteredHistory.reduce(
+        return summaryHistory.reduce(
             (summary, item) => {
                 if (item.action === 'created') {
                     summary.created += 1
@@ -321,8 +321,9 @@ export function LogPage() {
                 deleted: 0,
             }
         )
-    }, [filteredHistory])
+    }, [summaryHistory])
 
+    const totalRecords = summaryHistory.length
     const reportPeriod = getReportPeriodLabel(startDate, endDate)
     const generatedAt = new Date().toLocaleString('pt-BR')
     const actionLabel =
@@ -409,7 +410,7 @@ export function LogPage() {
 
     if (isLoading) {
         return (
-            <main className="log-page">
+            <main className="log-page log-page-loading">
                 <p className="empty-message">Carregando log...</p>
             </main>
         )
@@ -419,19 +420,76 @@ export function LogPage() {
         <main className="log-page">
             <header className="log-page-header">
                 <div>
-                    <h2>Log de tarefas</h2>
-                    <p>
-                        Acompanhe as alterações realizadas nas tarefas.
-                    </p>
+                    <h2>Log</h2>
+                    <p>Acompanhe as alterações realizadas nas tarefas.</p>
+                </div>
+            </header>
+
+            <section className="log-summary-panel">
+                <div className="log-summary-header">
+                    <h3>Resumo do log</h3>
+                    <span>{reportPeriod}</span>
                 </div>
 
-                <span>
-                    {filteredHistory.length}{' '}
-                    {filteredHistory.length === 1
-                        ? 'registro encontrado'
-                        : 'registros encontrados'}
-                </span>
-            </header>
+                <div className="log-summary-grid">
+                    <button
+                        type="button"
+                        className={`log-summary-card log-summary-total ${
+                            actionFilter === 'todas' ? 'is-active' : ''
+                        }`}
+                        onClick={() => setActionFilter('todas')}
+                    >
+                        <strong>{totalRecords}</strong>
+                        <span>Total</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        className={`log-summary-card log-summary-created ${
+                            actionFilter === 'created' ? 'is-active' : ''
+                        }`}
+                        onClick={() => setActionFilter('created')}
+                    >
+                        <strong>{logSummary.created}</strong>
+                        <span>Criadas</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        className={`log-summary-card log-summary-updated ${
+                            actionFilter === 'updated' ? 'is-active' : ''
+                        }`}
+                        onClick={() => setActionFilter('updated')}
+                    >
+                        <strong>{logSummary.updated}</strong>
+                        <span>Editadas</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        className={`log-summary-card log-summary-status ${
+                            actionFilter === 'status_changed'
+                                ? 'is-active'
+                                : ''
+                        }`}
+                        onClick={() => setActionFilter('status_changed')}
+                    >
+                        <strong>{logSummary.statusChanged}</strong>
+                        <span>Status</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        className={`log-summary-card log-summary-deleted ${
+                            actionFilter === 'deleted' ? 'is-active' : ''
+                        }`}
+                        onClick={() => setActionFilter('deleted')}
+                    >
+                        <strong>{logSummary.deleted}</strong>
+                        <span>Excluídas</span>
+                    </button>
+                </div>
+            </section>
 
             <section className="print-report-summary">
                 <h3>Resumo do relatório</h3>
@@ -478,112 +536,145 @@ export function LogPage() {
                 </div>
             </section>
 
-            <section className="log-filters">
-                <input
-                    type="text"
-                    placeholder="Buscar por tarefa..."
-                    value={searchTerm}
-                    onChange={(event) => setSearchTerm(event.target.value)}
-                />
+            <section className="log-controls-panel">
+                <div className="log-filters">
+                    <label htmlFor="log-search">Buscar tarefa</label>
 
-                <select
-                    value={actionFilter}
-                    onChange={(event) =>
-                        setActionFilter(event.target.value as ActionFilter)
-                    }
-                >
-                    <option value="todas">Todas as ações</option>
-                    <option value="created">Criadas</option>
-                    <option value="updated">Editadas</option>
-                    <option value="status_changed">Status alterado</option>
-                    <option value="deleted">Excluídas</option>
-                </select>
+                    <input
+                        id="log-search"
+                        type="text"
+                        placeholder="Buscar por tarefa..."
+                        value={searchTerm}
+                        onChange={(event) => setSearchTerm(event.target.value)}
+                        autoComplete="off"
+                    />
 
-                <input
-                    type="date"
-                    value={startDate}
-                    onChange={(event) => setStartDate(event.target.value)}
-                    title="Data inicial"
-                />
+                    <label htmlFor="log-action">Filtrar ação</label>
 
-                <input
-                    type="date"
-                    value={endDate}
-                    onChange={(event) => setEndDate(event.target.value)}
-                    title="Data final"
-                />
+                    <select
+                        id="log-action"
+                        value={actionFilter}
+                        onChange={(event) =>
+                            setActionFilter(event.target.value as ActionFilter)
+                        }
+                    >
+                        <option value="todas">Todas as ações</option>
+                        <option value="created">Criadas</option>
+                        <option value="updated">Editadas</option>
+                        <option value="status_changed">Status alterado</option>
+                        <option value="deleted">Excluídas</option>
+                    </select>
 
-                <button
-                    type="button"
-                    onClick={handleClearFilters}
-                    disabled={!hasActiveFilters}
-                >
-                    Limpar filtros
-                </button>
+                    <label htmlFor="log-start-date">Data inicial</label>
+
+                    <input
+                        id="log-start-date"
+                        type="date"
+                        value={startDate}
+                        onChange={(event) => setStartDate(event.target.value)}
+                        title="Data inicial"
+                    />
+
+                    <label htmlFor="log-end-date">Data final</label>
+
+                    <input
+                        id="log-end-date"
+                        type="date"
+                        value={endDate}
+                        onChange={(event) => setEndDate(event.target.value)}
+                        title="Data final"
+                    />
+
+                    <button
+                        type="button"
+                        onClick={handleClearFilters}
+                        disabled={!hasActiveFilters}
+                    >
+                        Limpar filtros
+                    </button>
+                </div>
+
+                <div className="log-actions-toolbar">
+                    <button
+                        type="button"
+                        onClick={handlePrint}
+                        disabled={filteredHistory.length === 0}
+                    >
+                        Imprimir / PDF
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={handleExportExcel}
+                        disabled={filteredHistory.length === 0}
+                    >
+                        Exportar Excel
+                    </button>
+                </div>
             </section>
 
-            <section className="log-actions-toolbar">
-                <button
-                    type="button"
-                    onClick={handlePrint}
-                    disabled={filteredHistory.length === 0}
-                >
-                    Imprimir / PDF
-                </button>
+            <section className="log-list-panel">
+                <div className="log-list-header">
+                    <h3>Registros</h3>
 
-                <button
-                    type="button"
-                    onClick={handleExportExcel}
-                    disabled={filteredHistory.length === 0}
-                >
-                    Exportar Excel
-                </button>
+                    <span>
+                        {filteredHistory.length}{' '}
+                        {filteredHistory.length === 1
+                            ? 'registro'
+                            : 'registros'}
+                    </span>
+                </div>
+
+                {filteredHistory.length === 0 ? (
+                    <p className="empty-message">Nenhum log encontrado.</p>
+                ) : (
+                    <div className="log-list-scroll-area">
+                        <section className="log-list">
+                            {filteredHistory.map((item) => (
+                                <article key={item.id} className="log-card">
+                                    <div className="log-card-header">
+                                        <div>
+                                            <h3>{item.task_title}</h3>
+                                            <small>
+                                                Tarefa #{item.task_id} |
+                                                Usuário #{item.user_id}
+                                            </small>
+                                        </div>
+
+                                        <span
+                                            className={`log-action-badge ${
+                                                actionClassNames[item.action] ||
+                                                'log-action-default'
+                                            }`}
+                                        >
+                                            {actionLabels[item.action] ||
+                                                item.action}
+                                        </span>
+                                    </div>
+
+                                    <div className="log-values-grid">
+                                        <div className="log-value-card">
+                                            <strong>Valor anterior</strong>
+                                            {formatValue(item.old_value)}
+                                        </div>
+
+                                        <div className="log-value-card">
+                                            <strong>Novo valor</strong>
+                                            {formatValue(item.new_value)}
+                                        </div>
+                                    </div>
+
+                                    <footer className="log-card-footer">
+                                        <span>
+                                            {formatDateTime(item.created_at)}
+                                        </span>
+                                    </footer>
+                                </article>
+                            ))}
+                        </section>
+                    </div>
+                )}
             </section>
-
-            {filteredHistory.length === 0 ? (
-                <p className="empty-message">Nenhum log encontrado.</p>
-            ) : (
-                <section className="log-list">
-                    {filteredHistory.map((item) => (
-                        <article key={item.id} className="log-card">
-                            <div className="log-card-header">
-                                <div>
-                                    <h3>{item.task_title}</h3>
-                                    <small>
-                                        Tarefa #{item.task_id} | Usuário #
-                                        {item.user_id}
-                                    </small>
-                                </div>
-
-                                <span
-                                    className={`log-action-badge ${
-                                        actionClassNames[item.action] ||
-                                        'log-action-default'
-                                    }`}
-                                >
-                                    {actionLabels[item.action] || item.action}
-                                </span>
-                            </div>
-
-                            <div className="log-values-grid">
-                                <div className="log-value-card">
-                                    <strong>Valor anterior</strong>
-                                    {formatValue(item.old_value)}
-                                </div>
-
-                                <div className="log-value-card">
-                                    <strong>Novo valor</strong>
-                                    {formatValue(item.new_value)}
-                                </div>
-                            </div>
-
-                            <footer className="log-card-footer">
-                                <span>{formatDateTime(item.created_at)}</span>
-                            </footer>
-                        </article>
-                    ))}
-                </section>
-            )}
         </main>
     )
 }

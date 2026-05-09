@@ -1,0 +1,1060 @@
+.container:has(.log-page) {
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.container:has(.log-page) .log-page {
+    min-height: 0;
+}
+
+.log-page {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+    gap: 10px;
+    overflow: hidden;
+    padding: 0 10px 10px;
+}
+
+.log-page-loading {
+    place-items: center;
+}
+
+.log-page-header {
+    min-height: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 2px 2px 0;
+    overflow: hidden;
+}
+
+.log-page-header div {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+}
+
+.log-page-header h2 {
+    margin: 0;
+    color: #202020;
+    font-size: 34px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.055em;
+}
+
+.log-page-header p {
+    margin: 0;
+    color: rgba(64, 64, 64, 0.72);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+}
+
+.log-summary-panel,
+.log-controls-panel,
+.log-list-panel {
+    min-height: 0;
+    border: 1px solid rgba(255, 255, 255, 0.64);
+    border-radius: 22px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.72),
+            rgba(255, 255, 255, 0.42)
+        );
+    box-shadow:
+        0 14px 32px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    overflow: hidden;
+}
+
+/* =========================
+   Resumo
+========================= */
+
+.log-summary-panel {
+    display: grid;
+    gap: 6px;
+    padding: 9px 10px;
+}
+
+.log-summary-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.log-summary-header h3 {
+    margin: 0;
+    color: #202020;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.log-summary-header span {
+    color: rgba(64, 64, 64, 0.68);
+    font-size: 12px;
+    font-weight: 600;
+    text-align: right;
+}
+
+.log-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.log-summary-card {
+    min-width: 0;
+    min-height: 48px;
+    display: grid;
+    place-items: center;
+    gap: 2px;
+    padding: 7px 8px;
+    border: 1px solid rgba(64, 64, 64, 0.06);
+    border-left-width: 5px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.66);
+    color: #303030;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.15s ease;
+}
+
+.log-summary-card:hover {
+    transform: translateY(-1px);
+    background-color: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.log-summary-card.is-active {
+    background-color: rgba(64, 64, 64, 0.08);
+    box-shadow:
+        inset 0 0 0 1px rgba(64, 64, 64, 0.12),
+        0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.log-summary-total {
+    border-left-color: #404040;
+}
+
+.log-summary-created {
+    border-left-color: #057401;
+}
+
+.log-summary-updated {
+    border-left-color: #9b7c00;
+}
+
+.log-summary-status {
+    border-left-color: #404040;
+}
+
+.log-summary-deleted {
+    border-left-color: #810101;
+}
+
+.log-summary-card strong {
+    color: #202020;
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.log-summary-card span {
+    color: rgba(64, 64, 64, 0.7);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* =========================
+   Filtros e ações
+========================= */
+
+.print-report-summary {
+    display: none;
+}
+
+.log-controls-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+}
+
+.log-filters {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(190px, 1fr) 170px 140px 140px 116px;
+    align-items: center;
+    gap: 8px;
+}
+
+.log-filters label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.log-filters input,
+.log-filters select {
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid rgba(64, 64, 64, 0.08);
+    border-radius: 14px;
+    background-color: rgba(250, 250, 250, 0.98);
+    color: #303030;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.log-filters input:focus,
+.log-filters select:focus {
+    border-color: rgba(64, 64, 64, 0.2);
+    box-shadow: 0 0 0 4px rgba(64, 64, 64, 0.08);
+    outline: none;
+}
+
+.log-filters button,
+.log-actions-toolbar button {
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid rgba(64, 64, 64, 0.14);
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.82);
+    color: #303030;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.log-filters button:hover:not(:disabled),
+.log-actions-toolbar button:hover:not(:disabled) {
+    background-color: #404040;
+    color: #ffffff;
+}
+
+.log-filters button:disabled,
+.log-actions-toolbar button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.log-actions-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 8px;
+}
+
+.log-actions-toolbar button {
+    min-width: 112px;
+}
+
+/* =========================
+   Lista
+========================= */
+
+.log-list-panel {
+    min-height: 0;
+    max-height: 100%;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.log-list-header {
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    overflow: hidden;
+}
+
+.log-list-header h3 {
+    margin: 0;
+    color: #202020;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.log-list-header span {
+    color: rgba(64, 64, 64, 0.68);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.log-list-scroll-area {
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+    padding-right: 4px;
+}
+
+.log-list {
+    display: grid;
+    gap: 9px;
+}
+
+.log-card {
+    min-width: 0;
+    display: grid;
+    gap: 10px;
+    padding: 11px;
+    border: 1px solid rgba(64, 64, 64, 0.08);
+    border-radius: 18px;
+    background-color: rgba(255, 255, 255, 0.82);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.86),
+        0 8px 18px rgba(0, 0, 0, 0.05);
+}
+
+.log-card-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 10px;
+}
+
+.log-card-header h3 {
+    margin: 0;
+    overflow: hidden;
+    color: #202020;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.log-card-header small {
+    color: rgba(64, 64, 64, 0.62);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.log-action-badge {
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.log-action-created {
+    background-color: #057401;
+}
+
+.log-action-updated {
+    background-color: #9b7c00;
+}
+
+.log-action-status {
+    background-color: #404040;
+}
+
+.log-action-deleted {
+    background-color: #810101;
+}
+
+.log-action-default {
+    background-color: #404040;
+}
+
+.log-values-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.log-value-card {
+    min-width: 0;
+    display: grid;
+    gap: 6px;
+    padding: 10px;
+    border: 1px solid rgba(64, 64, 64, 0.06);
+    border-radius: 14px;
+    background-color: rgba(247, 247, 247, 0.86);
+    color: rgba(64, 64, 64, 0.82);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.35;
+}
+
+.log-value-card > strong {
+    color: #202020;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.log-empty-value {
+    color: rgba(64, 64, 64, 0.5);
+    font-style: italic;
+}
+
+.log-value-list {
+    margin: 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 3px;
+}
+
+.log-card-footer {
+    display: flex;
+    justify-content: flex-end;
+    color: rgba(64, 64, 64, 0.62);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* =========================
+   Notebook
+========================= */
+
+@media only screen and (min-width: 1025px) and (max-width: 1366px) {
+    .container:has(.log-page) {
+        height: calc(100dvh - 16px);
+        max-height: calc(100dvh - 16px);
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .log-page {
+        gap: 8px;
+        padding: 0 8px 8px;
+    }
+
+    .log-page-header h2 {
+        font-size: 30px;
+    }
+
+    .log-page-header p {
+        font-size: 12px;
+    }
+
+    .log-summary-panel,
+    .log-controls-panel,
+    .log-list-panel {
+        border-radius: 20px;
+    }
+
+    .log-summary-panel {
+        padding: 8px 9px;
+    }
+
+    .log-summary-card {
+        min-height: 43px;
+        padding: 6px 7px;
+    }
+
+    .log-summary-card strong {
+        font-size: 18px;
+    }
+
+    .log-controls-panel {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 7px;
+        padding: 7px 8px;
+    }
+
+    .log-filters {
+        grid-template-columns: minmax(170px, 1fr) 145px 122px 122px 104px;
+        gap: 7px;
+    }
+
+    .log-filters input,
+    .log-filters select,
+    .log-filters button,
+    .log-actions-toolbar button {
+        min-height: 36px;
+        padding: 7px 10px;
+        font-size: 12px;
+    }
+
+    .log-actions-toolbar {
+        gap: 7px;
+    }
+
+    .log-actions-toolbar button {
+        min-width: 94px;
+    }
+}
+
+/* =========================
+   Notebook com pouca altura
+========================= */
+
+@media only screen and (min-width: 1025px) and (max-height: 650px) {
+    .container:has(.log-page) {
+        height: calc(100dvh - 12px);
+        max-height: calc(100dvh - 12px);
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .log-page {
+        gap: 7px;
+        padding: 0 8px 8px;
+    }
+
+    .log-page-header h2 {
+        font-size: 28px;
+    }
+
+    .log-page-header p {
+        display: none;
+    }
+
+    .log-summary-panel {
+        padding: 7px 8px;
+    }
+
+    .log-summary-header h3 {
+        display: none;
+    }
+
+    .log-summary-card {
+        min-height: 36px;
+        padding: 5px 6px;
+        border-radius: 12px;
+    }
+
+    .log-summary-card strong {
+        font-size: 17px;
+    }
+
+    .log-summary-card span {
+        font-size: 10px;
+    }
+
+    .log-controls-panel {
+        gap: 6px;
+        padding: 7px 8px;
+    }
+
+    .log-filters {
+        grid-template-columns: minmax(150px, 1fr) 130px 112px 112px 96px;
+        gap: 6px;
+    }
+
+    .log-filters input,
+    .log-filters select,
+    .log-filters button,
+    .log-actions-toolbar button {
+        min-height: 34px;
+        font-size: 12px;
+    }
+
+    .log-actions-toolbar {
+        gap: 6px;
+    }
+
+    .log-actions-toolbar button {
+        min-width: 86px;
+    }
+
+    .log-list-panel {
+        padding: 10px;
+    }
+
+    .log-list-header h3 {
+        font-size: 16px;
+    }
+
+    .log-card {
+        padding: 10px;
+        border-radius: 16px;
+    }
+}
+
+/* =========================
+   Tablet e mobile
+========================= */
+
+@media only screen and (max-width: 1024px) {
+    .container:has(.log-page) {
+        height: calc(100dvh - 16px);
+        max-height: calc(100dvh - 16px);
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .log-page {
+        grid-template-rows: auto auto auto minmax(0, 1fr);
+        gap: 12px;
+        padding: 0 10px 10px;
+    }
+
+    .log-page-header {
+        display: grid;
+        gap: 8px;
+        text-align: left;
+    }
+
+    .log-page-header h2 {
+        font-size: 36px;
+    }
+
+    .log-page-header p {
+        font-size: 14px;
+    }
+
+    .log-summary-panel,
+    .log-controls-panel,
+    .log-list-panel {
+        border-radius: 22px;
+    }
+
+    .log-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .log-summary-total {
+        grid-column: 1 / -1;
+    }
+
+    .log-controls-panel {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 9px;
+    }
+
+    .log-filters {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .log-filters input[type='text'] {
+        grid-column: 1 / -1;
+    }
+
+    .log-filters button {
+        grid-column: 1 / -1;
+    }
+
+    .log-filters button:disabled {
+        display: none;
+    }
+
+    .log-filters input,
+    .log-filters select,
+    .log-filters button,
+    .log-actions-toolbar button {
+        min-height: 42px;
+        font-size: 14px;
+    }
+
+    .log-actions-toolbar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .log-actions-toolbar button {
+        min-width: 0;
+    }
+
+    .log-list-panel {
+        grid-template-rows: auto minmax(0, 1fr);
+        overflow-x: hidden;
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+
+    .log-values-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .log-card-header h3 {
+        white-space: normal;
+    }
+}
+
+/* =========================
+   Tablet específico
+========================= */
+
+@media only screen and (min-width: 769px) and (max-width: 1024px) {
+    .log-page {
+        gap: 14px;
+        padding: 0 14px 14px;
+    }
+
+    .log-page-header h2 {
+        font-size: 40px;
+    }
+
+    .log-summary-panel,
+    .log-controls-panel,
+    .log-list-panel {
+        padding: 14px;
+    }
+
+    .log-summary-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .log-summary-total {
+        grid-column: auto;
+    }
+
+    .log-filters {
+        grid-template-columns: minmax(220px, 1fr) 1fr 1fr 1fr 130px;
+    }
+
+    .log-filters input[type='text'] {
+        grid-column: auto;
+    }
+}
+
+/* =========================
+   Celular menor — 411 x 811
+========================= */
+
+@media only screen and (max-width: 480px) {
+    .container:has(.log-page) {
+        height: calc(100dvh - 16px);
+        max-height: calc(100dvh - 16px);
+        min-height: 0;
+        overflow: hidden;
+        gap: 6px;
+    }
+
+    .container:has(.log-page) .app-footer {
+        display: none;
+    }
+
+    /* .container:has(.log-page) .header {
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: center;
+        gap: 6px;
+        text-align: left;
+    } */
+
+    /* .container:has(.log-page) .header-brand {
+        width: auto;
+        padding-left: 8px;
+        margin-top: 0;
+    } */
+
+    /* .container:has(.log-page) .header-logo {
+        width: 32px;
+        height: 32px;
+    } */
+
+    /* .container:has(.log-page) .header-content {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: nowrap;
+        gap: 5px;
+        padding-right: 8px;
+        margin-top: 0;
+        margin-left: 0;
+    } */
+/* 
+    .container:has(.log-page) .main-nav {
+        width: auto;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: nowrap;
+        gap: 4px;
+        margin-top: 0;
+    } */
+
+    /* .container:has(.log-page) .nav-link {
+        min-height: 30px;
+        padding: 6px 8px;
+        font-size: 10px;
+    } */
+
+    /* .container:has(.log-page) .header-user {
+        max-width: 78px;
+        display: grid;
+        grid-template-columns: auto auto;
+        align-items: center;
+        padding: 4px;
+        gap: 4px;
+        border-radius: 999px;
+    } */
+
+    /* .container:has(.log-page) .header-user-info {
+        display: none;
+    } */
+
+    /* .container:has(.log-page) .header-user-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 10px;
+    } */
+
+    /* .container:has(.log-page) .header-logout-button {
+        min-width: 38px;
+        min-height: 28px;
+        padding: 5px 7px;
+        font-size: 10px;
+    } */
+
+    .log-page {
+        gap: 6px;
+        padding: 0 6px 6px;
+    }
+
+    .log-page-header {
+        min-height: 0;
+        gap: 3px;
+        padding: 0;
+        overflow: visible;
+    }
+
+    .log-page-header div {
+        overflow: visible;
+    }
+
+    .log-page-header h2 {
+        display: block;
+        margin: 0;
+        padding: 1px 0 2px;
+        overflow: visible;
+        font-size: 30px;
+        line-height: 1.15;
+        letter-spacing: -0.045em;
+    }
+
+    .log-page-header p {
+        display: none;
+    }
+
+    .log-summary-panel,
+    .log-controls-panel,
+    .log-list-panel {
+        border-radius: 18px;
+    }
+
+    .log-summary-panel {
+        gap: 5px;
+        padding: 7px;
+    }
+
+    .log-summary-header {
+        gap: 5px;
+    }
+
+    .log-summary-header h3 {
+        font-size: 13px;
+        line-height: 1.1;
+    }
+
+    .log-summary-header span {
+        display: none;
+    }
+
+    .log-summary-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6px;
+    }
+
+    .log-summary-total {
+        grid-column: auto;
+    }
+
+    .log-summary-card {
+        min-height: 36px;
+        padding: 5px 4px;
+        border-left-width: 4px;
+        border-radius: 12px;
+    }
+
+    .log-summary-card strong {
+        font-size: 16px;
+    }
+
+    .log-summary-card span {
+        font-size: 8px;
+        line-height: 1;
+    }
+
+    .log-controls-panel {
+        gap: 6px;
+        padding: 7px;
+    }
+
+    .log-filters {
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+    }
+
+    .log-filters input[type='text'] {
+        grid-column: 1 / -1;
+    }
+
+    .log-filters button {
+        grid-column: 1 / -1;
+    }
+
+    .log-filters button:disabled {
+        display: none;
+    }
+
+    .log-filters input,
+    .log-filters select,
+    .log-filters button,
+    .log-actions-toolbar button {
+        min-height: 34px;
+        padding: 6px 9px;
+        border-radius: 12px;
+        font-size: 12px;
+    }
+
+    .log-actions-toolbar {
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+    }
+
+    .log-list-panel {
+        gap: 6px;
+        padding: 8px;
+    }
+
+    .log-list-header h3 {
+        font-size: 15px;
+    }
+
+    .log-list-header span {
+        display: none;
+    }
+
+    .log-list {
+        gap: 7px;
+    }
+
+    .log-card {
+        gap: 8px;
+        padding: 9px;
+        border-radius: 15px;
+    }
+
+    .log-card-header {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .log-card-header h3 {
+        font-size: 14px;
+    }
+
+    .log-action-badge {
+        width: fit-content;
+        min-height: 26px;
+        padding: 5px 9px;
+        font-size: 10px;
+    }
+
+    .log-value-card {
+        padding: 8px;
+        border-radius: 13px;
+        font-size: 11px;
+    }
+
+    .log-card-footer {
+        justify-content: flex-start;
+        font-size: 10px;
+    }
+}
+
+/* =========================
+   Impressão
+========================= */
+
+@media print {
+    .log-page {
+        height: auto;
+        max-height: none;
+        display: block;
+        padding: 0;
+        overflow: visible;
+    }
+
+    .log-page-header,
+    .log-summary-panel,
+    .log-controls-panel,
+    .log-list-header {
+        display: none;
+    }
+
+    .print-report-summary {
+        display: block;
+        margin-bottom: 16px;
+    }
+
+    .print-report-summary h3 {
+        margin: 0 0 10px;
+        color: #202020;
+    }
+
+    .print-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px 14px;
+    }
+
+    .print-summary-grid p {
+        margin: 0;
+        font-size: 12px;
+    }
+
+    .log-list-panel {
+        display: block;
+        height: auto;
+        max-height: none;
+        padding: 0;
+        overflow: visible;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .log-list-scroll-area {
+        overflow: visible;
+        padding: 0;
+    }
+
+    .log-card {
+        page-break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #cccccc;
+        background: #ffffff;
+    }
+}

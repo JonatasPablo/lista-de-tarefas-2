@@ -1,7 +1,7 @@
 export const APP_NAME = 'Lista de Tarefas'
 export const APP_DEVELOPER = 'Jonatas Pablo'
 export const DEVELOPER_EMAIL = 'jonathaspabllo@gmail.com'
-export const APP_VERSION = '2.0.18'
+export const APP_VERSION = '2.0.19'
 
 /*
 Regras da versão:
