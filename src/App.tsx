@@ -19,6 +19,7 @@ import {
     getFileNameWithoutExtension,
 } from './utils/file'
 import { ConfirmEmailPage } from './pages/ConfirmEmailPage/ConfirmEmailPage'
+import { ScreenSizeDebug } from './components/ScreenSizeDebug'
 
 import { Header } from './components/Header/Header'
 import { CompletedTasksPage } from './pages/CompletedTasksPage/CompletedTasksPage'
@@ -733,163 +734,173 @@ function AppContent() {
         }
     }, [showToast, user])
 
-    return (
-        <main className="container">
-            <Header user={user} onLogout={handleLogout} />
+        return (
+        <>
+            <ScreenSizeDebug />
 
-            {isCheckingAuth ? (
-                <p className="empty-message">Validando sessão...</p>
-            ) : (
-                <Routes>
-                    <Route
-                        path="/login"
-                        element={
-                            user ? (
-                                <Navigate to="/" replace />
-                            ) : (
-                                <LoginPage onLogin={handleLogin} />
-                            )
-                        }
-                    />
+            <main className="container">
+                <Header user={user} onLogout={handleLogout} />
 
-                    <Route
-                        path="/cadastro"
-                        element={
-                            user ? (
-                                <Navigate to="/" replace />
-                            ) : (
-                                <RegisterPage onRegister={handleRegister} />
-                            )
-                        }
-                    />
-
-                    <Route
-                        path="/confirmar-email"
-                        element={
-                            user ? (
-                                <Navigate to="/" replace />
-                            ) : (
-                                <ConfirmEmailPage
-                                    onConfirmEmail={handleConfirmEmail}
-                                    onResendConfirmation={handleResendConfirmation}
-                                    onCheckEmailConfirmationStatus={
-                                        handleCheckEmailConfirmationStatus
-                                    }
-                                />
-                            )
-                        }
-                    />
-
-                    <Route path="/ajuda" element={<HelpPage />} />
-
-                    <Route
-                        path="/"
-                        element={
-                            user ? (
-                                isLoadingTasks ? (
-                                    <p className="empty-message">
-                                        Carregando tarefas...
-                                    </p>
+                {isCheckingAuth ? (
+                    <p className="empty-message">Validando sessão...</p>
+                ) : (
+                    <Routes>
+                        <Route
+                            path="/login"
+                            element={
+                                user ? (
+                                    <Navigate to="/" replace />
                                 ) : (
-                                    <TasksPage
-                                        onRequestRenameFile={
-                                            requestRenameTaskFile
+                                    <LoginPage onLogin={handleLogin} />
+                                )
+                            }
+                        />
+
+                        <Route
+                            path="/cadastro"
+                            element={
+                                user ? (
+                                    <Navigate to="/" replace />
+                                ) : (
+                                    <RegisterPage onRegister={handleRegister} />
+                                )
+                            }
+                        />
+
+                        <Route
+                            path="/confirmar-email"
+                            element={
+                                user ? (
+                                    <Navigate to="/" replace />
+                                ) : (
+                                    <ConfirmEmailPage
+                                        onConfirmEmail={handleConfirmEmail}
+                                        onResendConfirmation={
+                                            handleResendConfirmation
                                         }
-                                        pendingTasks={pendingTasks}
-                                        selectedTaskIds={selectedTaskIds}
-                                        onSelectTask={selectTaskForExport}
-                                        onSelectAllVisibleTasks={
-                                            selectAllVisibleTasks
+                                        onCheckEmailConfirmationStatus={
+                                            handleCheckEmailConfirmationStatus
                                         }
-                                        onClearSelectedTasks={
-                                            clearSelectedTasks
-                                        }
-                                        onAddTask={addTask}
-                                        onToggleTask={toggleTask}
-                                        onDeleteTask={deleteTask}
-                                        onUpdateTask={updateTask}
-                                        onAddFiles={addFilesToTask}
-                                        onRenameFile={renameTaskFile}
-                                        onDeleteFile={deleteTaskFile}
-                                        onExportTasks={exportTasks}
-                                        onConfirm={confirm}
                                     />
                                 )
-                            ) : (
-                                <Navigate to="/login" replace />
-                            )
-                        }
-                    />
+                            }
+                        />
 
-                    <Route
-                        path="/historico"
-                        element={
-                            user ? (
-                                isLoadingTasks ? (
-                                    <p className="empty-message">
-                                        Carregando tarefas...
-                                    </p>
+                        <Route path="/ajuda" element={<HelpPage />} />
+
+                        <Route
+                            path="/"
+                            element={
+                                user ? (
+                                    isLoadingTasks ? (
+                                        <p className="empty-message">
+                                            Carregando tarefas...
+                                        </p>
+                                    ) : (
+                                        <TasksPage
+                                            onRequestRenameFile={
+                                                requestRenameTaskFile
+                                            }
+                                            pendingTasks={pendingTasks}
+                                            selectedTaskIds={selectedTaskIds}
+                                            onSelectTask={selectTaskForExport}
+                                            onSelectAllVisibleTasks={
+                                                selectAllVisibleTasks
+                                            }
+                                            onClearSelectedTasks={
+                                                clearSelectedTasks
+                                            }
+                                            onAddTask={addTask}
+                                            onToggleTask={toggleTask}
+                                            onDeleteTask={deleteTask}
+                                            onUpdateTask={updateTask}
+                                            onAddFiles={addFilesToTask}
+                                            onRenameFile={renameTaskFile}
+                                            onDeleteFile={deleteTaskFile}
+                                            onExportTasks={exportTasks}
+                                            onConfirm={confirm}
+                                        />
+                                    )
                                 ) : (
-                                    <CompletedTasksPage
-                                        onRequestRenameFile={
-                                            requestRenameTaskFile
-                                        }
-                                        completedTasks={completedTasks}
-                                        onToggleTask={toggleTask}
-                                        onDeleteTask={deleteTask}
-                                        onUpdateTask={updateTask}
-                                        onAddFiles={addFilesToTask}
-                                        onRenameFile={renameTaskFile}
-                                        onDeleteFile={deleteTaskFile}
-                                    />
+                                    <Navigate to="/login" replace />
                                 )
-                            ) : (
-                                <Navigate to="/login" replace />
-                            )
-                        }
-                    />
+                            }
+                        />
 
-                    <Route
-                        path="/log"
-                        element={
-                            user ? (
-                                <LogPage />
-                            ) : (
-                                <Navigate to="/login" replace />
-                            )
-                        }
-                    />
+                        <Route
+                            path="/historico"
+                            element={
+                                user ? (
+                                    isLoadingTasks ? (
+                                        <p className="empty-message">
+                                            Carregando tarefas...
+                                        </p>
+                                    ) : (
+                                        <CompletedTasksPage
+                                            onRequestRenameFile={
+                                                requestRenameTaskFile
+                                            }
+                                            completedTasks={completedTasks}
+                                            onToggleTask={toggleTask}
+                                            onDeleteTask={deleteTask}
+                                            onUpdateTask={updateTask}
+                                            onAddFiles={addFilesToTask}
+                                            onRenameFile={renameTaskFile}
+                                            onDeleteFile={deleteTaskFile}
+                                        />
+                                    )
+                                ) : (
+                                    <Navigate to="/login" replace />
+                                )
+                            }
+                        />
 
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-            )}
+                        <Route
+                            path="/log"
+                            element={
+                                user ? (
+                                    <LogPage />
+                                ) : (
+                                    <Navigate to="/login" replace />
+                                )
+                            }
+                        />
 
-            <Footer />
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                )}
 
-            <Toast messages={toasts} onRemoveToast={removeToast} />
+                <Footer />
 
-            <ConfirmModal
-                isOpen={confirmState.isOpen}
-                title={confirmState.title}
-                message={confirmState.message}
-                confirmText={confirmState.confirmText}
-                cancelText={confirmState.cancelText}
-                onConfirm={handleConfirm}
-                onCancel={handleCancel}
-            />
+                <Toast messages={toasts} onRemoveToast={removeToast} />
 
-            <PromptModal
-                key={promptState.isOpen ? promptState.initialValue : 'closed'}
-                isOpen={promptState.isOpen}
-                title={promptState.title}
-                message={promptState.message}
-                initialValue={promptState.initialValue}
-                confirmText={promptState.confirmText}
-                cancelText={promptState.cancelText}
-                onConfirm={handlePromptConfirm}
-                onCancel={handlePromptCancel}
-            />
-        </main>
+                <ConfirmModal
+                    isOpen={confirmState.isOpen}
+                    title={confirmState.title}
+                    message={confirmState.message}
+                    confirmText={confirmState.confirmText}
+                    cancelText={confirmState.cancelText}
+                    onConfirm={handleConfirm}
+                    onCancel={handleCancel}
+                />
+
+                <PromptModal
+                    key={
+                        promptState.isOpen
+                            ? promptState.initialValue
+                            : 'closed'
+                    }
+                    isOpen={promptState.isOpen}
+                    title={promptState.title}
+                    message={promptState.message}
+                    initialValue={promptState.initialValue}
+                    confirmText={promptState.confirmText}
+                    cancelText={promptState.cancelText}
+                    onConfirm={handlePromptConfirm}
+                    onCancel={handlePromptCancel}
+                />
+            </main>
+        </>
     )
 }
 
