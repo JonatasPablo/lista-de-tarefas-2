@@ -117,6 +117,12 @@ export const ConfirmEmailPage = ({
             )
 
             goToLoginAfterConfirmation()
+        } catch {
+            /*
+                O App.tsx já mostra o toast de erro.
+                Aqui apenas impedimos que a tela siga para o login
+                quando o código for inválido ou a confirmação falhar.
+            */
         } finally {
             setIsSubmitting(false)
         }

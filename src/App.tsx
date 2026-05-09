@@ -34,6 +34,24 @@ import { taskFilesApi } from './services/taskFilesApi'
 import { authApi, type AuthUser } from './services/authApi'
 import './styles/global.css'
 
+const APP_VERSION_STORAGE_KEY = 'lista_tarefas_app_version'
+
+const clearPwaCacheForNewVersion = async () => {
+    if ('caches' in window) {
+        const cacheNames = await caches.keys()
+
+        await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)))
+    }
+
+    if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations()
+
+        await Promise.all(
+            registrations.map((registration) => registration.update())
+        )
+    }
+}
+
 function AppContent() {
     const navigate = useNavigate()
 
@@ -141,8 +159,6 @@ function AppContent() {
                 response.message ||
                     'E-mail confirmado com sucesso. Agora você já pode entrar.'
             )
-
-            navigate('/login')
         } catch (error) {
             console.error('Erro ao confirmar e-mail:', error)
 
@@ -152,6 +168,8 @@ function AppContent() {
                     : 'Não foi possível confirmar o e-mail.'
 
             showToast('error', message)
+
+            throw error
         }
     }
 
@@ -617,6 +635,32 @@ function AppContent() {
 
     useEffect(() => {
         document.title = `${APP_NAME} v${APP_VERSION}`
+    }, [])
+
+    useEffect(() => {
+        const storedVersion = localStorage.getItem(APP_VERSION_STORAGE_KEY)
+
+        if (!storedVersion) {
+            localStorage.setItem(APP_VERSION_STORAGE_KEY, APP_VERSION)
+            return
+        }
+
+        if (storedVersion === APP_VERSION) {
+            return
+        }
+
+        const refreshAppVersion = async () => {
+            try {
+                await clearPwaCacheForNewVersion()
+            } catch (error) {
+                console.error('Erro ao atualizar cache do PWA:', error)
+            } finally {
+                localStorage.setItem(APP_VERSION_STORAGE_KEY, APP_VERSION)
+                window.location.reload()
+            }
+        }
+
+        refreshAppVersion()
     }, [])
 
     useEffect(() => {
