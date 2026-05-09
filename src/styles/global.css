@@ -1,6 +1,6 @@
 /* =========================
    Global base — Lista de Tarefas
-   Versão 2.0.8
+   Versão 2.0.11
 ========================= */
 
 * {
@@ -108,7 +108,7 @@ a {
 .header h1 {
     margin: 0;
     color: #404040;
-    font-size: clamp(38px, 4.6vw, 38px);
+    font-size: 38px;
     line-height: 1;
     letter-spacing: -0.045em;
     white-space: nowrap;
@@ -237,7 +237,6 @@ a {
     transform: translateY(-1px);
 }
 
-
 /* =========================
    Footer global
 ========================= */
@@ -251,7 +250,6 @@ a {
     padding: 1px 14px;
     display: grid;
     place-items: center;
-    /* gap: 0px; */
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 15px;
     background:
@@ -457,216 +455,241 @@ a {
 }
 
 /* =========================
-   Responsivo global
+   Desktop grande
 ========================= */
 
-@media only screen and (max-width: 980px) {
+@media only screen and (min-width: 1367px) {
+    .container {
+        width: min(1100px, 95%);
+    }
+}
+
+/* =========================
+   Notebook
+========================= */
+
+@media only screen and (min-width: 1025px) and (max-width: 1366px) {
+    .container {
+        width: min(1040px, 95%);
+        min-height: calc(100dvh - 16px);
+        margin: 8px auto;
+        gap: 10px;
+    }
+
+    .header h1 {
+        font-size: 36px;
+    }
+
+    .nav-link {
+        min-height: 31px;
+        padding: 7px 11px;
+        font-size: 12px;
+    }
+
+    .app-footer {
+        margin-bottom: 8px;
+        padding: 2px 12px;
+        font-size: 11px;
+    }
+}
+
+/* =========================
+   Notebook com pouca altura
+========================= */
+
+@media only screen and (min-width: 1025px) and (max-height: 650px) {
+    .container {
+        min-height: calc(100dvh - 12px);
+        margin: 6px auto;
+        gap: 8px;
+    }
+
+    .header {
+        margin-top: 2px;
+    }
+
+    .header h1 {
+        font-size: 34px;
+    }
+
+    .nav-link {
+        min-height: 30px;
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .app-footer {
+        margin-bottom: 6px;
+        padding: 1px 10px;
+        font-size: 10px;
+        line-height: 1.2;
+    }
+}
+
+/* =========================
+   Tablet e mobile
+========================= */
+
+@media only screen and (max-width: 1024px) {
     .container {
         width: min(760px, 96%);
         min-height: calc(100dvh - 16px);
         margin: 8px auto;
+        gap: 12px;
     }
 
     .header {
-        grid-template-columns: 1fr auto;
-        align-items: start;
+        grid-template-columns: 1fr;
+        align-items: center;
+        justify-items: center;
         gap: 10px;
+        text-align: center;
+    }
+
+    .header-brand {
+        width: 100%;
+        padding-left: 0;
+        margin-top: 0;
     }
 
     .header h1 {
-        white-space: nowrap;
+        width: 100%;
+        margin: 0;
+        font-size: clamp(34px, 8vw, 46px);
+        line-height: 0.95;
+        letter-spacing: -0.055em;
+        white-space: normal;
+        text-align: center;
     }
 
     .header-content {
-        width: auto;
+        width: 100%;
         display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        justify-content: flex-end;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding-right: 0;
+        margin-top: 0;
+        margin-left: 0;
+    }
+
+    .main-nav {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
         gap: 8px;
     }
 
+    .nav-link {
+        min-height: 34px;
+        padding: 7px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 800;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .nav-link.active {
+        box-shadow: 0 10px 18px rgba(0, 0, 0, 0.16);
+    }
+
     .header-user {
-        width: min(360px, 100%);
+        width: min(420px, 100%);
         max-width: 100%;
         border-radius: 18px;
     }
 
-    .main-nav {
-        justify-content: flex-end;
-        flex-wrap: nowrap;
+    .app-footer {
+        width: calc(100% - 20px);
+        margin: 0 auto calc(12px + env(safe-area-inset-bottom, 0px));
+        padding: 8px 10px;
+        display: grid;
+        place-items: center;
+        gap: 3px;
+        border-radius: 14px;
+        text-align: center;
+        font-size: 11px;
+        line-height: 1.25;
+        background-color: rgba(255, 255, 255, 0.42);
+        backdrop-filter: blur(4px);
+    }
+
+    .app-footer p,
+    .app-footer span {
+        width: 100%;
+        margin: 0;
+    }
+
+    .app-footer a,
+    .app-footer strong {
+        font-weight: 800;
     }
 }
 
-/* @media only screen and (max-width: 600px) {
-    .header {
-        grid-template-columns: 1fr;
-        align-items: center;
-        justify-items: center;
-        gap: 10px;
-        /* padding: 18px 18px 0; *//*
-        text-align: center;
-    }
+/* =========================
+   Tablet específico
+========================= */
 
-    .header-brand {
-        width: 100%;
-        padding-left: 0;
-        margin-top: 0;
+@media only screen and (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        width: min(760px, 96%);
     }
 
     .header h1 {
-        width: 100%;
-        margin: 0;
-        font-size: clamp(34px, 10vw, 46px);
-        line-height: 0.95;
-        letter-spacing: -0.055em;
-        white-space: normal;
-        text-align: center;
-    }
-
-    .header-content {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding-right: 0;
-        margin-top: 0;
-        margin-left: 0;
-    }
-
-    .main-nav {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
+        font-size: 46px;
     }
 
     .nav-link {
-        min-height: 34px;
-        padding: 7px 14px;
-        border-radius: 999px;
-        font-size: 13px;
-        font-weight: 800;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
-    }
-
-    .nav-link.active {
-        box-shadow: 0 10px 18px rgba(0, 0, 0, 0.16);
+        min-height: 36px;
+        padding: 8px 16px;
+        font-size: 14px;
     }
 
     .app-footer {
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 3px;
-        margin: 0 10px calc(12px + env(safe-area-inset-bottom, 0px));
-        padding: 8px 10px;
-        border-radius: 14px;
-        text-align: center;
-        font-size: 11px;
-        line-height: 1.25;
-        background-color: rgba(255, 255, 255, 0.42);
-        backdrop-filter: blur(4px);
+        font-size: 12px;
     }
+}
 
-    .app-footer p,
-    .app-footer span {
-        width: 100%;
-        margin: 0;
-    }
+/* =========================
+   Celular
+========================= */
 
-    .app-footer a,
-    .app-footer strong {
-        font-weight: 800;
-    }
-} */
-
-/* 09/05/2026 - 11:43:30 */
 @media only screen and (max-width: 768px) {
-    .header {
-        grid-template-columns: 1fr;
-        align-items: center;
-        justify-items: center;
-        gap: 10px;
-        text-align: center;
-    }
-
-    .header-brand {
-        width: 100%;
-        padding-left: 0;
-        margin-top: 0;
+    .container {
+        width: 96%;
     }
 
     .header h1 {
-        width: 100%;
-        margin: 0;
         font-size: clamp(34px, 10vw, 46px);
-        line-height: 0.95;
-        letter-spacing: -0.055em;
-        white-space: normal;
-        text-align: center;
+    }
+}
+
+/* =========================
+   Celular menor
+========================= */
+
+@media only screen and (max-width: 480px) {
+    .container {
+        width: 96%;
+        border-radius: 22px;
     }
 
-    .header-content {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding-right: 0;
-        margin-top: 0;
-        margin-left: 0;
-    }
-
-    .main-nav {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
+    .header h1 {
+        font-size: clamp(32px, 10vw, 42px);
     }
 
     .nav-link {
         min-height: 34px;
-        padding: 7px 14px;
-        border-radius: 999px;
+        padding: 7px 13px;
         font-size: 13px;
-        font-weight: 800;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
     }
 
-    .nav-link.active {
-        box-shadow: 0 10px 18px rgba(0, 0, 0, 0.16);
-    }
-
-    .app-footer {
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 3px;
-        margin: 0 10px calc(12px + env(safe-area-inset-bottom, 0px));
-        padding: 8px 10px;
-        border-radius: 14px;
-        text-align: center;
-        font-size: 11px;
-        line-height: 1.25;
-        background-color: rgba(255, 255, 255, 0.42);
-        backdrop-filter: blur(4px);
-    }
-
-    .app-footer p,
-    .app-footer span {
-        width: 100%;
-        margin: 0;
-    }
-
-    .app-footer a,
-    .app-footer strong {
-        font-weight: 800;
+    .toast-container {
+        right: 10px;
+        bottom: 10px;
+        width: calc(100% - 20px);
     }
 }
 
