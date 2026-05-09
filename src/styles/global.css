@@ -98,18 +98,20 @@ a {
 }
 
 /* =========================
-   Container específico — TasksPage
-   Trava a tela para somente a lista de tarefas rolar
+   Container específico — páginas internas com scroll próprio
+   Trava a tela para somente o painel principal rolar
 ========================= */
 
-.container:has(.tasks-page) {
+.container:has(.tasks-page),
+.container:has(.completed-tasks-page) {
     height: 100dvh;
     max-height: 100dvh;
     min-height: 0;
     overflow: hidden;
 }
 
-.container:has(.tasks-page) .tasks-page {
+.container:has(.tasks-page) .tasks-page,
+.container:has(.completed-tasks-page) .completed-tasks-page {
     min-height: 0;
 }
 
@@ -546,7 +548,8 @@ a {
         gap: 10px;
     }
 
-    .container:has(.tasks-page) {
+    .container:has(.tasks-page),
+    .container:has(.completed-tasks-page) {
         height: calc(100dvh - 16px);
         max-height: calc(100dvh - 16px);
         min-height: 0;
@@ -626,7 +629,8 @@ a {
         gap: 8px;
     }
 
-    .container:has(.tasks-page) {
+    .container:has(.tasks-page),
+    .container:has(.completed-tasks-page) {
         height: calc(100dvh - 12px);
         max-height: calc(100dvh - 12px);
         min-height: 0;
@@ -710,7 +714,8 @@ a {
         gap: 12px;
     }
 
-    .container:has(.tasks-page) {
+    .container:has(.tasks-page),
+    .container:has(.completed-tasks-page) {
         height: calc(100dvh - 16px);
         max-height: calc(100dvh - 16px);
         min-height: 0;
@@ -928,7 +933,8 @@ a {
         border-radius: 22px;
     }
 
-    .container:has(.tasks-page) {
+    .container:has(.tasks-page),
+    .container:has(.completed-tasks-page) {
         height: calc(100dvh - 16px);
         max-height: calc(100dvh - 16px);
         min-height: 0;
@@ -936,56 +942,67 @@ a {
         gap: 6px;
     }
 
-    .container:has(.tasks-page) .app-footer {
+    .container:has(.tasks-page) .app-footer,
+    .container:has(.completed-tasks-page) .app-footer {
         display: none;
     }
 
-    .container:has(.tasks-page) .header {
+    .container:has(.tasks-page) .header,
+    .container:has(.completed-tasks-page) .header {
         gap: 5px;
     }
 
-    .container:has(.tasks-page) .header-content {
+    .container:has(.tasks-page) .header-content,
+    .container:has(.completed-tasks-page) .header-content {
         gap: 5px;
         padding-right: 6px;
     }
 
-    .container:has(.tasks-page) .header-brand {
+    .container:has(.tasks-page) .header-brand,
+    .container:has(.completed-tasks-page) .header-brand {
         padding-left: 6px;
     }
 
-    .container:has(.tasks-page) .header-logo {
+    .container:has(.tasks-page) .header-logo,
+    .container:has(.completed-tasks-page) .header-logo {
         width: 30px;
         height: 30px;
     }
 
-    .container:has(.tasks-page) .main-nav {
+    .container:has(.tasks-page) .main-nav,
+    .container:has(.completed-tasks-page) .main-nav {
         gap: 4px;
     }
 
-    .container:has(.tasks-page) .nav-link {
+    .container:has(.tasks-page) .nav-link,
+    .container:has(.completed-tasks-page) .nav-link {
         min-height: 28px;
         padding: 5px 8px;
         font-size: 10px;
     }
 
-    .container:has(.tasks-page) .header-user {
+    .container:has(.tasks-page) .header-user,
+    .container:has(.completed-tasks-page) .header-user {
         max-width: 78px;
         grid-template-columns: auto auto;
         padding: 4px;
         gap: 4px;
     }
 
-    .container:has(.tasks-page) .header-user-info {
+    .container:has(.tasks-page) .header-user-info,
+    .container:has(.completed-tasks-page) .header-user-info {
         display: none;
     }
 
-    .container:has(.tasks-page) .header-user-avatar {
+    .container:has(.tasks-page) .header-user-avatar,
+    .container:has(.completed-tasks-page) .header-user-avatar {
         width: 27px;
         height: 27px;
         font-size: 10px;
     }
 
-    .container:has(.tasks-page) .header-logout-button {
+    .container:has(.tasks-page) .header-logout-button,
+    .container:has(.completed-tasks-page) .header-logout-button {
         min-width: 38px;
         min-height: 27px;
         padding: 5px 7px;

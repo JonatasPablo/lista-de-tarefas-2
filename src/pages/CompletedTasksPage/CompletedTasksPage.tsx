@@ -9,6 +9,8 @@ import { TaskStats } from '../../components/TaskStats/TaskStats'
 import type { Task, TaskFile, TaskPriority } from '../../types/task'
 import { filterTasks, sortTasks } from '../../utils/tasks'
 
+import './CompletedTasksPage.css'
+
 interface CompletedTasksPageProps {
     completedTasks: Task[]
     onToggleTask: (taskId: string) => void | Promise<void>
@@ -45,11 +47,20 @@ export const CompletedTasksPage = ({
     const [sortOption, setSortOption] =
         useState<TaskSortOption>('mais-recentes')
 
+    const statsTasks = useMemo(() => {
+        return filterTasks(completedTasks, searchTerm, 'todas')
+    }, [completedTasks, searchTerm])
+
     const filteredTasks = useMemo(() => {
         const filtered = filterTasks(completedTasks, searchTerm, priorityFilter)
 
         return sortTasks(filtered, sortOption)
     }, [completedTasks, priorityFilter, searchTerm, sortOption])
+
+    const hasActiveFilters =
+        searchTerm.trim() !== '' ||
+        priorityFilter !== 'todas' ||
+        sortOption !== 'mais-recentes'
 
     const handleClearFilters = () => {
         setSearchTerm('')
@@ -57,24 +68,67 @@ export const CompletedTasksPage = ({
         setSortOption('mais-recentes')
     }
 
+    const handleSearchChange = (value: string) => {
+        setSearchTerm(value)
+    }
+
+    const handlePriorityChange = (value: PriorityFilter) => {
+        setPriorityFilter(value)
+    }
+
+    const handleSortChange = (value: TaskSortOption) => {
+        setSortOption(value)
+    }
+
+    const handleStatsFilterChange = (value: PriorityFilter) => {
+        setPriorityFilter(value)
+    }
+
     return (
-        <section className="page-section completed-page-section">
-            <TaskStats tasks={filteredTasks} title="Resumo do histórico" />
+        <section className="completed-tasks-page">
+            <header className="completed-tasks-page-header">
+                <div>
+                    <h2>Histórico</h2>
+                    <p>
+                        Consulte tarefas concluídas, filtre por prioridade e
+                        reabra quando precisar.
+                    </p>
+                </div>
+            </header>
 
-            <TaskFilters
-                searchTerm={searchTerm}
-                priorityFilter={priorityFilter}
-                sortOption={sortOption}
-                onSearchChange={setSearchTerm}
-                onPriorityChange={setPriorityFilter}
-                onSortChange={setSortOption}
-                onClearFilters={handleClearFilters}
-            />
+            <section className="completed-tasks-stats-panel">
+                <TaskStats
+                    tasks={statsTasks}
+                    title="Resumo do histórico"
+                    activeFilter={priorityFilter}
+                    onFilterChange={handleStatsFilterChange}
+                />
+            </section>
 
-            <section className="tasks-section">
-                <h2>Histórico de concluídas</h2>
+            <section className="completed-tasks-controls-panel">
+                <TaskFilters
+                    searchTerm={searchTerm}
+                    priorityFilter={priorityFilter}
+                    sortOption={sortOption}
+                    onSearchChange={handleSearchChange}
+                    onPriorityChange={handlePriorityChange}
+                    onSortChange={handleSortChange}
+                    onClearFilters={handleClearFilters}
+                />
 
-                <div className="tasks-scroll-area">
+                {hasActiveFilters && (
+                    <span className="completed-tasks-filter-status">
+                        Filtros aplicados
+                    </span>
+                )}
+            </section>
+
+            <section className="completed-tasks-list-panel">
+                <div className="completed-tasks-list-header">
+                    <h3>Tarefas concluídas</h3>
+                </div>
+
+                <div className="completed-tasks-scroll-area">
                     <TaskList
                         onRequestRenameFile={onRequestRenameFile}
                         tasks={filteredTasks}
