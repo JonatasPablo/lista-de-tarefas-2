@@ -421,8 +421,7 @@ export function LogPage() {
                 <div>
                     <h2>Log de tarefas</h2>
                     <p>
-                        Acompanhe as alterações realizadas nas tarefas do
-                        usuário.
+                        Acompanhe as alterações realizadas nas tarefas.
                     </p>
                 </div>
 

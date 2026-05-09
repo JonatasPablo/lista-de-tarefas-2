@@ -71,11 +71,9 @@ export const HelpPage = () => {
             </div>
 
             <div className="help-card">
-                <h3>Arquivos reais e backend</h3>
+                <h3>Anexos de arquivos</h3>
                 <p>
-                    Nesta etapa, o sistema salva apenas informações dos arquivos.
-                    Quando o backend estiver pronto, os arquivos serão salvos no
-                    MySQL e poderão ser baixados em outro computador.
+                    O sistema vai salvar seus arquivos e você vai conseguir baixar em outros dispositivos.
                 </p>
             </div>
 
