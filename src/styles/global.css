@@ -4820,3 +4820,44 @@ button,
     border-color: rgba(161, 98, 7, 0.22);
     background: rgba(254, 249, 195, 0.65);
 }
+
+/* =========================
+   Correção footer mobile/PWA
+========================= */
+
+html,
+body,
+#root {
+    min-height: 100%;
+    height: auto;
+}
+
+body {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.container {
+    min-height: 100svh;
+    height: auto;
+    padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+    overflow-x: hidden;
+    overflow-y: visible;
+}
+
+.footer {
+    margin-top: 32px;
+    margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media only screen and (max-width: 768px) {
+    .container {
+        min-height: 100svh;
+        padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .footer {
+        margin-top: 36px;
+        margin-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    }
+}
