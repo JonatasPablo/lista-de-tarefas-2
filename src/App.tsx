@@ -77,6 +77,18 @@ function AppContent() {
                     : 'Não foi possível fazer login.'
 
             showToast('error', message)
+
+            const shouldRedirectToEmailConfirmation = message
+                .toLowerCase()
+                .includes('confirme seu e-mail')
+
+            if (shouldRedirectToEmailConfirmation) {
+                navigate('/confirmar-email', {
+                    state: {
+                        email,
+                    },
+                })
+            }
         }
     }
 
