@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type SyntheticEvent } from 'react'
 import type { TaskPriority } from '../../types/task'
 
 interface TaskFormProps {
@@ -14,15 +14,19 @@ export const TaskForm = ({ onAddTask }: TaskFormProps) => {
     const [description, setDescription] = useState('')
     const [priority, setPriority] = useState<TaskPriority>('alta')
 
-    const handleSubmit = (event: React.FormEvent) => {
+    const normalizedTitle = title.trim()
+    const normalizedDescription = description.trim()
+    const canSubmit = normalizedTitle.length > 0
+
+    const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        if (!title.trim()) {
+        if (!canSubmit) {
             alert('O título da tarefa não pode ficar vazio.')
             return
         }
 
-        onAddTask(title, description, priority)
+        onAddTask(normalizedTitle, normalizedDescription, priority)
 
         setTitle('')
         setDescription('')
@@ -31,38 +35,46 @@ export const TaskForm = ({ onAddTask }: TaskFormProps) => {
 
     return (
         <form className="task-form" onSubmit={handleSubmit}>
-            <label htmlFor="taskTitle">Título da tarefa:</label>
+            <label htmlFor="task-form-title">Título da tarefa</label>
 
             <input
-                id="taskTitle"
+                id="task-form-title"
                 type="text"
                 placeholder="Ex: Ajustar relatório de vendas"
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
+                maxLength={120}
+                autoComplete="off"
             />
 
-            <label htmlFor="taskDescription">Descrição:</label>
+            <label htmlFor="task-form-description">Descrição</label>
 
             <textarea
-                id="taskDescription"
+                id="task-form-description"
                 placeholder="Detalhes da tarefa..."
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 rows={3}
+                maxLength={600}
             />
 
+            <label htmlFor="task-form-priority">Prioridade</label>
+
             <select
+                id="task-form-priority"
                 value={priority}
                 onChange={(event) =>
                     setPriority(event.target.value as TaskPriority)
                 }
             >
-                <option value="alta">Alta Prioridade</option>
-                <option value="media">Média Prioridade</option>
-                <option value="baixa">Baixa Prioridade</option>
+                <option value="alta">Alta prioridade</option>
+                <option value="media">Média prioridade</option>
+                <option value="baixa">Baixa prioridade</option>
             </select>
 
-            <button type="submit">Adicionar</button>
+            <button type="submit" disabled={!canSubmit}>
+                Adicionar
+            </button>
         </form>
     )
 }

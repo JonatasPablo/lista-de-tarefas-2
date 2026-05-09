@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { TaskFilters } from '../../components/TaskFilters/TaskFilters'
 import type {
     PriorityFilter,
@@ -9,6 +9,8 @@ import { TaskList } from '../../components/TaskList/TaskList'
 import { TaskStats } from '../../components/TaskStats/TaskStats'
 import type { Task, TaskFile, TaskPriority } from '../../types/task'
 import { filterTasks, sortTasks } from '../../utils/tasks'
+
+import './TasksPage.css'
 
 interface TasksPageProps {
     pendingTasks: Task[]
@@ -25,8 +27,8 @@ interface TasksPageProps {
     onDeleteTask: (taskId: string) => void | Promise<void>
     onUpdateTask: (
         taskId: string,
-        title: string,
         description: string,
+        title: string,
         priority: TaskPriority
     ) => void
     onAddFiles: (taskId: string, files: File[]) => void
@@ -44,25 +46,6 @@ interface TasksPageProps {
         cancelText?: string
     }) => Promise<boolean>
     onRequestRenameFile: (taskId: string, file: TaskFile) => void
-}
-
-const collapsibleFormQuery =
-    '(max-height: 850px) and (min-width: 901px), (max-width: 700px)'
-
-const isCollapsibleFormScreen = () => {
-    if (typeof window === 'undefined') {
-        return false
-    }
-
-    return window.matchMedia(collapsibleFormQuery).matches
-}
-
-const getInitialFormVisibility = () => {
-    if (typeof window === 'undefined') {
-        return true
-    }
-
-    return !window.matchMedia(collapsibleFormQuery).matches
 }
 
 export const TasksPage = ({
@@ -87,25 +70,11 @@ export const TasksPage = ({
         useState<PriorityFilter>('todas')
     const [sortOption, setSortOption] =
         useState<TaskSortOption>('Filtros')
-    const [isTaskFormVisible, setIsTaskFormVisible] = useState(
-        getInitialFormVisibility
-    )
+    const [isTaskFormVisible, setIsTaskFormVisible] = useState(false)
 
-    useEffect(() => {
-        const mediaQuery = window.matchMedia(collapsibleFormQuery)
-
-        const handleScreenChange = () => {
-            setIsTaskFormVisible(!mediaQuery.matches)
-        }
-
-        handleScreenChange()
-
-        mediaQuery.addEventListener('change', handleScreenChange)
-
-        return () => {
-            mediaQuery.removeEventListener('change', handleScreenChange)
-        }
-    }, [])
+    const statsTasks = useMemo(() => {
+        return filterTasks(pendingTasks, searchTerm, 'todas')
+    }, [pendingTasks, searchTerm])
 
     const filteredTasks = useMemo(() => {
         const filtered = filterTasks(pendingTasks, searchTerm, priorityFilter)
@@ -132,10 +101,7 @@ export const TasksPage = ({
         priority: TaskPriority
     ) => {
         onAddTask(title, description, priority)
-
-        if (isCollapsibleFormScreen()) {
-            setIsTaskFormVisible(false)
-        }
+        setIsTaskFormVisible(false)
     }
 
     const handleClearFilters = () => {
@@ -181,16 +147,31 @@ export const TasksPage = ({
         onClearSelectedTasks()
     }
 
+    const handleStatsFilterChange = (value: PriorityFilter) => {
+        setPriorityFilter(value)
+        onClearSelectedTasks()
+    }
+
     return (
-        <section className="page-section">
-            <div
-                className={`task-form-panel ${
+        <section className="tasks-page">
+            <header className="tasks-page-header">
+                <div>
+                    <h2>Tarefas pendentes</h2>
+                    <p>
+                        Organize, filtre, anexe arquivos e acompanhe suas
+                        tarefas em andamento.
+                    </p>
+                </div>
+            </header>
+
+            <section
+                className={`tasks-form-panel ${
                     isTaskFormVisible ? 'is-open' : 'is-closed'
                 }`}
             >
                 <button
                     type="button"
-                    className="new-task-toggle"
+                    className="tasks-new-task-toggle"
                     onClick={handleToggleTaskForm}
                     aria-expanded={isTaskFormVisible}
                 >
@@ -198,59 +179,79 @@ export const TasksPage = ({
                 </button>
 
                 {isTaskFormVisible && (
-                    <TaskForm onAddTask={handleAddTask} />
+                    <div className="tasks-form-content">
+                        <TaskForm onAddTask={handleAddTask} />
+                    </div>
                 )}
-            </div>
+            </section>
 
-            <TaskStats
-                tasks={filteredTasks}
-                title="Resumo das tarefas pendentes"
-            />
+            <section className="tasks-stats-panel">
+                <TaskStats
+                    tasks={statsTasks}
+                    title="Resumo das tarefas pendentes"
+                    activeFilter={priorityFilter}
+                    onFilterChange={handleStatsFilterChange}
+                />
+            </section>
 
-            <TaskFilters
-                searchTerm={searchTerm}
-                priorityFilter={priorityFilter}
-                sortOption={sortOption}
-                onSearchChange={handleSearchChange}
-                onPriorityChange={handlePriorityChange}
-                onSortChange={handleSortChange}
-                onClearFilters={handleClearFilters}
-            />
+            <section className="tasks-controls-panel">
+                <TaskFilters
+                    searchTerm={searchTerm}
+                    priorityFilter={priorityFilter}
+                    sortOption={sortOption}
+                    onSearchChange={handleSearchChange}
+                    onPriorityChange={handlePriorityChange}
+                    onSortChange={handleSortChange}
+                    onClearFilters={handleClearFilters}
+                />
 
-            <div className="export-toolbar">
-                <button type="button" onClick={handleExport}>
-                    {selectedTaskIds.length > 0
-                        ? `Exportar (${selectedVisibleTasks.length})`
-                        : 'Exportar'}
-                </button>
+                <div className="tasks-export-toolbar">
+                    <button type="button" onClick={handleExport}>
+                        {selectedTaskIds.length > 0
+                            ? `Exportar (${selectedVisibleTasks.length})`
+                            : 'Exportar'}
+                    </button>
 
-                <button
-                    type="button"
-                    onClick={() =>
-                        onSelectAllVisibleTasks(
-                            filteredTasks.map((task) => task.id)
-                        )
-                    }
-                    disabled={filteredTasks.length === 0}
-                >
-                    Selecionar
-                </button>
+                    <button
+                        type="button"
+                        onClick={() =>
+                            onSelectAllVisibleTasks(
+                                filteredTasks.map((task) => task.id)
+                            )
+                        }
+                        disabled={filteredTasks.length === 0}
+                    >
+                        Selecionar
+                    </button>
 
-                <button
-                    type="button"
-                    onClick={onClearSelectedTasks}
-                    disabled={selectedTaskIds.length === 0}
-                >
-                    Limpar
-                </button>
+                    <button
+                        type="button"
+                        onClick={onClearSelectedTasks}
+                        disabled={selectedTaskIds.length === 0}
+                    >
+                        Limpar
+                    </button>
 
-                {hasActiveFilters && (
-                    <span className="filter-status">Filtros aplicados</span>
-                )}
-            </div>
+                    {hasActiveFilters && (
+                        <span className="tasks-filter-status">
+                            Filtros aplicados
+                        </span>
+                    )}
+                </div>
+            </section>
 
-            <section className="tasks-section">
-                <h2>Tarefas pendentes</h2>
+            <section className="tasks-list-panel">
+                <div className="tasks-list-header">
+                    <h3>Lista de tarefas</h3>
+
+                    <span>
+                        {selectedTaskIds.length > 0
+                            ? `${selectedVisibleTasks.length} selecionada${
+                                  selectedVisibleTasks.length === 1 ? '' : 's'
+                              }`
+                            : 'Clique em uma tarefa para ver os detalhes'}
+                    </span>
+                </div>
 
                 <div className="tasks-scroll-area">
                     <TaskList

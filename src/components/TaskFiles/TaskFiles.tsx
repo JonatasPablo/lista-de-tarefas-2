@@ -1,6 +1,8 @@
+import { useState } from 'react'
+
 import type { TaskFile } from '../../types/task'
-import { formatFileSize } from '../../utils/file'
 import { taskFilesApi } from '../../services/taskFilesApi'
+import { formatFileSize } from '../../utils/file'
 
 interface TaskFilesProps {
     taskId: string
@@ -17,8 +19,18 @@ export const TaskFiles = ({
     onRequestRenameFile,
     onDeleteFile,
 }: TaskFilesProps) => {
+    const [downloadingFileId, setDownloadingFileId] = useState<string | null>(
+        null
+    )
+
     const handleDownloadFile = async (file: TaskFile) => {
-        await taskFilesApi.downloadTaskFile(taskId, file)
+        try {
+            setDownloadingFileId(file.id)
+
+            await taskFilesApi.downloadTaskFile(taskId, file)
+        } finally {
+            setDownloadingFileId(null)
+        }
     }
 
     if (files.length === 0) {
@@ -27,43 +39,67 @@ export const TaskFiles = ({
 
     return (
         <div className="task-files">
-            <strong>Arquivos anexados:</strong>
+            <strong>
+                Arquivos anexados ({files.length}
+                {files.length === 1 ? ' arquivo' : ' arquivos'}):
+            </strong>
 
             <ul>
-                {files.map((file) => (
-                    <li key={file.id} className="task-file-item">
-                        <div>
-                            <span>{file.displayName}</span>
+                {files.map((file) => {
+                    const isDownloading = downloadingFileId === file.id
 
-                            <small>{formatFileSize(file.sizeBytes)}</small>
-                        </div>
+                    return (
+                        <li key={file.id} className="task-file-item">
+                            <div>
+                                <span title={file.displayName}>
+                                    {file.displayName}
+                                </span>
 
-                        <div className="task-file-actions">
-                            <button
-                                type="button"
-                                onClick={() => handleDownloadFile(file)}
-                            >
-                                Baixar
-                            </button>
+                                <small>{formatFileSize(file.sizeBytes)}</small>
+                            </div>
 
-                            <button
-                                type="button"
-                                disabled={isTaskCompleted}
-                                onClick={() => onRequestRenameFile(file)}
-                            >
-                                Renomear
-                            </button>
+                            <div className="task-file-actions">
+                                <button
+                                    type="button"
+                                    onClick={() => handleDownloadFile(file)}
+                                    disabled={isDownloading}
+                                    aria-label={`Baixar arquivo ${file.displayName}`}
+                                    title={`Baixar ${file.displayName}`}
+                                >
+                                    {isDownloading ? 'Baixando...' : 'Baixar'}
+                                </button>
 
-                            <button
-                                type="button"
-                                disabled={isTaskCompleted}
-                                onClick={() => onDeleteFile(file.id)}
-                            >
-                                Deletar
-                            </button>
-                        </div>
-                    </li>
-                ))}
+                                <button
+                                    type="button"
+                                    disabled={isTaskCompleted}
+                                    onClick={() => onRequestRenameFile(file)}
+                                    aria-label={`Renomear arquivo ${file.displayName}`}
+                                    title={
+                                        isTaskCompleted
+                                            ? 'Não é possível renomear arquivos de uma tarefa concluída'
+                                            : `Renomear ${file.displayName}`
+                                    }
+                                >
+                                    Renomear
+                                </button>
+
+                                <button
+                                    type="button"
+                                    disabled={isTaskCompleted}
+                                    onClick={() => onDeleteFile(file.id)}
+                                    aria-label={`Excluir arquivo ${file.displayName}`}
+                                    title={
+                                        isTaskCompleted
+                                            ? 'Não é possível excluir arquivos de uma tarefa concluída'
+                                            : `Excluir ${file.displayName}`
+                                    }
+                                >
+                                    Excluir
+                                </button>
+                            </div>
+                        </li>
+                    )
+                })}
             </ul>
         </div>
     )

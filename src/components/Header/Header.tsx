@@ -6,6 +6,8 @@ interface HeaderProps {
     onLogout: () => void
 }
 
+const appLogoUrl = `${import.meta.env.BASE_URL}favicon.svg`
+
 const getInitials = (name: string) => {
     const nameParts = name.trim().split(' ').filter(Boolean)
 
@@ -28,31 +30,18 @@ export const Header = ({ user, onLogout }: HeaderProps) => {
     return (
         <header className="header">
             <div className="header-brand">
-                <h1>Lista de Tarefas</h1>
+                {user ? (
+                    <img
+                        src={appLogoUrl}
+                        alt="Lista de Tarefas"
+                        className="header-logo"
+                    />
+                ) : (
+                    <h1>Lista de Tarefas</h1>
+                )}
             </div>
 
             <div className="header-content">
-                {user && (
-                    <div className="header-user">
-                        <div className="header-user-avatar">
-                            {getInitials(user.name)}
-                        </div>
-
-                        <div className="header-user-info">
-                            <strong>{user.name}</strong>
-                            <span>{user.email}</span>
-                        </div>
-
-                        <button
-                            type="button"
-                            className="header-logout-button"
-                            onClick={onLogout}
-                        >
-                            Sair
-                        </button>
-                    </div>
-                )}
-
                 <nav className="main-nav">
                     {user ? (
                         <>
@@ -94,6 +83,29 @@ export const Header = ({ user, onLogout }: HeaderProps) => {
                         </>
                     )}
                 </nav>
+
+                {user && (
+                    <div
+                        className="header-user"
+                        title={`Usuário logado: ${user.name}`}
+                    >
+                        <div className="header-user-avatar">
+                            {getInitials(user.name)}
+                        </div>
+
+                        <div className="header-user-info">
+                            <strong>{user.name}</strong>
+                        </div>
+
+                        <button
+                            type="button"
+                            className="header-logout-button"
+                            onClick={onLogout}
+                        >
+                            Sair
+                        </button>
+                    </div>
+                )}
             </div>
         </header>
     )

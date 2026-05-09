@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { Task, TaskFile, TaskPriority } from '../../types/task'
 import { TaskItem } from '../TaskItem/TaskItem'
 
@@ -42,13 +42,32 @@ export const TaskList = ({
 }: TaskListProps) => {
     const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null)
 
-    if (tasks.length === 0) {
-        return <p className="empty-message">{emptyMessage}</p>
-    }
+    const selectedTaskIdsSet = useMemo(
+        () => new Set(selectedTaskIds),
+        [selectedTaskIds]
+    )
+
+    const availableTaskIdsSet = useMemo(
+        () => new Set(tasks.map((task) => task.id)),
+        [tasks]
+    )
+
+    const activeExpandedTaskId =
+        expandedTaskId && availableTaskIdsSet.has(expandedTaskId)
+            ? expandedTaskId
+            : null
 
     const handleToggleExpandedTask = (taskId: string) => {
         setExpandedTaskId((currentTaskId) =>
             currentTaskId === taskId ? null : taskId
+        )
+    }
+
+    if (tasks.length === 0) {
+        return (
+            <p className="empty-message task-list-empty">
+                {emptyMessage}
+            </p>
         )
     }
 
@@ -58,8 +77,8 @@ export const TaskList = ({
                 <TaskItem
                     key={task.id}
                     task={task}
-                    expanded={expandedTaskId === task.id}
-                    selected={selectedTaskIds.includes(task.id)}
+                    expanded={activeExpandedTaskId === task.id}
+                    selected={selectedTaskIdsSet.has(task.id)}
                     selectable={selectable}
                     onToggleExpanded={() => handleToggleExpandedTask(task.id)}
                     onToggleTask={onToggleTask}

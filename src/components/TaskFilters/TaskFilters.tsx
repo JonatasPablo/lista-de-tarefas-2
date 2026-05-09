@@ -29,16 +29,30 @@ export const TaskFilters = ({
     onSortChange,
     onClearFilters,
 }: TaskFiltersProps) => {
+    const hasActiveFilters =
+        searchTerm.trim() !== '' ||
+        priorityFilter !== 'todas' ||
+        sortOption !== 'Filtros'
+
     return (
         <div className="task-filters">
+            <label htmlFor="task-filter-search">Buscar tarefas</label>
+
             <input
+                id="task-filter-search"
                 type="text"
                 placeholder="Buscar por tarefa, descrição ou arquivo..."
                 value={searchTerm}
                 onChange={(event) => onSearchChange(event.target.value)}
+                autoComplete="off"
             />
 
+            <label htmlFor="task-filter-priority">
+                Filtrar por prioridade
+            </label>
+
             <select
+                id="task-filter-priority"
                 value={priorityFilter}
                 onChange={(event) =>
                     onPriorityChange(event.target.value as PriorityFilter)
@@ -50,7 +64,10 @@ export const TaskFilters = ({
                 <option value="baixa">Baixa</option>
             </select>
 
+            <label htmlFor="task-filter-sort">Ordenar tarefas</label>
+
             <select
+                id="task-filter-sort"
                 value={sortOption}
                 onChange={(event) =>
                     onSortChange(event.target.value as TaskSortOption)
@@ -64,7 +81,11 @@ export const TaskFilters = ({
                 <option value="nome-za">Nome Z-A</option>
             </select>
 
-            <button type="button" onClick={onClearFilters}>
+            <button
+                type="button"
+                onClick={onClearFilters}
+                disabled={!hasActiveFilters}
+            >
                 Limpar filtros
             </button>
         </div>
