@@ -199,7 +199,7 @@
 .log-filters {
     min-height: 0;
     display: grid;
-    grid-template-columns: minmax(190px, 1fr) 170px 140px 140px 116px;
+    grid-template-columns: minmax(180px, 1fr) 160px 150px 150px 116px;
     align-items: center;
     gap: 8px;
 }
@@ -214,7 +214,8 @@
 }
 
 .log-filters input,
-.log-filters select {
+.log-filters select,
+.log-date-field {
     width: 100%;
     min-height: 38px;
     padding: 8px 12px;
@@ -226,10 +227,49 @@
     font-weight: 500;
 }
 
+.log-date-field {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+}
+
+.log-date-field span {
+    color: rgba(64, 64, 64, 0.64);
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.log-date-field input {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #303030;
+    font-size: 12px;
+    font-weight: 600;
+}
+
 .log-filters input:focus,
 .log-filters select:focus {
     border-color: rgba(64, 64, 64, 0.2);
     box-shadow: 0 0 0 4px rgba(64, 64, 64, 0.08);
+    outline: none;
+}
+
+.log-date-field:focus-within {
+    border-color: rgba(64, 64, 64, 0.2);
+    box-shadow: 0 0 0 4px rgba(64, 64, 64, 0.08);
+}
+
+.log-date-field input:focus {
+    box-shadow: none;
     outline: none;
 }
 
@@ -488,17 +528,31 @@
     }
 
     .log-filters {
-        grid-template-columns: minmax(170px, 1fr) 145px 122px 122px 104px;
+        grid-template-columns: minmax(150px, 1fr) 136px 128px 128px 104px;
         gap: 7px;
     }
 
     .log-filters input,
     .log-filters select,
+    .log-date-field,
     .log-filters button,
     .log-actions-toolbar button {
         min-height: 36px;
         padding: 7px 10px;
         font-size: 12px;
+    }
+
+    .log-date-field {
+        gap: 6px;
+        padding: 6px 8px;
+    }
+
+    .log-date-field span {
+        font-size: 10px;
+    }
+
+    .log-date-field input {
+        font-size: 11px;
     }
 
     .log-actions-toolbar {
@@ -563,16 +617,30 @@
     }
 
     .log-filters {
-        grid-template-columns: minmax(150px, 1fr) 130px 112px 112px 96px;
+        grid-template-columns: minmax(130px, 1fr) 120px 112px 112px 96px;
         gap: 6px;
     }
 
     .log-filters input,
     .log-filters select,
+    .log-date-field,
     .log-filters button,
     .log-actions-toolbar button {
         min-height: 34px;
         font-size: 12px;
+    }
+
+    .log-date-field {
+        gap: 5px;
+        padding: 6px 7px;
+    }
+
+    .log-date-field span {
+        font-size: 9px;
+    }
+
+    .log-date-field input {
+        font-size: 10px;
     }
 
     .log-actions-toolbar {
@@ -658,6 +726,16 @@
         grid-column: 1 / -1;
     }
 
+    .log-filters select {
+        grid-column: 1 / -1;
+    }
+
+    .log-date-field {
+        min-height: 42px;
+        padding: 7px 10px;
+        border-radius: 14px;
+    }
+
     .log-filters button {
         grid-column: 1 / -1;
     }
@@ -668,10 +746,19 @@
 
     .log-filters input,
     .log-filters select,
+    .log-date-field,
     .log-filters button,
     .log-actions-toolbar button {
         min-height: 42px;
         font-size: 14px;
+    }
+
+    .log-date-field span {
+        font-size: 11px;
+    }
+
+    .log-date-field input {
+        font-size: 12px;
     }
 
     .log-actions-toolbar {
@@ -729,11 +816,19 @@
     }
 
     .log-filters {
-        grid-template-columns: minmax(220px, 1fr) 1fr 1fr 1fr 130px;
+        grid-template-columns: minmax(220px, 1fr) minmax(160px, 0.8fr) minmax(150px, 0.8fr) minmax(150px, 0.8fr);
     }
 
     .log-filters input[type='text'] {
         grid-column: auto;
+    }
+
+    .log-filters select {
+        grid-column: auto;
+    }
+
+    .log-filters button {
+        grid-column: 1 / -1;
     }
 }
 
@@ -753,79 +848,6 @@
     .container:has(.log-page) .app-footer {
         display: none;
     }
-
-    /* .container:has(.log-page) .header {
-        grid-template-columns: auto minmax(0, 1fr);
-        align-items: center;
-        gap: 6px;
-        text-align: left;
-    } */
-
-    /* .container:has(.log-page) .header-brand {
-        width: auto;
-        padding-left: 8px;
-        margin-top: 0;
-    } */
-
-    /* .container:has(.log-page) .header-logo {
-        width: 32px;
-        height: 32px;
-    } */
-
-    /* .container:has(.log-page) .header-content {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        flex-wrap: nowrap;
-        gap: 5px;
-        padding-right: 8px;
-        margin-top: 0;
-        margin-left: 0;
-    } */
-/* 
-    .container:has(.log-page) .main-nav {
-        width: auto;
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        flex-wrap: nowrap;
-        gap: 4px;
-        margin-top: 0;
-    } */
-
-    /* .container:has(.log-page) .nav-link {
-        min-height: 30px;
-        padding: 6px 8px;
-        font-size: 10px;
-    } */
-
-    /* .container:has(.log-page) .header-user {
-        max-width: 78px;
-        display: grid;
-        grid-template-columns: auto auto;
-        align-items: center;
-        padding: 4px;
-        gap: 4px;
-        border-radius: 999px;
-    } */
-
-    /* .container:has(.log-page) .header-user-info {
-        display: none;
-    } */
-
-    /* .container:has(.log-page) .header-user-avatar {
-        width: 28px;
-        height: 28px;
-        font-size: 10px;
-    } */
-
-    /* .container:has(.log-page) .header-logout-button {
-        min-width: 38px;
-        min-height: 28px;
-        padding: 5px 7px;
-        font-size: 10px;
-    } */
 
     .log-page {
         gap: 6px;
@@ -920,6 +942,25 @@
         grid-column: 1 / -1;
     }
 
+    .log-filters select {
+        grid-column: 1 / -1;
+    }
+
+    .log-date-field {
+        min-height: 34px;
+        gap: 5px;
+        padding: 6px 8px;
+        border-radius: 12px;
+    }
+
+    .log-date-field span {
+        font-size: 10px;
+    }
+
+    .log-date-field input {
+        font-size: 11px;
+    }
+
     .log-filters button {
         grid-column: 1 / -1;
     }
@@ -930,6 +971,7 @@
 
     .log-filters input,
     .log-filters select,
+    .log-date-field,
     .log-filters button,
     .log-actions-toolbar button {
         min-height: 34px;
@@ -941,6 +983,12 @@
     .log-actions-toolbar {
         grid-template-columns: 1fr 1fr;
         gap: 6px;
+    }
+
+    .log-actions-toolbar button {
+        min-height: 34px;
+        padding: 6px 7px;
+        font-size: 11px;
     }
 
     .log-list-panel {

@@ -567,23 +567,31 @@ export function LogPage() {
 
                     <label htmlFor="log-start-date">Data inicial</label>
 
-                    <input
-                        id="log-start-date"
-                        type="date"
-                        value={startDate}
-                        onChange={(event) => setStartDate(event.target.value)}
-                        title="Data inicial"
-                    />
+<div className="log-date-field">
+    <span>Início</span>
 
-                    <label htmlFor="log-end-date">Data final</label>
+    <input
+        id="log-start-date"
+        type="date"
+        value={startDate}
+        onChange={(event) => setStartDate(event.target.value)}
+        title="Data inicial"
+    />
+</div>
 
-                    <input
-                        id="log-end-date"
-                        type="date"
-                        value={endDate}
-                        onChange={(event) => setEndDate(event.target.value)}
-                        title="Data final"
-                    />
+<label htmlFor="log-end-date">Data final</label>
+
+<div className="log-date-field">
+    <span>Final</span>
+
+    <input
+        id="log-end-date"
+        type="date"
+        value={endDate}
+        onChange={(event) => setEndDate(event.target.value)}
+        title="Data final"
+    />
+</div>
 
                     <button
                         type="button"
