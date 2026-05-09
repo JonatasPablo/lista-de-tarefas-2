@@ -2,6 +2,8 @@ const nodemailer = require('nodemailer')
 
 const AppError = require('../errors/AppError')
 
+const EMAIL_PROVIDER = process.env.EMAIL_PROVIDER || 'smtp'
+
 const getRequiredEnv = (key) => {
     const value = process.env[key]
 
@@ -26,15 +28,10 @@ const getSmtpConfig = () => {
         host,
         port,
         secure,
-
-        // Força IPv4 para evitar erro ENETUNREACH em ambientes cloud/Railway
         family: 4,
-
-        // Evita ficar pendurado por muito tempo se o SMTP não responder
         connectionTimeout: 15000,
         greetingTimeout: 15000,
         socketTimeout: 20000,
-
         auth: {
             user,
             pass,
@@ -46,11 +43,78 @@ const getTransporter = () => {
     return nodemailer.createTransport(getSmtpConfig())
 }
 
-const getFromAddress = () => {
+const getSmtpFromAddress = () => {
     const fromName = process.env.SMTP_FROM_NAME || 'Lista de Tarefas'
     const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER
 
     return `"${fromName}" <${fromEmail}>`
+}
+
+const getBrevoSender = () => {
+    const name = process.env.BREVO_FROM_NAME || 'Lista de Tarefas'
+    const email = getRequiredEnv('BREVO_FROM_EMAIL')
+
+    return {
+        name,
+        email,
+    }
+}
+
+const sendMailWithSmtp = async ({ to, subject, html, text }) => {
+    const transporter = getTransporter()
+
+    await transporter.sendMail({
+        from: getSmtpFromAddress(),
+        to,
+        subject,
+        html,
+        text,
+    })
+}
+
+const sendMailWithBrevo = async ({ to, subject, html, text }) => {
+    const apiKey = getRequiredEnv('BREVO_API_KEY')
+    const sender = getBrevoSender()
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+            accept: 'application/json',
+            'api-key': apiKey,
+            'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+            sender,
+            to: [
+                {
+                    email: to,
+                },
+            ],
+            subject,
+            htmlContent: html,
+            textContent: text,
+        }),
+    })
+
+    if (!response.ok) {
+        let errorMessage = `Erro ao enviar e-mail pela Brevo: ${response.status}`
+
+        try {
+            const data = await response.json()
+
+            if (data?.message) {
+                errorMessage = data.message
+            }
+        } catch {
+            const responseText = await response.text().catch(() => '')
+
+            if (responseText) {
+                errorMessage = responseText
+            }
+        }
+
+        throw new AppError(errorMessage, 500)
+    }
 }
 
 const sendMail = async ({ to, subject, html, text }) => {
@@ -58,10 +122,18 @@ const sendMail = async ({ to, subject, html, text }) => {
         throw new AppError('O destinatário do e-mail é obrigatório.', 500)
     }
 
-    const transporter = getTransporter()
+    if (EMAIL_PROVIDER === 'brevo') {
+        await sendMailWithBrevo({
+            to,
+            subject,
+            html,
+            text,
+        })
 
-    await transporter.sendMail({
-        from: getFromAddress(),
+        return
+    }
+
+    await sendMailWithSmtp({
         to,
         subject,
         html,
@@ -70,6 +142,27 @@ const sendMail = async ({ to, subject, html, text }) => {
 }
 
 const testConnection = async () => {
+    if (EMAIL_PROVIDER === 'brevo') {
+        const apiKey = getRequiredEnv('BREVO_API_KEY')
+
+        const response = await fetch('https://api.brevo.com/v3/account', {
+            method: 'GET',
+            headers: {
+                accept: 'application/json',
+                'api-key': apiKey,
+            },
+        })
+
+        if (!response.ok) {
+            throw new AppError(
+                `Não foi possível validar a API Key da Brevo. Status: ${response.status}`,
+                500
+            )
+        }
+
+        return true
+    }
+
     const transporter = getTransporter()
 
     await transporter.verify()
