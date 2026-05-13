@@ -12,7 +12,7 @@ const errorHandler = (error, req, res, next) => {
         if (error.code === 'LIMIT_FILE_SIZE') {
             if (error.field === 'avatar') {
                 return res.status(400).json({
-                    message: 'A foto deve ter no maximo 2 MB.',
+                    message: 'A foto deve ter no maximo 20 MB.',
                 })
             }
 

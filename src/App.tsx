@@ -18,6 +18,7 @@ import { useAuth } from './hooks/useAuth'
 import { useTasks } from './hooks/useTasks'
 import { useTaskFiles } from './hooks/useTaskFiles'
 import { useTheme } from './hooks/useTheme'
+import { PwaInstallPrompt } from './components/PwaInstallPrompt/PwaInstallPrompt'
 import { ConfirmEmailPage } from './pages/ConfirmEmailPage/ConfirmEmailPage'
 import { EsqueciSenhaPage } from './pages/EsqueciSenhaPage/EsqueciSenhaPage'
 import { Header } from './components/Header/Header'
@@ -395,6 +396,7 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
                 />
             </main>
             <BottomNav user={user} />
+            <PwaInstallPrompt />
         </>
     )
 }

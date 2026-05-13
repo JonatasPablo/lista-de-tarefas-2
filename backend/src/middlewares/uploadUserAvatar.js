@@ -5,7 +5,7 @@ const crypto = require('crypto')
 
 const AppError = require('../errors/AppError')
 
-const MAX_AVATAR_SIZE_BYTES = 2 * 1024 * 1024
+const MAX_AVATAR_SIZE_BYTES = 20 * 1024 * 1024
 const ALLOWED_IMAGE_TYPES = new Map([
     ['.jpeg', new Set(['image/jpeg'])],
     ['.jpg', new Set(['image/jpeg'])],

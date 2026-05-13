@@ -281,8 +281,8 @@ export const MinhaContaPage = ({
             return
         }
 
-        if (file.size > 2 * 1024 * 1024) {
-            showToast('error', 'A foto deve ter no máximo 2 MB.')
+        if (file.size > 20 * 1024 * 1024) {
+            showToast('error', 'A foto deve ter no máximo 20 MB.')
             return
         }
 
@@ -373,7 +373,7 @@ export const MinhaContaPage = ({
                     <div className="minha-conta-avatar-actions">
                         <strong>Foto de perfil</strong>
                         <p>
-                            Envie uma imagem JPG, PNG ou WebP com até 2 MB.
+                            Envie uma imagem JPG, PNG ou WebP com até 20 MB.
                         </p>
                         <label className="minha-conta-upload-button">
                             <input

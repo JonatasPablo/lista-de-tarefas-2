@@ -1047,6 +1047,41 @@
 }
 
 /* =========================
+   PWA Install Prompt
+========================= */
+
+[data-theme="dark"] .pwa-prompt {
+    border-color: rgba(255, 255, 255, 0.07);
+    background: linear-gradient(
+        145deg,
+        rgba(38, 38, 38, 0.98),
+        rgba(26, 26, 26, 0.95)
+    );
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 2px 8px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .pwa-prompt-question {
+    color: #e8e8e8;
+}
+
+[data-theme="dark"] .pwa-prompt-description {
+    color: rgba(200, 200, 200, 0.62);
+}
+
+[data-theme="dark"] .pwa-prompt-btn-dismiss {
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(200, 200, 200, 0.65);
+}
+
+[data-theme="dark"] .pwa-prompt-btn-dismiss:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #e0e0e0;
+}
+
+/* =========================
     ValidacaoSenha (cores semânticas, mantidas em dark mode)
 ========================= */
 
