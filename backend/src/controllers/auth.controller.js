@@ -81,12 +81,72 @@ const resendEmailVerificationCode = async (req, res) => {
     return res.json(result)
 }
 
+const verificarStatusConfirmacaoEmail = async (req, res) => {
+    const { email } = req.body
+
+    const result = await authService.verificarStatusConfirmacaoEmail({
+        email,
+    })
+
+    return res.json(result)
+}
+
+const solicitarRedefinicaoSenha = async (req, res) => {
+    const { email } = req.body
+
+    const result = await authService.solicitarRedefinicaoSenha({
+        email,
+    })
+
+    return res.json(result)
+}
+
+const validarCodigoRedefinicaoSenha = async (req, res) => {
+    const { email, code } = req.body
+
+    const result = await authService.validarCodigoRedefinicaoSenha({
+        email,
+        code,
+    })
+
+    return res.json(result)
+}
+
+const redefinirSenha = async (req, res) => {
+    const { email, code, password } = req.body
+
+    const result = await authService.redefinirSenha({
+        email,
+        code,
+        password,
+    })
+
+    return res.json(result)
+}
+
 const login = async (req, res) => {
     const { email, password } = req.body
 
     const result = await authService.login({
         email,
         password,
+    })
+
+    setSessionCookie(res, result.session)
+
+    return res.json({
+        user: result.user,
+    })
+}
+
+const loginGoogle = async (req, res) => {
+    const { credential, termsAccepted } = req.body
+
+    const result = await authService.loginGoogle({
+        credential,
+        termsAccepted,
+        termsAcceptedIp: getClientIp(req),
+        termsAcceptedUserAgent: getUserAgent(req),
     })
 
     setSessionCookie(res, result.session)
@@ -116,7 +176,12 @@ module.exports = {
     register,
     confirmEmail,
     resendEmailVerificationCode,
+    verificarStatusConfirmacaoEmail,
+    solicitarRedefinicaoSenha,
+    validarCodigoRedefinicaoSenha,
+    redefinirSenha,
     login,
+    loginGoogle,
     logout,
     me,
 }

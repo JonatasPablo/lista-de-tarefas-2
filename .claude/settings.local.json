@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-Command claude -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source; \\(Get-Command claude -ErrorAction SilentlyContinue\\) -eq $null)",
+      "PowerShell(Get-ChildItem \"$env:APPDATA\\\\npm\" -ErrorAction SilentlyContinue | Select-Object Name | Where-Object { $_.Name -match \"claude\" }; npm list -g --depth=0 2>$null | Select-String \"claude\")",
+      "Bash(npx tsc *)"
+    ]
+  }
+}

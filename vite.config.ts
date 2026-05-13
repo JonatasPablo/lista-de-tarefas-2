@@ -8,7 +8,11 @@ export default defineConfig({
         react(),
         VitePWA({
             registerType: 'autoUpdate',
-            includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+            includeAssets: [
+                'favicon.svg',
+                'favicon.png',
+                'apple-touch-icon.png',
+            ],
             manifest: {
                 id: '/lista-de-tarefas-2/',
                 name: `${APP_NAME} v${APP_VERSION}`,
@@ -43,7 +47,7 @@ export default defineConfig({
                 globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
             },
             devOptions: {
-                enabled: true,
+                enabled: false,
             },
         }),
     ],

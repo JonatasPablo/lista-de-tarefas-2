@@ -1,1 +1,0 @@
-if('serviceWorker' in navigator) navigator.serviceWorker.register('/lista-de-tarefas-2/dev-sw.js?dev-sw', { scope: '/lista-de-tarefas-2/', type: 'classic' })

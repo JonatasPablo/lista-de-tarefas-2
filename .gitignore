@@ -37,3 +37,5 @@ backend/dev-dist
 backend/.env
 backend/.env.local
 backend/.env.*.local
+
+.claude/

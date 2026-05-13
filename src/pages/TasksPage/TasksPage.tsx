@@ -27,8 +27,8 @@ interface TasksPageProps {
     onDeleteTask: (taskId: string) => void | Promise<void>
     onUpdateTask: (
         taskId: string,
-        description: string,
         title: string,
+        description: string,
         priority: TaskPriority
     ) => void
     onAddFiles: (taskId: string, files: File[]) => void

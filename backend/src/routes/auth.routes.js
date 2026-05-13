@@ -12,7 +12,21 @@ authRoutes.post(
     '/resend-confirmation',
     asyncHandler(authController.resendEmailVerificationCode)
 )
+authRoutes.post(
+    '/email-confirmation-status',
+    asyncHandler(authController.verificarStatusConfirmacaoEmail)
+)
+authRoutes.post(
+    '/forgot-password',
+    asyncHandler(authController.solicitarRedefinicaoSenha)
+)
+authRoutes.post(
+    '/validate-password-reset-code',
+    asyncHandler(authController.validarCodigoRedefinicaoSenha)
+)
+authRoutes.post('/reset-password', asyncHandler(authController.redefinirSenha))
 authRoutes.post('/login', asyncHandler(authController.login))
+authRoutes.post('/google', asyncHandler(authController.loginGoogle))
 authRoutes.post('/logout', authMiddleware, asyncHandler(authController.logout))
 authRoutes.get('/me', authMiddleware, asyncHandler(authController.me))
 

@@ -1,6 +1,16 @@
+const fs = require('fs/promises')
+
 const taskFilesService = require('../services/taskFiles.service')
 const AppError = require('../errors/AppError')
 const { validateTaskId } = require('../helpers/validateTask')
+
+const removeUploadedFileIfNeeded = async (file) => {
+    if (!file?.path) {
+        return
+    }
+
+    await fs.unlink(file.path).catch(() => null)
+}
 
 const validateFileId = (id) => {
     const fileId = Number(id)
@@ -27,13 +37,19 @@ const createTaskFile = async (req, res) => {
 
     const taskId = validateTaskId(id)
 
-    const file = await taskFilesService.createTaskFile(
-        taskId,
-        req.user.id,
-        req.file
-    )
+    try {
+        const file = await taskFilesService.createTaskFile(
+            taskId,
+            req.user.id,
+            req.file
+        )
 
-    return res.status(201).json(file)
+        return res.status(201).json(file)
+    } catch (error) {
+        await removeUploadedFileIfNeeded(req.file)
+
+        throw error
+    }
 }
 
 const renameTaskFile = async (req, res) => {

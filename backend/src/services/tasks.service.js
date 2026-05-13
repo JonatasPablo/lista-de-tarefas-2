@@ -1,5 +1,6 @@
 const connection = require('../database/connection')
 const taskHistoryService = require('./taskHistory.service')
+const AppError = require('../errors/AppError')
 
 const getTaskById = async (id, userId) => {
     const [tasks] = await connection.query(
@@ -88,6 +89,10 @@ const updateTask = async (userId, id, { title, description, priority }) => {
 
     if (!oldTask) {
         return null
+    }
+
+    if (oldTask.status === 'concluida') {
+        throw new AppError('Não é possível editar uma tarefa concluída.', 400)
     }
 
     await connection.query(

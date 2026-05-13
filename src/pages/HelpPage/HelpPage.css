@@ -555,6 +555,10 @@
         gap: 6px;
     }
 
+    .container:has(.help-page) .app-footer {
+        display: none;
+    }
+
     .help-page {
         padding: 0 6px 6px;
     }
@@ -624,6 +628,76 @@
     .help-items-grid {
         gap: 8px;
         padding-right: 4px;
+    }
+}
+
+/* =========================
+   Celular muito pequeno (≤360px)
+========================= */
+
+@media only screen and (max-width: 360px) {
+    .container:has(.help-page) {
+        gap: 5px;
+    }
+
+    .help-page {
+        padding: 0 5px 5px;
+    }
+
+    .help-card {
+        border-radius: 18px;
+    }
+
+    .help-hero {
+        min-height: 100px;
+        padding: 13px;
+    }
+
+    .help-hero-description {
+        font-size: 13px;
+        line-height: 1.22;
+    }
+
+    .help-hero-title {
+        font-size: 24px;
+    }
+
+    .help-content {
+        gap: 6px;
+        padding: 10px;
+    }
+
+    .help-header h2 {
+        font-size: 26px;
+        line-height: 1.05;
+    }
+
+    .help-header span,
+    .help-header p {
+        font-size: 10px;
+    }
+
+    .help-about-card,
+    .help-version-card,
+    .help-item-card {
+        padding: 8px;
+        border-radius: 14px;
+    }
+
+    .help-about-card h3,
+    .help-version-card h3,
+    .help-item-card h3 {
+        font-size: 11px;
+    }
+
+    .help-about-card p,
+    .help-version-card p,
+    .help-item-card p {
+        font-size: 10px;
+    }
+
+    .help-items-grid {
+        gap: 6px;
     }
 }
 

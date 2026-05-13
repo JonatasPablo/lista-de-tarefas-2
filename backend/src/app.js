@@ -28,6 +28,8 @@ const getAllowedOrigins = () => {
 }
 
 const allowedOrigins = getAllowedOrigins()
+const isProduction = process.env.NODE_ENV === 'production'
+const stateChangingMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
 
 const corsOptions = {
     origin(origin, callback) {
@@ -46,6 +48,46 @@ const corsOptions = {
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type'],
+}
+
+const getOriginFromReferer = (referer) => {
+    if (!referer) {
+        return null
+    }
+
+    try {
+        return new URL(referer).origin
+    } catch {
+        return null
+    }
+}
+
+const csrfOriginProtection = (req, res, next) => {
+    if (!stateChangingMethods.has(req.method)) {
+        return next()
+    }
+
+    const requestOrigin =
+        req.get('origin') || getOriginFromReferer(req.get('referer'))
+
+    if (!requestOrigin) {
+        if (isProduction) {
+            return res.status(403).json({
+                message:
+                    'Origem da requisição não identificada. Atualize a página e tente novamente.',
+            })
+        }
+
+        return next()
+    }
+
+    if (!allowedOrigins.includes(requestOrigin)) {
+        return res.status(403).json({
+            message: 'Origem da requisição não permitida.',
+        })
+    }
+
+    return next()
 }
 
 const apiLimiter = rateLimit({
@@ -68,6 +110,7 @@ app.use(
 )
 
 app.use(cors(corsOptions))
+app.use(csrfOriginProtection)
 app.use(express.json({ limit: '1mb' }))
 app.use(apiLimiter)
 

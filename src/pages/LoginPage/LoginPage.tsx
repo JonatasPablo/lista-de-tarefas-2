@@ -1,17 +1,20 @@
 import { useState, type SyntheticEvent } from 'react'
 import { Link } from 'react-router-dom'
+import { GoogleLogin, type CredentialResponse } from '@react-oauth/google'
 
 import './LoginPage.css'
 
 interface LoginPageProps {
     onLogin: (email: string, password: string) => Promise<void>
+    onLoginGoogle?: (credential: string) => Promise<void>
 }
 
-export const LoginPage = ({ onLogin }: LoginPageProps) => {
+export const LoginPage = ({ onLogin, onLoginGoogle }: LoginPageProps) => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isSubmittingGoogle, setIsSubmittingGoogle] = useState(false)
 
     const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -25,6 +28,22 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
         }
     }
 
+    const handleLoginGoogleSuccess = async (
+        credentialResponse: CredentialResponse
+    ) => {
+        if (!onLoginGoogle || !credentialResponse.credential) {
+            return
+        }
+
+        try {
+            setIsSubmittingGoogle(true)
+
+            await onLoginGoogle(credentialResponse.credential)
+        } finally {
+            setIsSubmittingGoogle(false)
+        }
+    }
+
     return (
         <main className="login-page">
             <section className="login-card">
@@ -32,6 +51,15 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
                     <p className="login-hero-description">
                         Tarefas, histórico, logs e anexos em um só lugar.
                     </p>
+
+                    <ul className="login-hero-features">
+                        <li>Tarefas com prazo e prioridade</li>
+                        <li>Histórico completo de alterações</li>
+                        <li>Log detalhado de todas as ações</li>
+                        <li>Login seguro com e-mail ou Google</li>
+                        <li>Redefinição de senha por e-mail</li>
+                        <li>Confirmação de e-mail no cadastro</li>
+                    </ul>
 
                     <strong className="login-hero-title">
                         Organize seu dia com leveza
@@ -45,6 +73,35 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
                             Acesse sua Lista de Tarefas com seu e-mail e senha.
                         </p>
                     </header>
+
+                    <div className="login-google-area">
+                        {onLoginGoogle ? (
+                            <>
+                                <div className="login-google-button-wrapper">
+                                    <GoogleLogin
+                                        onSuccess={handleLoginGoogleSuccess}
+                                        onError={() => {
+                                            setIsSubmittingGoogle(false)
+                                        }}
+                                        text="signin_with"
+                                        shape="pill"
+                                        size="large"
+                                        width="100%"
+                                    />
+                                </div>
+
+                                {isSubmittingGoogle && (
+                                    <small className="login-google-status">
+                                        Entrando com Google...
+                                    </small>
+                                )}
+
+                                <div className="login-divider">
+                                    <span>ou entre com e-mail</span>
+                                </div>
+                            </>
+                        ) : null}
+                    </div>
 
                     <form className="login-form" onSubmit={handleSubmit}>
                         <div className="login-field">
@@ -122,10 +179,17 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
                             </div>
                         </div>
 
+                        <Link
+                            to="/esqueci-senha"
+                            className="login-forgot-password-link"
+                        >
+                            Esqueci minha senha
+                        </Link>
+
                         <button
                             type="submit"
                             className="login-submit-button"
-                            disabled={isSubmitting}
+                            disabled={isSubmitting || isSubmittingGoogle}
                         >
                             {isSubmitting ? 'Entrando...' : 'Entrar'}
                         </button>

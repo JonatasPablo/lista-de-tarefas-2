@@ -610,3 +610,50 @@
         font-size: 17px;
     }
 }
+
+/* =========================
+   Celular muito pequeno (≤360px)
+========================= */
+
+@media only screen and (max-width: 360px) {
+    .confirm-email-page {
+        padding: 6px;
+    }
+
+    .confirm-email-card {
+        border-radius: 18px;
+    }
+
+    .confirm-email-hero {
+        min-height: 115px;
+        padding: 15px;
+    }
+
+    .confirm-email-hero-description {
+        font-size: 15px;
+    }
+
+    .confirm-email-hero-title {
+        font-size: 27px;
+    }
+
+    .confirm-email-content {
+        gap: 14px;
+        padding: 20px 16px;
+    }
+
+    .confirm-email-header h2 {
+        font-size: 29px;
+    }
+
+    .confirm-email-field input {
+        min-height: 42px;
+        font-size: 16px;
+    }
+
+    .confirm-email-submit-button,
+    .confirm-email-secondary-button {
+        min-height: 42px;
+        font-size: 14px;
+    }
+}

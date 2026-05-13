@@ -29,84 +29,84 @@ export const Header = ({ user, onLogout }: HeaderProps) => {
 
     return (
         <header className="header">
-            <div className="header-brand">
-                {user ? (
-                    <img
-                        src={appLogoUrl}
-                        alt="Lista de Tarefas"
-                        className="header-logo"
-                    />
-                ) : (
-                    <h1>Lista de Tarefas</h1>
-                )}
-            </div>
-
-            <div className="header-content">
-                <nav className="main-nav">
+                <div className="header-brand">
                     {user ? (
-                        <>
-                            <NavLink to="/" end className={getNavLinkClass}>
-                                Pendentes
-                            </NavLink>
-
-                            <NavLink
-                                to="/historico"
-                                className={getNavLinkClass}
-                            >
-                                Histórico
-                            </NavLink>
-
-                            <NavLink to="/log" className={getNavLinkClass}>
-                                Log
-                            </NavLink>
-
-                            <NavLink to="/ajuda" className={getNavLinkClass}>
-                                Ajuda
-                            </NavLink>
-                        </>
+                        <img
+                            src={appLogoUrl}
+                            alt="Lista de Tarefas"
+                            className="header-logo"
+                        />
                     ) : (
-                        <>
-                            <NavLink to="/login" className={getNavLinkClass}>
-                                Entrar
-                            </NavLink>
-
-                            <NavLink
-                                to="/cadastro"
-                                className={getNavLinkClass}
-                            >
-                                Criar conta
-                            </NavLink>
-
-                            <NavLink to="/ajuda" className={getNavLinkClass}>
-                                Ajuda
-                            </NavLink>
-                        </>
+                        <h1>Lista de Tarefas</h1>
                     )}
-                </nav>
+                </div>
 
-                {user && (
-                    <div
-                        className="header-user"
-                        title={`Usuário logado: ${user.name}`}
-                    >
-                        <div className="header-user-avatar">
-                            {getInitials(user.name)}
-                        </div>
+                <div className="header-content">
+                    <nav className="main-nav">
+                        {user ? (
+                            <>
+                                <NavLink to="/" end className={getNavLinkClass}>
+                                    Pendentes
+                                </NavLink>
 
-                        <div className="header-user-info">
-                            <strong>{user.name}</strong>
-                        </div>
+                                <NavLink
+                                    to="/historico"
+                                    className={getNavLinkClass}
+                                >
+                                    Histórico
+                                </NavLink>
 
-                        <button
-                            type="button"
-                            className="header-logout-button"
-                            onClick={onLogout}
+                                <NavLink to="/log" className={getNavLinkClass}>
+                                    Log
+                                </NavLink>
+
+                                <NavLink to="/ajuda" className={getNavLinkClass}>
+                                    Ajuda
+                                </NavLink>
+                            </>
+                        ) : (
+                            <>
+                                <NavLink to="/login" className={getNavLinkClass}>
+                                    Entrar
+                                </NavLink>
+
+                                <NavLink
+                                    to="/cadastro"
+                                    className={getNavLinkClass}
+                                >
+                                    Criar conta
+                                </NavLink>
+
+                                <NavLink to="/ajuda" className={getNavLinkClass}>
+                                    Ajuda
+                                </NavLink>
+                            </>
+                        )}
+                    </nav>
+
+                    {user && (
+                        <div
+                            className="header-user"
+                            title={`Usuário logado: ${user.name}`}
                         >
-                            Sair
-                        </button>
-                    </div>
-                )}
-            </div>
-        </header>
+                            <div className="header-user-avatar">
+                                {getInitials(user.name)}
+                            </div>
+
+                            <div className="header-user-info">
+                                <strong>{user.name}</strong>
+                            </div>
+
+                            <button
+                                type="button"
+                                className="header-logout-button"
+                                onClick={onLogout}
+                            >
+                                Sair
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </header>
     )
 }

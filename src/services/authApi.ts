@@ -23,6 +23,11 @@ type LoginPayload = {
     password: string
 }
 
+type LoginGooglePayload = {
+    credential: string
+    termsAccepted?: boolean
+}
+
 type RegisterPayload = {
     name: string
     email: string
@@ -43,8 +48,28 @@ type EmailConfirmationStatusPayload = {
     email: string
 }
 
+type SolicitarRedefinicaoSenhaPayload = {
+    email: string
+}
+
+type ValidarCodigoRedefinicaoSenhaPayload = {
+    email: string
+    code: string
+}
+
+type RedefinirSenhaPayload = {
+    email: string
+    code: string
+    password: string
+}
+
 type EmailConfirmationStatusResponse = {
     confirmed: boolean
+}
+
+type SolicitarRedefinicaoSenhaResponse = {
+    message: string
+    action?: 'confirm_email' | 'reset_password'
 }
 
 export const authApi = {
@@ -52,7 +77,6 @@ export const authApi = {
         return apiRequest<AuthResponse>('/auth/register', {
             method: 'POST',
             body: payload,
-            auth: false,
         })
     },
 
@@ -60,7 +84,6 @@ export const authApi = {
         return apiRequest<AuthResponse>('/auth/confirm-email', {
             method: 'POST',
             body: payload,
-            auth: false,
         })
     },
 
@@ -68,7 +91,6 @@ export const authApi = {
         return apiRequest<{ message: string }>('/auth/resend-confirmation', {
             method: 'POST',
             body: payload,
-            auth: false,
         })
     },
 
@@ -80,16 +102,50 @@ export const authApi = {
             {
                 method: 'POST',
                 body: payload,
-                auth: false,
             }
         )
+    },
+
+    async solicitarRedefinicaoSenha(payload: SolicitarRedefinicaoSenhaPayload) {
+        return apiRequest<SolicitarRedefinicaoSenhaResponse>(
+            '/auth/forgot-password',
+            {
+                method: 'POST',
+                body: payload,
+            }
+        )
+    },
+
+    async validarCodigoRedefinicaoSenha(
+        payload: ValidarCodigoRedefinicaoSenhaPayload
+    ) {
+        return apiRequest<{ message: string }>(
+            '/auth/validate-password-reset-code',
+            {
+                method: 'POST',
+                body: payload,
+            }
+        )
+    },
+
+    async redefinirSenha(payload: RedefinirSenhaPayload) {
+        return apiRequest<{ message: string }>('/auth/reset-password', {
+            method: 'POST',
+            body: payload,
+        })
     },
 
     async login(payload: LoginPayload) {
         return apiRequest<AuthResponse>('/auth/login', {
             method: 'POST',
             body: payload,
-            auth: false,
+        })
+    },
+
+    async loginGoogle(payload: LoginGooglePayload) {
+        return apiRequest<AuthResponse>('/auth/google', {
+            method: 'POST',
+            body: payload,
         })
     },
 

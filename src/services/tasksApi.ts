@@ -52,20 +52,23 @@ const mapApiTaskToTask = (apiTask: ApiTask): Task => {
 }
 
 const loadFilesForTasks = async (tasks: Task[]) => {
-    return Promise.all(
-        tasks.map(async (task) => {
-            try {
+    try {
+        return await Promise.all(
+            tasks.map(async (task) => {
                 const files = await taskFilesApi.listTaskFiles(task.id)
 
                 return {
                     ...task,
                     files,
                 }
-            } catch {
-                return task
-            }
+            })
+        )
+    } catch (error) {
+        console.error('Erro ao carregar anexos das tarefas:', error)
+        throw new Error('Não foi possível carregar os anexos das tarefas.', {
+            cause: error,
         })
-    )
+    }
 }
 
 export const tasksApi = {

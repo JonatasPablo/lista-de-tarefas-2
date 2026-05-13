@@ -319,7 +319,7 @@ const sendEmailVerificationCode = async ({
     })
 }
 
-const sendPasswordResetCode = async ({ to, name, code }) => {
+const sendPasswordResetCode = async ({ to, name, code, resetUrl }) => {
     const subject = 'Código para redefinir sua senha - Lista de Tarefas'
 
     const text = [
@@ -329,8 +329,37 @@ const sendPasswordResetCode = async ({ to, name, code }) => {
         '',
         code,
         '',
-        'Esse código é temporário. Se você não solicitou a redefinição, ignore este e-mail.',
-    ].join('\n')
+        'Esse código é temporário.',
+        '',
+        resetUrl
+            ? `Acesse a tela de redefinição por este link: ${resetUrl}`
+            : '',
+        '',
+        'Se você não solicitou a redefinição, ignore este e-mail e mantenha sua conta protegida.',
+    ]
+        .filter(Boolean)
+        .join('\n')
+
+    const botaoRedefinirHtml = resetUrl
+        ? `
+            <a
+                href="${resetUrl}"
+                style="
+                    display: inline-block;
+                    margin-top: 18px;
+                    padding: 13px 22px;
+                    border-radius: 999px;
+                    background: #111827;
+                    color: #ffffff;
+                    font-size: 14px;
+                    font-weight: 700;
+                    text-decoration: none;
+                "
+            >
+                Abrir tela de redefinição
+            </a>
+        `
+        : ''
 
     const html = `
         <div style="
@@ -349,6 +378,22 @@ const sendPasswordResetCode = async ({ to, name, code }) => {
                 padding: 28px;
                 box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
             ">
+                <div style="
+                    width: 54px;
+                    height: 54px;
+                    border-radius: 18px;
+                    background: #111827;
+                    color: #ffffff;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 24px;
+                    font-weight: 800;
+                    margin-bottom: 18px;
+                ">
+                    🔐
+                </div>
+
                 <h2 style="
                     margin: 0 0 8px;
                     color: #111827;
@@ -358,9 +403,14 @@ const sendPasswordResetCode = async ({ to, name, code }) => {
                     Redefinição de senha
                 </h2>
 
-                <p>Olá, <strong>${name}</strong>.</p>
+                <p style="margin: 0 0 16px;">
+                    Olá, <strong>${name}</strong>.
+                </p>
 
-                <p>Use o código abaixo para redefinir sua senha:</p>
+                <p style="margin: 0 0 16px;">
+                    Use o código abaixo para redefinir sua senha na
+                    <strong>Lista de Tarefas</strong>.
+                </p>
 
                 <div style="
                     display: block;
@@ -378,12 +428,180 @@ const sendPasswordResetCode = async ({ to, name, code }) => {
                     ${code}
                 </div>
 
-                <p style="color: #6b7280; font-size: 13px;">
-                    Esse código é temporário.
+                <p style="
+                    margin: 18px 0 0;
+                    color: #6b7280;
+                    font-size: 13px;
+                ">
+                    Esse código é temporário. Use apenas dentro do prazo informado pelo sistema.
                 </p>
 
-                <p style="color: #6b7280; font-size: 12px;">
-                    Se você não solicitou a redefinição, ignore este e-mail.
+                ${botaoRedefinirHtml}
+
+                <hr style="
+                    border: 0;
+                    border-top: 1px solid #e5e7eb;
+                    margin: 24px 0;
+                " />
+
+                <p style="
+                    margin: 0;
+                    color: #6b7280;
+                    font-size: 12px;
+                ">
+                    Se você não solicitou a redefinição, ignore este e-mail e mantenha sua conta protegida.
+                </p>
+            </div>
+        </div>
+    `
+
+    await sendMail({
+        to,
+        subject,
+        html,
+        text,
+    })
+}
+
+const sendPasswordChangedNotification = async ({ to, name, resetUrl }) => {
+    const subject = 'Sua senha foi redefinida - Lista de Tarefas'
+
+    const text = [
+        `Olá, ${name}.`,
+        '',
+        'Informamos que sua senha da Lista de Tarefas foi redefinida com sucesso.',
+        '',
+        resetUrl
+            ? `Se não foi você quem fez essa alteração, redefina sua senha imediatamente por este link: ${resetUrl}`
+            : 'Se não foi você quem fez essa alteração, acesse a Lista de Tarefas e solicite uma nova redefinição de senha imediatamente.',
+        '',
+        'Por segurança, também recomendamos trocar a senha do e-mail usado na sua conta.',
+        '',
+        'Se foi você quem redefiniu a senha, nenhuma ação adicional é necessária.',
+    ]
+        .filter(Boolean)
+        .join('\n')
+
+    const botaoRedefinirHtml = resetUrl
+        ? `
+            <a
+                href="${resetUrl}"
+                style="
+                    display: inline-block;
+                    margin-top: 18px;
+                    padding: 13px 22px;
+                    border-radius: 999px;
+                    background: #111827;
+                    color: #ffffff;
+                    font-size: 14px;
+                    font-weight: 700;
+                    text-decoration: none;
+                "
+            >
+                Redefinir senha agora
+            </a>
+        `
+        : ''
+
+    const html = `
+        <div style="
+            margin: 0;
+            padding: 28px 14px;
+            background: #f3f4f6;
+            font-family: Arial, sans-serif;
+            color: #1f2937;
+            line-height: 1.6;
+        ">
+            <div style="
+                max-width: 560px;
+                margin: 0 auto;
+                background: #ffffff;
+                border-radius: 22px;
+                padding: 28px;
+                box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+            ">
+                <div style="
+                    width: 54px;
+                    height: 54px;
+                    border-radius: 18px;
+                    background: #111827;
+                    color: #ffffff;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 24px;
+                    font-weight: 800;
+                    margin-bottom: 18px;
+                ">
+                    ✓
+                </div>
+
+                <h2 style="
+                    margin: 0 0 8px;
+                    color: #111827;
+                    font-size: 24px;
+                    line-height: 1.25;
+                ">
+                    Senha redefinida com sucesso
+                </h2>
+
+                <p style="margin: 0 0 16px;">
+                    Olá, <strong>${name}</strong>.
+                </p>
+
+                <p style="margin: 0 0 16px;">
+                    Informamos que sua senha da <strong>Lista de Tarefas</strong> foi redefinida com sucesso.
+                </p>
+
+                <div style="
+                    padding: 16px;
+                    margin: 18px 0;
+                    background: #f9fafb;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 16px;
+                ">
+                    <p style="
+                        margin: 0 0 10px;
+                        color: #111827;
+                        font-size: 15px;
+                        font-weight: 700;
+                    ">
+                        Há! Não foi você?
+                    </p>
+
+                    <p style="
+                        margin: 0;
+                        color: #374151;
+                        font-size: 14px;
+                    ">
+                        Redefina sua senha imediatamente para proteger sua conta.
+                        Também recomendamos trocar a senha do e-mail usado neste cadastro,
+                        pois ele é uma parte importante da segurança da sua conta.
+                    </p>
+
+                    ${botaoRedefinirHtml}
+                </div>
+
+                <p style="
+                    margin: 18px 0 0;
+                    color: #6b7280;
+                    font-size: 13px;
+                ">
+                    Se foi você quem redefiniu a senha, nenhuma ação adicional é necessária.
+                </p>
+
+                <hr style="
+                    border: 0;
+                    border-top: 1px solid #e5e7eb;
+                    margin: 24px 0;
+                " />
+
+                <p style="
+                    margin: 0;
+                    color: #6b7280;
+                    font-size: 12px;
+                ">
+                    Esta é uma mensagem automática de segurança da Lista de Tarefas.
                 </p>
             </div>
         </div>
@@ -402,4 +620,5 @@ module.exports = {
     testConnection,
     sendEmailVerificationCode,
     sendPasswordResetCode,
+    sendPasswordChangedNotification,
 }

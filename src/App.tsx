@@ -19,8 +19,10 @@ import {
     getFileNameWithoutExtension,
 } from './utils/file'
 import { ConfirmEmailPage } from './pages/ConfirmEmailPage/ConfirmEmailPage'
+import { EsqueciSenhaPage } from './pages/EsqueciSenhaPage/EsqueciSenhaPage'
 
 import { Header } from './components/Header/Header'
+import { BottomNav } from './components/BottomNav/BottomNav'
 import { CompletedTasksPage } from './pages/CompletedTasksPage/CompletedTasksPage'
 import { HelpPage } from './pages/HelpPage/HelpPage'
 import { LoginPage } from './pages/LoginPage/LoginPage'
@@ -52,7 +54,15 @@ const clearPwaCacheForNewVersion = async () => {
     }
 }
 
-function AppContent() {
+interface AppContentProps {
+    isGoogleLoginConfigured: boolean
+}
+
+interface AppProps {
+    isGoogleLoginConfigured?: boolean
+}
+
+function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
     const navigate = useNavigate()
 
     const [user, setUser] = useState<AuthUser | null>(null)
@@ -107,6 +117,33 @@ function AppContent() {
                     },
                 })
             }
+        }
+    }
+
+    const handleLoginGoogle = async (
+        credential: string,
+        termsAccepted?: boolean
+    ) => {
+        try {
+            const response = await authApi.loginGoogle({
+                credential,
+                termsAccepted,
+            })
+
+            setIsLoadingTasks(true)
+            setUser(response.user)
+
+            showToast('success', 'Login com Google realizado com sucesso.')
+            navigate('/')
+        } catch (error) {
+            console.error('Erro ao fazer login com Google:', error)
+
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Não foi possível entrar com Google.'
+
+            showToast('error', message)
         }
     }
 
@@ -202,6 +239,102 @@ function AppContent() {
         })
 
         return response.confirmed
+    }
+
+    const handleSolicitarRedefinicaoSenha = async (email: string) => {
+        try {
+            const response = await authApi.solicitarRedefinicaoSenha({
+                email,
+            })
+
+            showToast(
+                'success',
+                response.message ||
+                    'Enviamos um código de redefinição para o seu e-mail.'
+            )
+
+            if (response.action === 'confirm_email') {
+                navigate('/confirmar-email', {
+                    state: {
+                        email,
+                    },
+                })
+            }
+
+            return response
+        } catch (error) {
+            console.error('Erro ao solicitar redefinição de senha:', error)
+
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Não foi possível solicitar a redefinição de senha.'
+
+            showToast('error', message)
+
+            throw error
+        }
+    }
+
+    const handleValidarCodigoRedefinicaoSenha = async (
+        email: string,
+        code: string
+    ) => {
+        try {
+            const response = await authApi.validarCodigoRedefinicaoSenha({
+                email,
+                code,
+            })
+
+            showToast(
+                'success',
+                response.message || 'Código validado com sucesso.'
+            )
+        } catch (error) {
+            console.error('Erro ao validar código de redefinição:', error)
+
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Não foi possível validar o código.'
+
+            showToast('error', message)
+
+            throw error
+        }
+    }
+
+    const handleRedefinirSenha = async (
+        email: string,
+        code: string,
+        password: string
+    ) => {
+        try {
+            const response = await authApi.redefinirSenha({
+                email,
+                code,
+                password,
+            })
+
+            showToast(
+                'success',
+                response.message ||
+                    'Senha redefinida com sucesso. Entre usando sua nova senha.'
+            )
+
+            navigate('/login')
+        } catch (error) {
+            console.error('Erro ao redefinir senha:', error)
+
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Não foi possível redefinir a senha.'
+
+            showToast('error', message)
+
+            throw error
+        }
     }
 
     const handleLogout = async () => {
@@ -734,6 +867,7 @@ function AppContent() {
     }, [showToast, user])
 
     return (
+        <>
         <main className="container">
             <Header user={user} onLogout={handleLogout} />
 
@@ -747,7 +881,14 @@ function AppContent() {
                             user ? (
                                 <Navigate to="/" replace />
                             ) : (
-                                <LoginPage onLogin={handleLogin} />
+                                <LoginPage
+                                    onLogin={handleLogin}
+                                    onLoginGoogle={
+                                        isGoogleLoginConfigured
+                                            ? handleLoginGoogle
+                                            : undefined
+                                    }
+                                />
                             )
                         }
                     />
@@ -758,7 +899,14 @@ function AppContent() {
                             user ? (
                                 <Navigate to="/" replace />
                             ) : (
-                                <RegisterPage onRegister={handleRegister} />
+                                <RegisterPage
+                                    onRegister={handleRegister}
+                                    onLoginGoogle={
+                                        isGoogleLoginConfigured
+                                            ? handleLoginGoogle
+                                            : undefined
+                                    }
+                                />
                             )
                         }
                     />
@@ -777,6 +925,25 @@ function AppContent() {
                                     onCheckEmailConfirmationStatus={
                                         handleCheckEmailConfirmationStatus
                                     }
+                                />
+                            )
+                        }
+                    />
+
+                    <Route
+                        path="/esqueci-senha"
+                        element={
+                            user ? (
+                                <Navigate to="/" replace />
+                            ) : (
+                                <EsqueciSenhaPage
+                                    onSolicitarRedefinicaoSenha={
+                                        handleSolicitarRedefinicaoSenha
+                                    }
+                                    onValidarCodigoRedefinicaoSenha={
+                                        handleValidarCodigoRedefinicaoSenha
+                                    }
+                                    onRedefinirSenha={handleRedefinirSenha}
                                 />
                             )
                         }
@@ -892,13 +1059,15 @@ function AppContent() {
                 onCancel={handlePromptCancel}
             />
         </main>
+        <BottomNav user={user} />
+        </>
     )
 }
 
-function App() {
+function App({ isGoogleLoginConfigured = false }: AppProps) {
     return (
         <HashRouter>
-            <AppContent />
+            <AppContent isGoogleLoginConfigured={isGoogleLoginConfigured} />
         </HashRouter>
     )
 }

@@ -15,7 +15,6 @@ export const API_URL = getApiUrl()
 type RequestOptions = {
     method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
     body?: unknown
-    auth?: boolean
 }
 
 export const apiRequest = async <ResponseData>(

@@ -1,5 +1,6 @@
 import { useState, type SyntheticEvent, type UIEvent } from 'react'
 import { Link } from 'react-router-dom'
+import { GoogleLogin, type CredentialResponse } from '@react-oauth/google'
 
 import './RegisterPage.css'
 
@@ -10,11 +11,48 @@ interface RegisterPageProps {
         password: string,
         termsAccepted: boolean
     ) => Promise<void>
+    onLoginGoogle?: (
+        credential: string,
+        termsAccepted?: boolean
+    ) => Promise<void>
 }
 
 const TERMS_VERSION = '1.0'
 
-export const RegisterPage = ({ onRegister }: RegisterPageProps) => {
+const obterRequisitosSenha = (senha: string) => {
+    return [
+        {
+            id: 'tamanho',
+            texto: 'Mínimo de 8 caracteres',
+            valido: senha.length >= 8,
+        },
+        {
+            id: 'maiuscula',
+            texto: 'Uma letra maiúscula',
+            valido: /[A-ZÀ-Ö]/.test(senha),
+        },
+        {
+            id: 'minuscula',
+            texto: 'Uma letra minúscula',
+            valido: /[a-zà-öø-ÿ]/.test(senha),
+        },
+        {
+            id: 'numero',
+            texto: 'Um número',
+            valido: /\d/.test(senha),
+        },
+        {
+            id: 'especial',
+            texto: 'Um caractere especial',
+            valido: /[^A-Za-zÀ-ÖØ-öø-ÿ0-9]/.test(senha),
+        },
+    ]
+}
+
+export const RegisterPage = ({
+    onRegister,
+    onLoginGoogle,
+}: RegisterPageProps) => {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -22,6 +60,12 @@ export const RegisterPage = ({ onRegister }: RegisterPageProps) => {
     const [hasScrolledTermsToEnd, setHasScrolledTermsToEnd] = useState(false)
     const [termsAccepted, setTermsAccepted] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isSubmittingGoogle, setIsSubmittingGoogle] = useState(false)
+
+    const requisitosSenha = obterRequisitosSenha(password)
+    const senhaAtendeRequisitos = requisitosSenha.every(
+        (requisito) => requisito.valido
+    )
 
     const handleTermsScroll = (event: UIEvent<HTMLDivElement>) => {
         const element = event.currentTarget
@@ -38,7 +82,7 @@ export const RegisterPage = ({ onRegister }: RegisterPageProps) => {
     const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        if (!hasScrolledTermsToEnd || !termsAccepted) {
+        if (!hasScrolledTermsToEnd || !termsAccepted || !senhaAtendeRequisitos) {
             return
         }
 
@@ -51,6 +95,26 @@ export const RegisterPage = ({ onRegister }: RegisterPageProps) => {
         }
     }
 
+    const handleLoginGoogleSuccess = async (
+        credentialResponse: CredentialResponse
+    ) => {
+        if (!onLoginGoogle || !credentialResponse.credential) {
+            return
+        }
+
+        if (!hasScrolledTermsToEnd || !termsAccepted) {
+            return
+        }
+
+        try {
+            setIsSubmittingGoogle(true)
+
+            await onLoginGoogle(credentialResponse.credential, termsAccepted)
+        } finally {
+            setIsSubmittingGoogle(false)
+        }
+    }
+
     return (
         <main className="register-page">
             <section className="register-card">
@@ -59,6 +123,15 @@ export const RegisterPage = ({ onRegister }: RegisterPageProps) => {
                         Crie sua conta, confirme seu e-mail e organize suas
                         tarefas com segurança.
                     </p>
+
+                    <ul className="register-hero-features">
+                        <li>Tarefas com título, prazo e prioridade</li>
+                        <li>Histórico completo de alterações</li>
+                        <li>Log detalhado de todas as ações</li>
+                        <li>Login seguro com e-mail ou Google</li>
+                        <li>Redefinição de senha por e-mail</li>
+                        <li>Confirmação de e-mail no cadastro</li>
+                    </ul>
 
                     <strong className="register-hero-title">
                         Comece sua organização
@@ -76,6 +149,46 @@ export const RegisterPage = ({ onRegister }: RegisterPageProps) => {
                     </header>
 
                     <form className="register-form" onSubmit={handleSubmit}>
+                        {onLoginGoogle ? (
+                            <section className="register-google-area">
+                                <div
+                                    className={
+                                        hasScrolledTermsToEnd && termsAccepted
+                                            ? 'register-google-button-wrapper'
+                                            : 'register-google-button-wrapper register-google-button-wrapper-disabled'
+                                    }
+                                >
+                                    <GoogleLogin
+                                        onSuccess={handleLoginGoogleSuccess}
+                                        onError={() => {
+                                            setIsSubmittingGoogle(false)
+                                        }}
+                                        text="signup_with"
+                                        shape="pill"
+                                        size="large"
+                                        width="100%"
+                                    />
+                                </div>
+
+                                {!hasScrolledTermsToEnd || !termsAccepted ? (
+                                    <small className="register-google-help">
+                                        Para criar conta com Google, leia e
+                                        aceite os termos primeiro.
+                                    </small>
+                                ) : null}
+
+                                {isSubmittingGoogle && (
+                                    <small className="register-google-help">
+                                        Entrando com Google...
+                                    </small>
+                                )}
+
+                                <div className="register-divider">
+                                    <span>ou crie com e-mail e senha</span>
+                                </div>
+                            </section>
+                        ) : null}
+
                         <div className="register-fields-grid">
                             <div className="register-field">
                                 <label htmlFor="register-name">Nome</label>
@@ -166,6 +279,25 @@ export const RegisterPage = ({ onRegister }: RegisterPageProps) => {
                                         </svg>
                                     )}
                                 </button>
+                            </div>
+
+                            <div className="register-password-requirements">
+                                <span>A senha precisa conter:</span>
+
+                                <ul>
+                                    {requisitosSenha.map((requisito) => (
+                                        <li
+                                            key={requisito.id}
+                                            className={
+                                                requisito.valido
+                                                    ? 'register-password-requirement-ok'
+                                                    : 'register-password-requirement-error'
+                                            }
+                                        >
+                                            {requisito.texto}
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         </div>
 
@@ -367,8 +499,10 @@ export const RegisterPage = ({ onRegister }: RegisterPageProps) => {
                             className="register-submit-button"
                             disabled={
                                 isSubmitting ||
+                                isSubmittingGoogle ||
                                 !hasScrolledTermsToEnd ||
-                                !termsAccepted
+                                !termsAccepted ||
+                                !senhaAtendeRequisitos
                             }
                         >
                             {isSubmitting ? 'Criando conta...' : 'Criar conta'}

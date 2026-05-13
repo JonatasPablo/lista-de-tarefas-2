@@ -1074,25 +1074,6 @@
     }
 }
 
-/* =========================
-   Celular menor
-========================= */
-
-/* =========================
-   Celular menor
-   Ajuste específico para 411 x 811
-========================= */
-
-/* =========================
-   Celular menor
-   Ajuste específico para 411 x 811
-========================= */
-
-/* =========================
-   Celular menor
-   Ajuste específico para 411 x 811
-========================= */
-
 @media only screen and (max-width: 480px) {
     .tasks-page {
         grid-template-rows: auto auto auto auto minmax(0, 1fr);
@@ -1128,7 +1109,7 @@
 
     .tasks-new-task-toggle {
         width: 100%;
-        min-height: 40px;
+        min-height: 44px;
         padding: 8px 12px;
         font-size: 14px;
     }
@@ -1171,7 +1152,7 @@
     }
 
     .tasks-page .stats-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 6px;
     }
 
@@ -1372,5 +1353,130 @@
         border-radius: 11px;
         font-size: 11px;
         line-height: 1;
+    }
+}
+
+/* =========================
+   Celular muito pequeno (≤360px)
+========================= */
+
+@media only screen and (max-width: 360px) {
+    .tasks-page {
+        gap: 5px;
+        padding: 0 5px 5px;
+    }
+
+    .tasks-page-header h2 {
+        font-size: 26px;
+    }
+
+    .tasks-form-panel,
+    .tasks-stats-panel,
+    .tasks-controls-panel,
+    .tasks-list-panel {
+        border-radius: 16px;
+    }
+
+    .tasks-form-panel {
+        gap: 5px;
+        padding: 6px;
+    }
+
+    .tasks-new-task-toggle {
+        min-height: 36px;
+        padding: 7px 11px;
+        font-size: 13px;
+    }
+
+    .tasks-page .task-form {
+        gap: 5px;
+    }
+
+    .tasks-page .task-form label {
+        font-size: 11px;
+    }
+
+    .tasks-page .task-form input,
+    .tasks-page .task-form textarea,
+    .tasks-page .task-form select,
+    .tasks-page .task-form button {
+        height: 34px;
+        min-height: 34px;
+        max-height: 34px;
+        border-radius: 12px;
+    }
+
+    .tasks-page .task-stats {
+        padding: 6px;
+    }
+
+    .tasks-page .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+    }
+
+    .tasks-controls-panel {
+        gap: 5px;
+        padding: 6px;
+    }
+
+    .tasks-page .task-filters {
+        gap: 5px;
+    }
+
+    .tasks-page .task-filters input,
+    .tasks-page .task-filters select,
+    .tasks-page .task-filters button {
+        min-height: 30px;
+        height: 30px;
+        max-height: 30px;
+        padding: 5px 8px;
+        border-radius: 11px;
+        font-size: 11px;
+    }
+
+    .tasks-export-toolbar {
+        gap: 5px;
+    }
+
+    .tasks-export-toolbar button {
+        min-height: 30px;
+        height: 30px;
+        max-height: 30px;
+        padding: 5px 6px;
+        border-radius: 11px;
+        font-size: 11px;
+    }
+
+    .tasks-list-panel {
+        padding: 7px;
+    }
+}
+
+@media only screen and (max-width: 768px) and (max-height: 700px) {
+    .tasks-page {
+        height: auto;
+        max-height: none;
+        min-height: 0;
+        grid-template-rows: none;
+        overflow: visible;
+    }
+
+    .tasks-form-panel,
+    .tasks-stats-panel,
+    .tasks-controls-panel,
+    .tasks-list-panel {
+        overflow: visible;
+    }
+
+    .tasks-list-panel {
+        max-height: none;
+        display: grid;
+        grid-template-rows: auto auto;
+    }
+
+    .tasks-scroll-area {
+        overflow: visible;
+        padding-right: 0;
     }
 }
