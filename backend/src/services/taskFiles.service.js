@@ -5,6 +5,9 @@ const connection = require('../database/connection')
 const AppError = require('../errors/AppError')
 
 const uploadsDirectory = path.resolve(__dirname, '../../uploads/tasks')
+const MAX_FILES_PER_TASK = Number(process.env.TASK_FILES_MAX_PER_TASK || 20)
+const USER_STORAGE_QUOTA_BYTES =
+    Number(process.env.TASK_FILES_USER_QUOTA_MB || 500) * 1024 * 1024
 
 const mapTaskFile = (file) => {
     if (!file) {
@@ -24,6 +27,46 @@ const mapTaskFile = (file) => {
         updated_at: file.updated_at,
         deleted_at: file.deleted_at,
     }
+}
+
+const listTaskFilesByTaskIds = async (taskIds, userId) => {
+    if (!Array.isArray(taskIds) || taskIds.length === 0) {
+        return new Map()
+    }
+
+    const placeholders = taskIds.map(() => '?').join(', ')
+
+    const [files] = await connection.query(
+        `
+            SELECT
+                id,
+                task_id,
+                user_id,
+                original_name,
+                stored_name,
+                display_name,
+                mime_type,
+                size_bytes,
+                created_at,
+                updated_at,
+                deleted_at
+            FROM task_files
+            WHERE user_id = ?
+                AND task_id IN (${placeholders})
+                AND deleted_at IS NULL
+            ORDER BY id DESC
+        `,
+        [userId, ...taskIds]
+    )
+
+    return files.reduce((filesByTaskId, file) => {
+        const taskFiles = filesByTaskId.get(file.task_id) || []
+
+        taskFiles.push(mapTaskFile(file))
+        filesByTaskId.set(file.task_id, taskFiles)
+
+        return filesByTaskId
+    }, new Map())
 }
 
 const sanitizeDisplayName = (displayName) => {
@@ -146,12 +189,58 @@ const listTaskFiles = async (taskId, userId) => {
     return files.map(mapTaskFile)
 }
 
+const ensureUploadQuota = async (taskId, userId, uploadedFileSize) => {
+    const [[taskFileStats]] = await connection.query(
+        `
+            SELECT
+                COUNT(*) AS task_files_count
+            FROM task_files
+            WHERE task_id = ?
+                AND user_id = ?
+                AND deleted_at IS NULL
+        `,
+        [taskId, userId]
+    )
+
+    if (Number(taskFileStats.task_files_count) >= MAX_FILES_PER_TASK) {
+        throw new AppError(
+            `Esta tarefa ja atingiu o limite de ${MAX_FILES_PER_TASK} anexos.`,
+            400
+        )
+    }
+
+    const [[userFileStats]] = await connection.query(
+        `
+            SELECT
+                COALESCE(SUM(size_bytes), 0) AS total_size_bytes
+            FROM task_files
+            WHERE user_id = ?
+                AND deleted_at IS NULL
+        `,
+        [userId]
+    )
+
+    const nextTotalSize =
+        Number(userFileStats.total_size_bytes) + Number(uploadedFileSize || 0)
+
+    if (nextTotalSize > USER_STORAGE_QUOTA_BYTES) {
+        const quotaInMb = Math.round(USER_STORAGE_QUOTA_BYTES / 1024 / 1024)
+
+        throw new AppError(
+            `Voce atingiu o limite de armazenamento de ${quotaInMb} MB para anexos.`,
+            400
+        )
+    }
+}
+
 const createTaskFile = async (taskId, userId, uploadedFile) => {
     await ensureTaskExistsAndIsPending(taskId, userId)
 
     if (!uploadedFile) {
         throw new AppError('Nenhum arquivo enviado.', 400)
     }
+
+    await ensureUploadQuota(taskId, userId, uploadedFile.size)
 
     const originalName = sanitizeDisplayName(uploadedFile.originalname)
     const displayName = originalName
@@ -288,6 +377,7 @@ const getTaskFileForDownload = async (taskId, fileId, userId) => {
 
 module.exports = {
     listTaskFiles,
+    listTaskFilesByTaskIds,
     createTaskFile,
     renameTaskFile,
     deleteTaskFile,

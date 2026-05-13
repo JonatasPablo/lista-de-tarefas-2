@@ -143,20 +143,22 @@
 
 .register-google-button-wrapper {
     width: 100%;
-    max-width: 400px;
+    max-width: 200px;
+    min-width: 0;
     min-height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     justify-self: center;
-    overflow: hidden;
+    overflow: visible;
     border-radius: 14px;
 }
 
-.register-google-button-wrapper iframe {
+/* .register-google-button-wrapper iframe {
     width: 100% !important;
     max-width: 100% !important;
-}
+    display: block !important;
+} */
 
 .register-google-button-wrapper-disabled {
     pointer-events: none;

@@ -1,7 +1,7 @@
 import { API_URL, apiRequest } from './api'
 import type { TaskFile } from '../types/task'
 
-type ApiTaskFile = {
+export type ApiTaskFile = {
     id: number
     task_id: number
     user_id: number
@@ -37,7 +37,7 @@ const getErrorMessage = async (response: Response) => {
     return `Erro na requisição: ${response.status}`
 }
 
-const mapApiTaskFileToTaskFile = (apiFile: ApiTaskFile): TaskFile => {
+export const mapApiTaskFileToTaskFile = (apiFile: ApiTaskFile): TaskFile => {
     return {
         id: String(apiFile.id),
         originalName: apiFile.original_name,

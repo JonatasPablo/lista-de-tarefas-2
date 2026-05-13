@@ -1,17 +1,17 @@
 .confirm-email-page {
     width: 100%;
-    height: 100%;
-    min-height: 0;
+    height: auto;
+    min-height: 100%;
     display: grid;
     place-items: center;
-    overflow: hidden;
-    padding: 0 12px;
+    overflow: visible;
+    padding: 12px;
 }
 
 .confirm-email-card {
-    width: min(900px, 100%);
-    height: 500px;
-    min-height: 0;
+    width: min(860px, 100%);
+    height: auto;
+    min-height: 480px;
     display: grid;
     grid-template-columns: minmax(300px, 0.9fr) minmax(480px, 1.1fr);
     overflow: hidden;
@@ -51,7 +51,7 @@
     font-size: 23px;
     font-weight: 800;
     line-height: 1.28;
-    letter-spacing: -0.035em;
+    letter-spacing: 0;
     padding-top: 30px;
 }
 
@@ -62,19 +62,20 @@
     font-size: 48px;
     font-weight: 900;
     line-height: 0.95;
-    letter-spacing: -0.065em;
+    letter-spacing: 0;
     padding-bottom: 30px;
 }
 
 .confirm-email-content {
     min-width: 0;
     min-height: 0;
-    height: 100%;
+    height: auto;
     display: grid;
     align-content: center;
     gap: 18px;
     padding: 34px 42px 32px;
-    overflow: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
 }
 
 .confirm-email-header {
@@ -87,7 +88,7 @@
     color: #202020;
     font-size: 42px;
     line-height: 1;
-    letter-spacing: -0.055em;
+    letter-spacing: 0;
 }
 
 .confirm-email-header p {
@@ -263,8 +264,9 @@
 
 @media only screen and (min-width: 1367px) {
     .confirm-email-card {
-        width: min(900px, 100%);
-        height: 500px;
+        width: min(860px, 100%);
+        height: clamp(480px, calc(100dvh - 180px), 700px);
+        min-height: 0;
     }
 }
 
@@ -274,8 +276,9 @@
 
 @media only screen and (min-width: 1025px) and (max-width: 1366px) {
     .confirm-email-card {
-        width: min(860px, 100%);
-        height: 470px;
+        width: min(820px, 100%);
+        height: clamp(450px, calc(100dvh - 150px), 590px);
+        min-height: 0;
         grid-template-columns: minmax(280px, 0.88fr) minmax(460px, 1.12fr);
     }
 
@@ -320,8 +323,9 @@
     }
 
     .confirm-email-card {
-        width: min(830px, 100%);
-        height: 420px;
+        width: min(800px, 100%);
+        height: clamp(350px, calc(100dvh - 110px), 430px);
+        min-height: 0;
     }
 
     .confirm-email-hero {
@@ -430,7 +434,7 @@
         padding-top: 0;
         font-size: 20px;
         line-height: 1.25;
-        letter-spacing: -0.035em;
+        letter-spacing: 0;
     }
 
     .confirm-email-hero-title {
@@ -438,7 +442,7 @@
         padding-bottom: 0;
         font-size: 38px;
         line-height: 0.95;
-        letter-spacing: -0.06em;
+        letter-spacing: 0;
     }
 
     .confirm-email-content {

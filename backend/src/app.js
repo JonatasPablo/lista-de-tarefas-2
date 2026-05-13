@@ -12,11 +12,13 @@ const app = express()
 
 app.set('trust proxy', 1)
 
+const isProduction = process.env.NODE_ENV === 'production'
+const stateChangingMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
+
 const getAllowedOrigins = () => {
-    const defaultOrigins = [
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-    ]
+    const defaultOrigins = isProduction
+        ? []
+        : ['http://localhost:5173', 'http://127.0.0.1:5173']
 
     const clientUrl = process.env.CLIENT_URL
 
@@ -28,8 +30,6 @@ const getAllowedOrigins = () => {
 }
 
 const allowedOrigins = getAllowedOrigins()
-const isProduction = process.env.NODE_ENV === 'production'
-const stateChangingMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
 
 const corsOptions = {
     origin(origin, callback) {

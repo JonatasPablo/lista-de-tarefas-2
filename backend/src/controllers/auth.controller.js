@@ -4,6 +4,14 @@ const SESSION_COOKIE_NAME = 'lista_tarefas_session'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
+const getGoogleClientId = () => {
+    return (
+        process.env.GOOGLE_CLIENT_ID?.trim() ||
+        process.env.VITE_GOOGLE_CLIENT_ID?.trim() ||
+        ''
+    )
+}
+
 const getCookieOptions = (expiresAt) => {
     return {
         httpOnly: true,
@@ -158,7 +166,7 @@ const loginGoogle = async (req, res) => {
 
 const config = async (req, res) => {
     return res.json({
-        googleLoginEnabled: Boolean(process.env.GOOGLE_CLIENT_ID?.trim()),
+        googleLoginEnabled: Boolean(getGoogleClientId()),
     })
 }
 

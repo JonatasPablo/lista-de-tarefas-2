@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import * as XLSX from 'xlsx'
 import { API_URL } from '../../services/api'
 
 import './LogPage.css'
@@ -217,6 +216,37 @@ const getErrorMessage = async (response: Response) => {
     return `Erro ao carregar log: ${response.status}`
 }
 
+const escapeCsvValue = (value: string | number) => {
+    const stringValue = String(value)
+
+    if (/[",\n\r;]/.test(stringValue)) {
+        return `"${stringValue.replace(/"/g, '""')}"`
+    }
+
+    return stringValue
+}
+
+const buildCsv = (rows: Array<Array<string | number>>) => {
+    return rows
+        .map((row) => row.map(escapeCsvValue).join(';'))
+        .join('\r\n')
+}
+
+const downloadTextFile = (content: string, fileName: string, type: string) => {
+    const blob = new Blob([content], {
+        type,
+    })
+
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+
+    link.href = url
+    link.download = fileName
+    link.click()
+
+    URL.revokeObjectURL(url)
+}
+
 export function LogPage() {
     const todayDate = getTodayDate()
 
@@ -348,40 +378,9 @@ export function LogPage() {
         window.print()
     }
 
-    const handleExportExcel = () => {
-        const workbook = XLSX.utils.book_new()
-
-        const logRows = filteredHistory.map((item) => ({
-            ID: item.id,
-            'Tarefa ID': item.task_id,
-            'Usuário ID': item.user_id,
-            'Título da tarefa': item.task_title,
-            Ação: actionLabels[item.action] || item.action,
-            'Valor anterior': formatValueToText(item.old_value),
-            'Novo valor': formatValueToText(item.new_value),
-            Data: formatDateTime(item.created_at),
-        }))
-
-        const logWorksheet = XLSX.utils.json_to_sheet(logRows)
-
-        logWorksheet['!cols'] = [
-            { wch: 8 },
-            { wch: 12 },
-            { wch: 12 },
-            { wch: 35 },
-            { wch: 18 },
-            { wch: 45 },
-            { wch: 45 },
-            { wch: 22 },
-        ]
-
-        if (logRows.length > 0) {
-            logWorksheet['!autofilter'] = {
-                ref: `A1:H${logRows.length + 1}`,
-            }
-        }
-
-        const summaryRows = [
+    const handleExportCsv = () => {
+        const filePeriod = getFilePeriodLabel(startDate, endDate)
+        const rows: Array<Array<string | number>> = [
             ['Relatório', 'Log de tarefas'],
             ['Período', reportPeriod],
             ['Busca', searchTerm.trim() || 'Nenhuma'],
@@ -394,18 +393,34 @@ export function LogPage() {
             ['Editadas', logSummary.updated],
             ['Status alterado', logSummary.statusChanged],
             ['Excluídas', logSummary.deleted],
+            [],
+            [
+                'ID',
+                'Tarefa ID',
+                'Usuário ID',
+                'Título da tarefa',
+                'Ação',
+                'Valor anterior',
+                'Novo valor',
+                'Data',
+            ],
+            ...filteredHistory.map((item) => [
+                item.id,
+                item.task_id,
+                item.user_id,
+                item.task_title,
+                actionLabels[item.action] || item.action,
+                formatValueToText(item.old_value),
+                formatValueToText(item.new_value),
+                formatDateTime(item.created_at),
+            ]),
         ]
 
-        const summaryWorksheet = XLSX.utils.aoa_to_sheet(summaryRows)
-
-        summaryWorksheet['!cols'] = [{ wch: 24 }, { wch: 35 }]
-
-        XLSX.utils.book_append_sheet(workbook, logWorksheet, 'Log filtrado')
-        XLSX.utils.book_append_sheet(workbook, summaryWorksheet, 'Resumo')
-
-        const filePeriod = getFilePeriodLabel(startDate, endDate)
-
-        XLSX.writeFile(workbook, `log-tarefas-${filePeriod}.xlsx`)
+        downloadTextFile(
+            buildCsv(rows),
+            `log-tarefas-${filePeriod}.csv`,
+            'text/csv;charset=utf-8'
+        )
     }
 
     if (isLoading) {
@@ -613,10 +628,10 @@ export function LogPage() {
 
                     <button
                         type="button"
-                        onClick={handleExportExcel}
+                        onClick={handleExportCsv}
                         disabled={filteredHistory.length === 0}
                     >
-                        Exportar Excel
+                        Exportar CSV
                     </button>
                 </div>
             </section>

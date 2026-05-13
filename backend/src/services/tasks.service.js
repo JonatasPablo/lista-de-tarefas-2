@@ -1,5 +1,6 @@
 const connection = require('../database/connection')
 const taskHistoryService = require('./taskHistory.service')
+const taskFilesService = require('./taskFiles.service')
 const AppError = require('../errors/AppError')
 
 const getTaskById = async (id, userId) => {
@@ -49,7 +50,16 @@ const listTasks = async (userId) => {
         [userId]
     )
 
-    return tasks
+    const taskIds = tasks.map((task) => task.id)
+    const filesByTaskId = await taskFilesService.listTaskFilesByTaskIds(
+        taskIds,
+        userId
+    )
+
+    return tasks.map((task) => ({
+        ...task,
+        files: filesByTaskId.get(task.id) || [],
+    }))
 }
 
 const createTask = async (userId, { title, description, priority }) => {

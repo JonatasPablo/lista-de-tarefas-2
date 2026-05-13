@@ -1,5 +1,8 @@
 import { apiRequest } from './api'
-import { taskFilesApi } from './taskFilesApi'
+import {
+    mapApiTaskFileToTaskFile,
+    type ApiTaskFile,
+} from './taskFilesApi'
 import type { Task, TaskPriority } from '../types/task'
 
 type ApiTaskStatus = 'pendente' | 'concluida' | 'cancelada' | 'arquivada'
@@ -15,6 +18,7 @@ type ApiTask = {
     updated_at: string | null
     completed_at: string | null
     deleted_at: string | null
+    files?: ApiTaskFile[]
 }
 
 type CreateTaskPayload = {
@@ -47,36 +51,15 @@ const mapApiTaskToTask = (apiTask: ApiTask): Task => {
         createdAt: formatDateTime(apiTask.created_at) || '',
         updatedAt: formatDateTime(apiTask.updated_at),
         completedAt: formatDateTime(apiTask.completed_at),
-        files: [],
-    }
-}
-
-const loadFilesForTasks = async (tasks: Task[]) => {
-    try {
-        return await Promise.all(
-            tasks.map(async (task) => {
-                const files = await taskFilesApi.listTaskFiles(task.id)
-
-                return {
-                    ...task,
-                    files,
-                }
-            })
-        )
-    } catch (error) {
-        console.error('Erro ao carregar anexos das tarefas:', error)
-        throw new Error('Não foi possível carregar os anexos das tarefas.', {
-            cause: error,
-        })
+        files: apiTask.files?.map(mapApiTaskFileToTaskFile) || [],
     }
 }
 
 export const tasksApi = {
     async listTasks() {
         const apiTasks = await apiRequest<ApiTask[]>('/tasks')
-        const tasks = apiTasks.map(mapApiTaskToTask)
 
-        return loadFilesForTasks(tasks)
+        return apiTasks.map(mapApiTaskToTask)
     },
 
     async createTask(payload: CreateTaskPayload) {

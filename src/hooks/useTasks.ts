@@ -1,0 +1,327 @@
+import { useCallback, useEffect, useState } from 'react'
+import type { ToastType } from '../components/Toast/Toast'
+import { tasksApi } from '../services/tasksApi'
+import type { AuthUser } from '../services/authApi'
+import type { Task, TaskPriority } from '../types/task'
+
+type ShowToast = (type: ToastType, message: string) => void
+type Confirm = (options: {
+    title: string
+    message: string
+    confirmText?: string
+    cancelText?: string
+}) => Promise<boolean>
+
+interface UseTasksOptions {
+    user: AuthUser | null
+    showToast: ShowToast
+    confirm: Confirm
+}
+
+export const useTasks = ({ user, showToast, confirm }: UseTasksOptions) => {
+    const [tasks, setTasks] = useState<Task[]>([])
+    const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
+    const [isLoadingTasks, setIsLoadingTasks] = useState(false)
+
+    const pendingTasks = tasks.filter((task) => !task.completed)
+    const completedTasks = tasks.filter((task) => task.completed)
+
+    const resetTasks = useCallback(() => {
+        setTasks([])
+        setSelectedTaskIds([])
+        setIsLoadingTasks(false)
+    }, [])
+
+    const addTask = async (
+        title: string,
+        description: string,
+        priority: TaskPriority
+    ) => {
+        try {
+            const newTask = await tasksApi.createTask({
+                title,
+                description,
+                priority,
+            })
+
+            setTasks((currentTasks) => [newTask, ...currentTasks])
+            showToast('success', 'Tarefa criada com sucesso.')
+        } catch (error) {
+            console.error('Erro ao criar tarefa:', error)
+            showToast('error', 'Nao foi possivel criar a tarefa.')
+        }
+    }
+
+    const toggleTask = async (taskId: string) => {
+        const taskToToggle = tasks.find((task) => task.id === taskId)
+
+        if (!taskToToggle) {
+            showToast('error', 'Tarefa nao encontrada.')
+            return
+        }
+
+        if (!taskToToggle.completed) {
+            const confirmComplete = await confirm({
+                title: 'Concluir tarefa',
+                message:
+                    'Deseja concluir esta tarefa? Ela sera enviada para o historico de concluidas e ficara bloqueada para edicao.',
+                confirmText: 'Concluir',
+                cancelText: 'Cancelar',
+            })
+
+            if (!confirmComplete) {
+                return
+            }
+        }
+
+        try {
+            const updatedTask = await tasksApi.toggleTask(taskId)
+
+            setTasks((currentTasks) =>
+                currentTasks.map((task) =>
+                    task.id === taskId
+                        ? {
+                              ...updatedTask,
+                              files: task.files,
+                          }
+                        : task
+                )
+            )
+
+            setSelectedTaskIds((currentSelectedIds) =>
+                currentSelectedIds.filter((id) => id !== taskId)
+            )
+
+            showToast(
+                taskToToggle.completed ? 'info' : 'success',
+                taskToToggle.completed
+                    ? 'Tarefa reaberta com sucesso.'
+                    : 'Tarefa concluida com sucesso.'
+            )
+        } catch (error) {
+            console.error('Erro ao alterar status da tarefa:', error)
+            showToast(
+                'error',
+                'Nao foi possivel alterar o status da tarefa.'
+            )
+        }
+    }
+
+    const updateTask = async (
+        taskId: string,
+        title: string,
+        description: string,
+        priority: TaskPriority
+    ) => {
+        const taskToUpdate = tasks.find((task) => task.id === taskId)
+
+        if (!taskToUpdate) {
+            showToast('error', 'Tarefa nao encontrada.')
+            return
+        }
+
+        if (taskToUpdate.completed) {
+            showToast('warning', 'Nao e possivel editar uma tarefa concluida.')
+            return
+        }
+
+        try {
+            const updatedTask = await tasksApi.updateTask(taskId, {
+                title,
+                description,
+                priority,
+            })
+
+            setTasks((currentTasks) =>
+                currentTasks.map((task) =>
+                    task.id === taskId
+                        ? {
+                              ...updatedTask,
+                              files: task.files,
+                          }
+                        : task
+                )
+            )
+
+            showToast('success', 'Tarefa editada com sucesso.')
+        } catch (error) {
+            console.error('Erro ao editar tarefa:', error)
+            showToast('error', 'Nao foi possivel editar a tarefa.')
+        }
+    }
+
+    const deleteTask = async (taskId: string) => {
+        const taskToDelete = tasks.find((task) => task.id === taskId)
+
+        if (!taskToDelete) {
+            showToast('error', 'Tarefa nao encontrada.')
+            return
+        }
+
+        const confirmDelete = await confirm({
+            title: 'Excluir tarefa',
+            message: `Tem certeza que deseja excluir a tarefa "${taskToDelete.title}"? Essa acao nao podera ser desfeita.`,
+            confirmText: 'Excluir',
+            cancelText: 'Cancelar',
+        })
+
+        if (!confirmDelete) {
+            return
+        }
+
+        try {
+            await tasksApi.deleteTask(taskId)
+
+            setTasks((currentTasks) =>
+                currentTasks.filter((task) => task.id !== taskId)
+            )
+
+            setSelectedTaskIds((currentSelectedIds) =>
+                currentSelectedIds.filter((id) => id !== taskId)
+            )
+
+            showToast('success', 'Tarefa excluida com sucesso.')
+        } catch (error) {
+            console.error('Erro ao excluir tarefa:', error)
+            showToast('error', 'Nao foi possivel excluir a tarefa.')
+        }
+    }
+
+    const selectTaskForExport = (taskId: string) => {
+        setSelectedTaskIds((currentSelectedIds) =>
+            currentSelectedIds.includes(taskId)
+                ? currentSelectedIds.filter((id) => id !== taskId)
+                : [...currentSelectedIds, taskId]
+        )
+    }
+
+    const selectAllVisibleTasks = (taskIds: string[]) => {
+        setSelectedTaskIds(taskIds)
+    }
+
+    const clearSelectedTasks = () => {
+        setSelectedTaskIds([])
+    }
+
+    const exportTasks = async (tasksToExport: Task[]) => {
+        if (tasksToExport.length === 0) {
+            showToast('warning', 'Nao existem tarefas pendentes para exportar.')
+            return
+        }
+
+        const includeFiles = await confirm({
+            title: 'Incluir arquivos',
+            message: 'Deseja incluir os arquivos anexados na exportacao tambem?',
+            confirmText: 'Incluir',
+            cancelText: 'Somente lista',
+        })
+
+        if (includeFiles) {
+            showToast(
+                'info',
+                'A exportacao dos arquivos em .zip sera implementada em uma proxima etapa.'
+            )
+        }
+
+        const taskText = tasksToExport
+            .map((task, index) => {
+                const filesText =
+                    task.files.length > 0
+                        ? task.files.map((file) => file.displayName).join(', ')
+                        : 'Nenhum arquivo anexado'
+
+                const descriptionText = task.description
+                    ? task.description
+                    : 'Sem descricao'
+
+                const editedAtText = task.updatedAt
+                    ? `- Editada em: ${task.updatedAt}`
+                    : '- Editada em: Nao editada'
+
+                return [
+                    `Tarefa ${index + 1}`,
+                    `- Titulo: ${task.title}`,
+                    `- Descricao: ${descriptionText}`,
+                    '- Status: Pendente',
+                    `- Criada em: ${task.createdAt}`,
+                    `- Prioridade: ${task.priority}`,
+                    `- Arquivos anexados: ${filesText}`,
+                    editedAtText,
+                ].join('\n')
+            })
+            .join('\n\n-----------------------------\n\n')
+
+        const blob = new Blob([taskText], {
+            type: 'text/plain;charset=utf-8',
+        })
+
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+
+        link.href = url
+        link.download = 'lista_de_tarefas_pendentes.txt'
+        link.click()
+
+        URL.revokeObjectURL(url)
+        clearSelectedTasks()
+    }
+
+    useEffect(() => {
+        let isMounted = true
+
+        if (!user) {
+            return () => {
+                isMounted = false
+            }
+        }
+
+        const loadUserTasks = async () => {
+            setIsLoadingTasks(true)
+
+            try {
+                const apiTasks = await tasksApi.listTasks()
+
+                if (isMounted) {
+                    setTasks(apiTasks)
+                }
+            } catch (error) {
+                console.error('Erro ao carregar tarefas:', error)
+
+                if (isMounted) {
+                    showToast(
+                        'error',
+                        'Nao foi possivel carregar as tarefas do backend.'
+                    )
+                }
+            } finally {
+                if (isMounted) {
+                    setIsLoadingTasks(false)
+                }
+            }
+        }
+
+        loadUserTasks()
+
+        return () => {
+            isMounted = false
+        }
+    }, [showToast, user])
+
+    return {
+        tasks,
+        setTasks,
+        pendingTasks,
+        completedTasks,
+        selectedTaskIds,
+        isLoadingTasks,
+        resetTasks,
+        addTask,
+        toggleTask,
+        updateTask,
+        deleteTask,
+        selectTaskForExport,
+        selectAllVisibleTasks,
+        clearSelectedTasks,
+        exportTasks,
+    }
+}

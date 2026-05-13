@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import {
     HashRouter,
     Navigate,
@@ -14,13 +14,12 @@ import { ConfirmModal } from './components/ConfirmModal/ConfirmModal'
 import { useConfirm } from './hooks/useConfirm'
 import { PromptModal } from './components/PromptModal/PromptModal'
 import { usePrompt } from './hooks/usePrompt'
-import {
-    buildFileNameWithOriginalExtension,
-    getFileNameWithoutExtension,
-} from './utils/file'
+import { useAuth } from './hooks/useAuth'
+import { useTasks } from './hooks/useTasks'
+import { useTaskFiles } from './hooks/useTaskFiles'
+import { useTheme } from './hooks/useTheme'
 import { ConfirmEmailPage } from './pages/ConfirmEmailPage/ConfirmEmailPage'
 import { EsqueciSenhaPage } from './pages/EsqueciSenhaPage/EsqueciSenhaPage'
-
 import { Header } from './components/Header/Header'
 import { BottomNav } from './components/BottomNav/BottomNav'
 import { CompletedTasksPage } from './pages/CompletedTasksPage/CompletedTasksPage'
@@ -29,12 +28,8 @@ import { LoginPage } from './pages/LoginPage/LoginPage'
 import { RegisterPage } from './pages/RegisterPage/RegisterPage'
 import { TasksPage } from './pages/TasksPage/TasksPage'
 import { LogPage } from './pages/LogPage/LogPage'
-
-import type { Task, TaskFile, TaskPriority } from './types/task'
-import { tasksApi } from './services/tasksApi'
-import { taskFilesApi } from './services/taskFilesApi'
-import { authApi, type AuthUser } from './services/authApi'
 import './styles/global.css'
+import './styles/dark-mode.css'
 
 const APP_VERSION_STORAGE_KEY = 'lista_tarefas_app_version'
 
@@ -64,18 +59,9 @@ interface AppProps {
 
 function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
     const navigate = useNavigate()
-
-    const [user, setUser] = useState<AuthUser | null>(null)
-    const [isCheckingAuth, setIsCheckingAuth] = useState(true)
-    const [tasks, setTasks] = useState<Task[]>([])
-    const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
-    const [isLoadingTasks, setIsLoadingTasks] = useState(false)
-    const [isBackendGoogleLoginEnabled, setIsBackendGoogleLoginEnabled] =
-        useState(false)
-
+    const { isDark, toggleTheme } = useTheme()
     const { toasts, showToast, removeToast } = useToast()
     const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm()
-
     const {
         prompt,
         promptState,
@@ -83,731 +69,63 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
         handlePromptCancel,
     } = usePrompt()
 
-    const pendingTasks = tasks.filter((task) => !task.completed)
-    const completedTasks = tasks.filter((task) => task.completed)
-    const isGoogleLoginAvailable =
-        isGoogleLoginConfigured && isBackendGoogleLoginEnabled
-
-    const handleLogin = async (email: string, password: string) => {
-        try {
-            const response = await authApi.login({
-                email,
-                password,
-            })
-
-            setIsLoadingTasks(true)
-            setUser(response.user)
-
-            showToast('success', 'Login realizado com sucesso.')
-            navigate('/')
-        } catch (error) {
-            console.error('Erro ao fazer login:', error)
-
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : 'Não foi possível fazer login.'
-
-            showToast('error', message)
-
-            const shouldRedirectToEmailConfirmation = message
-                .toLowerCase()
-                .includes('confirme seu e-mail')
-
-            if (shouldRedirectToEmailConfirmation) {
-                navigate('/confirmar-email', {
-                    state: {
-                        email,
-                    },
-                })
-            }
-        }
-    }
-
-    const handleLoginGoogle = async (
-        credential: string,
-        termsAccepted?: boolean
-    ) => {
-        try {
-            const response = await authApi.loginGoogle({
-                credential,
-                termsAccepted,
-            })
-
-            setIsLoadingTasks(true)
-            setUser(response.user)
-
-            showToast('success', 'Login com Google realizado com sucesso.')
-            navigate('/')
-        } catch (error) {
-            console.error('Erro ao fazer login com Google:', error)
-
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : 'Não foi possível entrar com Google.'
-
-            showToast('error', message)
-        }
-    }
-
-    const handleRegister = async (
-        name: string,
-        email: string,
-        password: string,
-        termsAccepted: boolean
-    ) => {
-        try {
-            const response = await authApi.register({
-                name,
-                email,
-                password,
-                termsAccepted,
-            })
-
-            showToast(
-                'success',
-                response.message ||
-                    'Cadastro criado com sucesso. Verifique seu e-mail para confirmar a conta.'
-            )
-
-            navigate('/confirmar-email', {
-                state: {
-                    email,
-                },
-            })
-        } catch (error) {
-            console.error('Erro ao criar cadastro:', error)
-
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : 'Não foi possível criar o cadastro.'
-
-            showToast('error', message)
-        }
-    }
-
-    const handleConfirmEmail = async (email: string, code: string) => {
-        try {
-            const response = await authApi.confirmEmail({
-                email,
-                code,
-            })
-
-            showToast(
-                'success',
-                response.message ||
-                    'E-mail confirmado com sucesso. Agora você já pode entrar.'
-            )
-        } catch (error) {
-            console.error('Erro ao confirmar e-mail:', error)
-
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : 'Não foi possível confirmar o e-mail.'
-
-            showToast('error', message)
-
-            throw error
-        }
-    }
-
-    const handleResendConfirmation = async (email: string) => {
-        try {
-            const response = await authApi.resendConfirmation({
-                email,
-            })
-
-            showToast(
-                'success',
-                response.message ||
-                    'Enviamos um novo código de confirmação para seu e-mail.'
-            )
-        } catch (error) {
-            console.error('Erro ao reenviar código:', error)
-
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : 'Não foi possível reenviar o código.'
-
-            showToast('error', message)
-        }
-    }
-
-    const handleCheckEmailConfirmationStatus = async (email: string) => {
-        const response = await authApi.getEmailConfirmationStatus({
-            email,
-        })
-
-        return response.confirmed
-    }
-
-    const handleSolicitarRedefinicaoSenha = async (email: string) => {
-        try {
-            const response = await authApi.solicitarRedefinicaoSenha({
-                email,
-            })
-
-            showToast(
-                'success',
-                response.message ||
-                    'Enviamos um código de redefinição para o seu e-mail.'
-            )
-
-            if (response.action === 'confirm_email') {
-                navigate('/confirmar-email', {
-                    state: {
-                        email,
-                    },
-                })
-            }
-
-            return response
-        } catch (error) {
-            console.error('Erro ao solicitar redefinição de senha:', error)
-
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : 'Não foi possível solicitar a redefinição de senha.'
-
-            showToast('error', message)
-
-            throw error
-        }
-    }
-
-    const handleValidarCodigoRedefinicaoSenha = async (
-        email: string,
-        code: string
-    ) => {
-        try {
-            const response = await authApi.validarCodigoRedefinicaoSenha({
-                email,
-                code,
-            })
-
-            showToast(
-                'success',
-                response.message || 'Código validado com sucesso.'
-            )
-        } catch (error) {
-            console.error('Erro ao validar código de redefinição:', error)
-
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : 'Não foi possível validar o código.'
-
-            showToast('error', message)
-
-            throw error
-        }
-    }
-
-    const handleRedefinirSenha = async (
-        email: string,
-        code: string,
-        password: string
-    ) => {
-        try {
-            const response = await authApi.redefinirSenha({
-                email,
-                code,
-                password,
-            })
-
-            showToast(
-                'success',
-                response.message ||
-                    'Senha redefinida com sucesso. Entre usando sua nova senha.'
-            )
-
-            navigate('/login')
-        } catch (error) {
-            console.error('Erro ao redefinir senha:', error)
-
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : 'Não foi possível redefinir a senha.'
-
-            showToast('error', message)
-
-            throw error
-        }
-    }
-
-    const handleLogout = async () => {
-        try {
-            await authApi.logout()
-        } catch (error) {
-            console.error('Erro ao encerrar sessão:', error)
-        } finally {
-            setUser(null)
-            setTasks([])
-            setSelectedTaskIds([])
-            setIsLoadingTasks(false)
-            showToast('info', 'Você saiu do sistema.')
-            navigate('/login')
-        }
-    }
-
-    const addTask = async (
-        title: string,
-        description: string,
-        priority: TaskPriority
-    ) => {
-        try {
-            const newTask = await tasksApi.createTask({
-                title,
-                description,
-                priority,
-            })
-
-            setTasks((currentTasks) => [newTask, ...currentTasks])
-
-            showToast('success', 'Tarefa criada com sucesso.')
-        } catch (error) {
-            console.error('Erro ao criar tarefa:', error)
-            showToast('error', 'Não foi possível criar a tarefa.')
-        }
-    }
-
-    const toggleTask = async (taskId: string) => {
-        const taskToToggle = tasks.find((task) => task.id === taskId)
-
-        if (!taskToToggle) {
-            showToast('error', 'Tarefa não encontrada.')
-            return
-        }
-
-        if (!taskToToggle.completed) {
-            const confirmComplete = await confirm({
-                title: 'Concluir tarefa',
-                message:
-                    'Deseja concluir esta tarefa? Ela será enviada para o histórico de concluídas e ficará bloqueada para edição.',
-                confirmText: 'Concluir',
-                cancelText: 'Cancelar',
-            })
-
-            if (!confirmComplete) {
-                return
-            }
-        }
-
-        try {
-            const updatedTask = await tasksApi.toggleTask(taskId)
-
-            setTasks((currentTasks) =>
-                currentTasks.map((task) =>
-                    task.id === taskId
-                        ? {
-                              ...updatedTask,
-                              files: task.files,
-                          }
-                        : task
-                )
-            )
-
-            setSelectedTaskIds((currentSelectedIds) =>
-                currentSelectedIds.filter((id) => id !== taskId)
-            )
-
-            showToast(
-                taskToToggle.completed ? 'info' : 'success',
-                taskToToggle.completed
-                    ? 'Tarefa reaberta com sucesso.'
-                    : 'Tarefa concluída com sucesso.'
-            )
-        } catch (error) {
-            console.error('Erro ao alterar status da tarefa:', error)
-            showToast(
-                'error',
-                'Não foi possível alterar o status da tarefa.'
-            )
-        }
-    }
-
-    const updateTask = async (
-        taskId: string,
-        title: string,
-        description: string,
-        priority: TaskPriority
-    ) => {
-        const taskToUpdate = tasks.find((task) => task.id === taskId)
-
-        if (!taskToUpdate) {
-            showToast('error', 'Tarefa não encontrada.')
-            return
-        }
-
-        if (taskToUpdate.completed) {
-            showToast(
-                'warning',
-                'Não é possível editar uma tarefa concluída.'
-            )
-            return
-        }
-
-        try {
-            const updatedTask = await tasksApi.updateTask(taskId, {
-                title,
-                description,
-                priority,
-            })
-
-            setTasks((currentTasks) =>
-                currentTasks.map((task) =>
-                    task.id === taskId
-                        ? {
-                              ...updatedTask,
-                              files: task.files,
-                          }
-                        : task
-                )
-            )
-
-            showToast('success', 'Tarefa editada com sucesso.')
-        } catch (error) {
-            console.error('Erro ao editar tarefa:', error)
-            showToast('error', 'Não foi possível editar a tarefa.')
-        }
-    }
-
-    const deleteTask = async (taskId: string) => {
-        const taskToDelete = tasks.find((task) => task.id === taskId)
-
-        if (!taskToDelete) {
-            showToast('error', 'Tarefa não encontrada.')
-            return
-        }
-
-        const confirmDelete = await confirm({
-            title: 'Excluir tarefa',
-            message: `Tem certeza que deseja excluir a tarefa "${taskToDelete.title}"? Essa ação não poderá ser desfeita.`,
-            confirmText: 'Excluir',
-            cancelText: 'Cancelar',
-        })
-
-        if (!confirmDelete) {
-            return
-        }
-
-        try {
-            await tasksApi.deleteTask(taskId)
-
-            setTasks((currentTasks) =>
-                currentTasks.filter((task) => task.id !== taskId)
-            )
-
-            setSelectedTaskIds((currentSelectedIds) =>
-                currentSelectedIds.filter((id) => id !== taskId)
-            )
-
-            showToast('success', 'Tarefa excluída com sucesso.')
-        } catch (error) {
-            console.error('Erro ao excluir tarefa:', error)
-            showToast('error', 'Não foi possível excluir a tarefa.')
-        }
-    }
-
-    const addFilesToTask = async (taskId: string, files: File[]) => {
-        const taskToUpdate = tasks.find((task) => task.id === taskId)
-
-        if (!taskToUpdate) {
-            showToast('error', 'Tarefa não encontrada.')
-            return
-        }
-
-        if (taskToUpdate.completed) {
-            showToast(
-                'warning',
-                'Não é possível anexar arquivo em uma tarefa concluída.'
-            )
-            return
-        }
-
-        try {
-            const uploadedFiles = await Promise.all(
-                files.map((file) => taskFilesApi.uploadTaskFile(taskId, file))
-            )
-
-            setTasks((currentTasks) =>
-                currentTasks.map((task) => {
-                    if (task.id !== taskId) {
-                        return task
-                    }
-
-                    return {
-                        ...task,
-                        files: [...task.files, ...uploadedFiles],
-                    }
-                })
-            )
-
-            showToast(
-                'success',
-                uploadedFiles.length === 1
-                    ? 'Arquivo anexado com sucesso.'
-                    : 'Arquivos anexados com sucesso.'
-            )
-        } catch (error) {
-            console.error('Erro ao anexar arquivo:', error)
-
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : 'Não foi possível anexar o arquivo.'
-
-            showToast('error', message)
-        }
-    }
-
-    const renameTaskFile = async (
-        taskId: string,
-        fileId: string,
-        displayName: string
-    ) => {
-        const taskToUpdate = tasks.find((task) => task.id === taskId)
-
-        if (!taskToUpdate) {
-            showToast('error', 'Tarefa não encontrada.')
-            return
-        }
-
-        if (taskToUpdate.completed) {
-            showToast(
-                'warning',
-                'Não é possível renomear arquivo de uma tarefa concluída.'
-            )
-            return
-        }
-
-        try {
-            const renamedFile = await taskFilesApi.renameTaskFile(
-                taskId,
-                fileId,
-                displayName
-            )
-
-            setTasks((currentTasks) =>
-                currentTasks.map((task) => {
-                    if (task.id !== taskId) {
-                        return task
-                    }
-
-                    return {
-                        ...task,
-                        files: task.files.map((file) =>
-                            file.id === fileId ? renamedFile : file
-                        ),
-                    }
-                })
-            )
-
-            showToast('success', 'Arquivo renomeado com sucesso.')
-        } catch (error) {
-            console.error('Erro ao renomear arquivo:', error)
-
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : 'Não foi possível renomear o arquivo.'
-
-            showToast('error', message)
-        }
-    }
-
-    const deleteTaskFile = async (taskId: string, fileId: string) => {
-        const taskToUpdate = tasks.find((task) => task.id === taskId)
-
-        if (!taskToUpdate) {
-            showToast('error', 'Tarefa não encontrada.')
-            return
-        }
-
-        if (taskToUpdate.completed) {
-            showToast(
-                'warning',
-                'Não é possível deletar arquivo de uma tarefa concluída.'
-            )
-            return
-        }
-
-        try {
-            await taskFilesApi.deleteTaskFile(taskId, fileId)
-
-            setTasks((currentTasks) =>
-                currentTasks.map((task) => {
-                    if (task.id !== taskId) {
-                        return task
-                    }
-
-                    return {
-                        ...task,
-                        files: task.files.filter((file) => file.id !== fileId),
-                    }
-                })
-            )
-
-            showToast('success', 'Arquivo excluído com sucesso.')
-        } catch (error) {
-            console.error('Erro ao excluir arquivo:', error)
-
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : 'Não foi possível excluir o arquivo.'
-
-            showToast('error', message)
-        }
-    }
-
-    const selectTaskForExport = (taskId: string) => {
-        setSelectedTaskIds((currentSelectedIds) =>
-            currentSelectedIds.includes(taskId)
-                ? currentSelectedIds.filter((id) => id !== taskId)
-                : [...currentSelectedIds, taskId]
-        )
-    }
-
-    const selectAllVisibleTasks = (taskIds: string[]) => {
-        setSelectedTaskIds(taskIds)
-    }
-
-    const clearSelectedTasks = () => {
-        setSelectedTaskIds([])
-    }
-
-    const exportTasks = async (tasksToExport: Task[]) => {
-        if (tasksToExport.length === 0) {
-            showToast('warning', 'Não existem tarefas pendentes para exportar.')
-            return
-        }
-
-        const includeFiles = await confirm({
-            title: 'Incluir arquivos',
-            message: 'Deseja incluir os arquivos anexados na exportação também?',
-            confirmText: 'Incluir',
-            cancelText: 'Somente lista',
-        })
-
-        if (includeFiles) {
-            showToast(
-                'info',
-                'A exportação dos arquivos em .zip será implementada em uma próxima etapa.'
-            )
-        }
-
-        const taskText = tasksToExport
-            .map((task, index) => {
-                const filesText =
-                    task.files.length > 0
-                        ? task.files.map((file) => file.displayName).join(', ')
-                        : 'Nenhum arquivo anexado'
-
-                const descriptionText = task.description
-                    ? task.description
-                    : 'Sem descrição'
-
-                const editedAtText = task.updatedAt
-                    ? `- Editada em: ${task.updatedAt}`
-                    : '- Editada em: Não editada'
-
-                return [
-                    `Tarefa ${index + 1}`,
-                    `- Título: ${task.title}`,
-                    `- Descrição: ${descriptionText}`,
-                    '- Status: Pendente',
-                    `- Criada em: ${task.createdAt}`,
-                    `- Prioridade: ${task.priority}`,
-                    `- Arquivos anexados: ${filesText}`,
-                    editedAtText,
-                ].join('\n')
-            })
-            .join('\n\n-----------------------------\n\n')
-
-        const blob = new Blob([taskText], {
-            type: 'text/plain;charset=utf-8',
-        })
-
-        const url = URL.createObjectURL(blob)
-
-        const link = document.createElement('a')
-        link.href = url
-        link.download = 'lista_de_tarefas_pendentes.txt'
-        link.click()
-
-        URL.revokeObjectURL(url)
-        clearSelectedTasks()
-    }
-
-    const requestRenameTaskFile = async (taskId: string, file: TaskFile) => {
-        const currentNameWithoutExtension = getFileNameWithoutExtension(
-            file.displayName
-        )
-
-        const newName = await prompt({
-            title: 'Renomear arquivo',
-            message:
-                'Digite o novo nome do arquivo. A extensão original será mantida automaticamente.',
-            initialValue: currentNameWithoutExtension,
-            confirmText: 'Renomear',
-            cancelText: 'Cancelar',
-        })
-
-        if (!newName?.trim()) {
-            return
-        }
-
-        const displayNameWithOriginalExtension =
-            buildFileNameWithOriginalExtension(newName, file.originalName)
-
-        renameTaskFile(taskId, file.id, displayNameWithOriginalExtension)
-    }
+    const {
+        user,
+        isCheckingAuth,
+        isGoogleLoginAvailable,
+        handleLogin,
+        handleLoginGoogle,
+        handleRegister,
+        handleConfirmEmail,
+        handleResendConfirmation,
+        handleCheckEmailConfirmationStatus,
+        handleSolicitarRedefinicaoSenha,
+        handleValidarCodigoRedefinicaoSenha,
+        handleRedefinirSenha,
+        handleLogout,
+    } = useAuth({
+        isGoogleLoginConfigured,
+        navigate,
+        showToast,
+    })
+
+    const {
+        tasks,
+        setTasks,
+        pendingTasks,
+        completedTasks,
+        selectedTaskIds,
+        isLoadingTasks,
+        resetTasks,
+        addTask,
+        toggleTask,
+        updateTask,
+        deleteTask,
+        selectTaskForExport,
+        selectAllVisibleTasks,
+        clearSelectedTasks,
+        exportTasks,
+    } = useTasks({
+        user,
+        showToast,
+        confirm,
+    })
+
+    const {
+        addFilesToTask,
+        renameTaskFile,
+        deleteTaskFile,
+        requestRenameTaskFile,
+    } = useTaskFiles({
+        tasks,
+        setTasks,
+        showToast,
+        prompt,
+    })
 
     useEffect(() => {
         document.title = `${APP_NAME} v${APP_VERSION}`
     }, [])
-
-    useEffect(() => {
-        let isMounted = true
-
-        if (!isGoogleLoginConfigured) {
-            return () => {
-                isMounted = false
-            }
-        }
-
-        const loadAuthConfig = async () => {
-            try {
-                const config = await authApi.getConfig()
-
-                if (isMounted) {
-                    setIsBackendGoogleLoginEnabled(config.googleLoginEnabled)
-                }
-            } catch (error) {
-                console.error(
-                    'Erro ao carregar configuração de autenticação:',
-                    error
-                )
-
-                if (isMounted) {
-                    setIsBackendGoogleLoginEnabled(false)
-                }
-            }
-        }
-
-        loadAuthConfig()
-
-        return () => {
-            isMounted = false
-        }
-    }, [isGoogleLoginConfigured])
 
     useEffect(() => {
         const storedVersion = localStorage.getItem(APP_VERSION_STORAGE_KEY)
@@ -835,270 +153,229 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
         refreshAppVersion()
     }, [])
 
-    useEffect(() => {
-        let isMounted = true
-
-        const checkAuth = async () => {
-            try {
-                const authenticatedUser = await authApi.me()
-
-                if (isMounted) {
-                    setIsLoadingTasks(true)
-                    setUser(authenticatedUser)
-                }
-            } catch {
-                if (isMounted) {
-                    setUser(null)
-                    setTasks([])
-                    setSelectedTaskIds([])
-                }
-            } finally {
-                if (isMounted) {
-                    setIsCheckingAuth(false)
-                }
-            }
-        }
-
-        checkAuth()
-
-        return () => {
-            isMounted = false
-        }
-    }, [])
-
-    useEffect(() => {
-        let isMounted = true
-
-        if (!user) {
-            return () => {
-                isMounted = false
-            }
-        }
-
-        const loadUserTasks = async () => {
-            try {
-                const apiTasks = await tasksApi.listTasks()
-
-                if (isMounted) {
-                    setTasks(apiTasks)
-                }
-            } catch (error) {
-                console.error('Erro ao carregar tarefas:', error)
-
-                if (isMounted) {
-                    showToast(
-                        'error',
-                        'Não foi possível carregar as tarefas do backend.'
-                    )
-                }
-            } finally {
-                if (isMounted) {
-                    setIsLoadingTasks(false)
-                }
-            }
-        }
-
-        loadUserTasks()
-
-        return () => {
-            isMounted = false
-        }
-    }, [showToast, user])
-
     return (
         <>
-        <main className="container">
-            <Header user={user} onLogout={handleLogout} />
+            <main className="container">
+                <Header
+                    user={user}
+                    onLogout={async () => {
+                        await handleLogout()
+                        resetTasks()
+                    }}
+                    isDark={isDark}
+                    onToggleTheme={toggleTheme}
+                />
 
-            {isCheckingAuth ? (
-                <p className="empty-message">Validando sessão...</p>
-            ) : (
-                <Routes>
-                    <Route
-                        path="/login"
-                        element={
-                            user ? (
-                                <Navigate to="/" replace />
-                            ) : (
-                                <LoginPage
-                                    onLogin={handleLogin}
-                                    onLoginGoogle={
-                                        isGoogleLoginAvailable
-                                            ? handleLoginGoogle
-                                            : undefined
-                                    }
-                                />
-                            )
-                        }
-                    />
-
-                    <Route
-                        path="/cadastro"
-                        element={
-                            user ? (
-                                <Navigate to="/" replace />
-                            ) : (
-                                <RegisterPage
-                                    onRegister={handleRegister}
-                                    onLoginGoogle={
-                                        isGoogleLoginAvailable
-                                            ? handleLoginGoogle
-                                            : undefined
-                                    }
-                                />
-                            )
-                        }
-                    />
-
-                    <Route
-                        path="/confirmar-email"
-                        element={
-                            user ? (
-                                <Navigate to="/" replace />
-                            ) : (
-                                <ConfirmEmailPage
-                                    onConfirmEmail={handleConfirmEmail}
-                                    onResendConfirmation={
-                                        handleResendConfirmation
-                                    }
-                                    onCheckEmailConfirmationStatus={
-                                        handleCheckEmailConfirmationStatus
-                                    }
-                                />
-                            )
-                        }
-                    />
-
-                    <Route
-                        path="/esqueci-senha"
-                        element={
-                            user ? (
-                                <Navigate to="/" replace />
-                            ) : (
-                                <EsqueciSenhaPage
-                                    onSolicitarRedefinicaoSenha={
-                                        handleSolicitarRedefinicaoSenha
-                                    }
-                                    onValidarCodigoRedefinicaoSenha={
-                                        handleValidarCodigoRedefinicaoSenha
-                                    }
-                                    onRedefinirSenha={handleRedefinirSenha}
-                                />
-                            )
-                        }
-                    />
-
-                    <Route path="/ajuda" element={<HelpPage />} />
-
-                    <Route
-                        path="/"
-                        element={
-                            user ? (
-                                isLoadingTasks ? (
-                                    <p className="empty-message">
-                                        Carregando tarefas...
-                                    </p>
+                {isCheckingAuth ? (
+                    <p className="empty-message">Validando sessao...</p>
+                ) : (
+                    <Routes>
+                        <Route
+                            path="/login"
+                            element={
+                                user ? (
+                                    <Navigate to="/" replace />
                                 ) : (
-                                    <TasksPage
-                                        onRequestRenameFile={
-                                            requestRenameTaskFile
+                                    <LoginPage
+                                        onLogin={handleLogin}
+                                        onLoginGoogle={
+                                            isGoogleLoginAvailable
+                                                ? handleLoginGoogle
+                                                : undefined
                                         }
-                                        pendingTasks={pendingTasks}
-                                        selectedTaskIds={selectedTaskIds}
-                                        onSelectTask={selectTaskForExport}
-                                        onSelectAllVisibleTasks={
-                                            selectAllVisibleTasks
-                                        }
-                                        onClearSelectedTasks={
-                                            clearSelectedTasks
-                                        }
-                                        onAddTask={addTask}
-                                        onToggleTask={toggleTask}
-                                        onDeleteTask={deleteTask}
-                                        onUpdateTask={updateTask}
-                                        onAddFiles={addFilesToTask}
-                                        onRenameFile={renameTaskFile}
-                                        onDeleteFile={deleteTaskFile}
-                                        onExportTasks={exportTasks}
-                                        onConfirm={confirm}
+                                        isDark={isDark}
+                                        onToggleTheme={toggleTheme}
                                     />
                                 )
-                            ) : (
-                                <Navigate to="/login" replace />
-                            )
-                        }
-                    />
+                            }
+                        />
 
-                    <Route
-                        path="/historico"
-                        element={
-                            user ? (
-                                isLoadingTasks ? (
-                                    <p className="empty-message">
-                                        Carregando tarefas...
-                                    </p>
+                        <Route
+                            path="/cadastro"
+                            element={
+                                user ? (
+                                    <Navigate to="/" replace />
                                 ) : (
-                                    <CompletedTasksPage
-                                        onRequestRenameFile={
-                                            requestRenameTaskFile
+                                    <RegisterPage
+                                        onRegister={handleRegister}
+                                        onLoginGoogle={
+                                            isGoogleLoginAvailable
+                                                ? handleLoginGoogle
+                                                : undefined
                                         }
-                                        completedTasks={completedTasks}
-                                        onToggleTask={toggleTask}
-                                        onDeleteTask={deleteTask}
-                                        onUpdateTask={updateTask}
-                                        onAddFiles={addFilesToTask}
-                                        onRenameFile={renameTaskFile}
-                                        onDeleteFile={deleteTaskFile}
+                                        isDark={isDark}
+                                        onToggleTheme={toggleTheme}
                                     />
                                 )
-                            ) : (
-                                <Navigate to="/login" replace />
-                            )
-                        }
-                    />
+                            }
+                        />
 
-                    <Route
-                        path="/log"
-                        element={
-                            user ? (
-                                <LogPage />
-                            ) : (
-                                <Navigate to="/login" replace />
-                            )
-                        }
-                    />
+                        <Route
+                            path="/confirmar-email"
+                            element={
+                                user ? (
+                                    <Navigate to="/" replace />
+                                ) : (
+                                    <ConfirmEmailPage
+                                        onConfirmEmail={handleConfirmEmail}
+                                        onResendConfirmation={
+                                            handleResendConfirmation
+                                        }
+                                        onCheckEmailConfirmationStatus={
+                                            handleCheckEmailConfirmationStatus
+                                        }
+                                        isDark={isDark}
+                                        onToggleTheme={toggleTheme}
+                                    />
+                                )
+                            }
+                        />
 
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-            )}
+                        <Route
+                            path="/esqueci-senha"
+                            element={
+                                user ? (
+                                    <Navigate to="/" replace />
+                                ) : (
+                                    <EsqueciSenhaPage
+                                        onSolicitarRedefinicaoSenha={
+                                            handleSolicitarRedefinicaoSenha
+                                        }
+                                        onValidarCodigoRedefinicaoSenha={
+                                            handleValidarCodigoRedefinicaoSenha
+                                        }
+                                        onRedefinirSenha={handleRedefinirSenha}
+                                        isDark={isDark}
+                                        onToggleTheme={toggleTheme}
+                                    />
+                                )
+                            }
+                        />
 
-            <Footer />
+                        <Route
+                            path="/ajuda"
+                            element={
+                                <HelpPage
+                                    isDark={isDark}
+                                    onToggleTheme={toggleTheme}
+                                    isLoggedIn={!!user}
+                                />
+                            }
+                        />
 
-            <Toast messages={toasts} onRemoveToast={removeToast} />
+                        <Route
+                            path="/"
+                            element={
+                                user ? (
+                                    isLoadingTasks ? (
+                                        <p className="empty-message">
+                                            Carregando tarefas...
+                                        </p>
+                                    ) : (
+                                        <TasksPage
+                                            onRequestRenameFile={
+                                                requestRenameTaskFile
+                                            }
+                                            pendingTasks={pendingTasks}
+                                            selectedTaskIds={selectedTaskIds}
+                                            onSelectTask={selectTaskForExport}
+                                            onSelectAllVisibleTasks={
+                                                selectAllVisibleTasks
+                                            }
+                                            onClearSelectedTasks={
+                                                clearSelectedTasks
+                                            }
+                                            onAddTask={addTask}
+                                            onToggleTask={toggleTask}
+                                            onDeleteTask={deleteTask}
+                                            onUpdateTask={updateTask}
+                                            onAddFiles={addFilesToTask}
+                                            onRenameFile={renameTaskFile}
+                                            onDeleteFile={deleteTaskFile}
+                                            onExportTasks={exportTasks}
+                                            onConfirm={confirm}
+                                        />
+                                    )
+                                ) : (
+                                    <Navigate to="/login" replace />
+                                )
+                            }
+                        />
 
-            <ConfirmModal
-                isOpen={confirmState.isOpen}
-                title={confirmState.title}
-                message={confirmState.message}
-                confirmText={confirmState.confirmText}
-                cancelText={confirmState.cancelText}
-                onConfirm={handleConfirm}
-                onCancel={handleCancel}
-            />
+                        <Route
+                            path="/historico"
+                            element={
+                                user ? (
+                                    isLoadingTasks ? (
+                                        <p className="empty-message">
+                                            Carregando tarefas...
+                                        </p>
+                                    ) : (
+                                        <CompletedTasksPage
+                                            onRequestRenameFile={
+                                                requestRenameTaskFile
+                                            }
+                                            completedTasks={completedTasks}
+                                            onToggleTask={toggleTask}
+                                            onDeleteTask={deleteTask}
+                                            onUpdateTask={updateTask}
+                                            onAddFiles={addFilesToTask}
+                                            onRenameFile={renameTaskFile}
+                                            onDeleteFile={deleteTaskFile}
+                                        />
+                                    )
+                                ) : (
+                                    <Navigate to="/login" replace />
+                                )
+                            }
+                        />
 
-            <PromptModal
-                key={promptState.isOpen ? promptState.initialValue : 'closed'}
-                isOpen={promptState.isOpen}
-                title={promptState.title}
-                message={promptState.message}
-                initialValue={promptState.initialValue}
-                confirmText={promptState.confirmText}
-                cancelText={promptState.cancelText}
-                onConfirm={handlePromptConfirm}
-                onCancel={handlePromptCancel}
-            />
-        </main>
-        <BottomNav user={user} />
+                        <Route
+                            path="/log"
+                            element={
+                                user ? (
+                                    <LogPage />
+                                ) : (
+                                    <Navigate to="/login" replace />
+                                )
+                            }
+                        />
+
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                )}
+
+                <Footer />
+
+                <Toast messages={toasts} onRemoveToast={removeToast} />
+
+                <ConfirmModal
+                    isOpen={confirmState.isOpen}
+                    title={confirmState.title}
+                    message={confirmState.message}
+                    confirmText={confirmState.confirmText}
+                    cancelText={confirmState.cancelText}
+                    onConfirm={handleConfirm}
+                    onCancel={handleCancel}
+                />
+
+                <PromptModal
+                    key={
+                        promptState.isOpen
+                            ? promptState.initialValue
+                            : 'closed'
+                    }
+                    isOpen={promptState.isOpen}
+                    title={promptState.title}
+                    message={promptState.message}
+                    initialValue={promptState.initialValue}
+                    confirmText={promptState.confirmText}
+                    cancelText={promptState.cancelText}
+                    onConfirm={handlePromptConfirm}
+                    onCancel={handlePromptCancel}
+                />
+            </main>
+            <BottomNav user={user} />
         </>
     )
 }

@@ -19,6 +19,14 @@ const PROVEDOR_LOCAL = 'local'
 const PROVEDOR_GOOGLE = 'google'
 const PROVEDOR_APPLE = 'apple'
 
+const getGoogleClientId = () => {
+    return (
+        process.env.GOOGLE_CLIENT_ID?.trim() ||
+        process.env.VITE_GOOGLE_CLIENT_ID?.trim() ||
+        ''
+    )
+}
+
 const MENSAGEM_REENVIO_CONFIRMACAO =
     'Se existir uma conta pendente de confirmação para este e-mail, enviaremos um novo código.'
 const MENSAGEM_REDEFINICAO_SOLICITADA =
@@ -894,12 +902,10 @@ const resendEmailVerificationCode = async ({ email }) => {
 }
 
 const verificarStatusConfirmacaoEmail = async ({ email }) => {
-    const validEmail = normalizeEmail(email)
-
-    const user = await findUserByEmail(validEmail)
+    normalizeEmail(email)
 
     return {
-        confirmed: Boolean(user?.email_verified_at),
+        confirmed: false,
     }
 }
 
@@ -1112,7 +1118,7 @@ const validarTokenGoogle = async (credential) => {
         throw new AppError('Token do Google não informado.', 400)
     }
 
-    const googleClientId = process.env.GOOGLE_CLIENT_ID
+    const googleClientId = getGoogleClientId()
 
     if (!googleClientId) {
         throw new AppError(

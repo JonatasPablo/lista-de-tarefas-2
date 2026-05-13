@@ -1,0 +1,1033 @@
+/* =========================
+   Dark mode — Lista de Tarefas
+   Ativado via data-theme="dark" no <html>
+========================= */
+
+/* ---- Body ---- */
+
+[data-theme="dark"] body {
+    background:
+        radial-gradient(
+            circle at 12% 18%,
+            rgba(255, 255, 255, 0.04) 0,
+            transparent 24%
+        ),
+        radial-gradient(
+            circle at 82% 12%,
+            rgba(255, 255, 255, 0.03) 0,
+            transparent 28%
+        ),
+        linear-gradient(135deg, #272730 0%, #21212a 45%, #1c1c24 100%);
+    color: #d8d8d8;
+}
+
+/* ---- Container ---- */
+
+[data-theme="dark"] .container {
+    border-color: rgba(255, 255, 255, 0.07);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.05),
+            rgba(255, 255, 255, 0.02)
+        );
+    box-shadow:
+        0 24px 70px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ---- Header ---- */
+
+[data-theme="dark"] .header h1 {
+    color: #d8d8d8;
+}
+
+[data-theme="dark"] .nav-link {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #c0c0c0;
+}
+
+[data-theme="dark"] .nav-link:hover,
+[data-theme="dark"] .nav-link.active {
+    background-color: rgba(225, 225, 225, 0.9);
+    color: #111111;
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="dark"] .header-user {
+    background-color: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .header-user-info strong {
+    color: #c8c8c8;
+}
+
+[data-theme="dark"] .header-logout-button {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #d0d0d0;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="dark"] .header-logout-button:hover {
+    background-color: rgba(225, 225, 225, 0.9);
+    color: #111111;
+}
+
+/* ---- Botão de toggle de tema ---- */
+
+[data-theme="dark"] .theme-toggle-btn {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #c0c0c0;
+}
+
+[data-theme="dark"] .theme-toggle-btn:hover {
+    background-color: rgba(225, 225, 225, 0.9);
+    color: #111111;
+}
+
+/* ---- Bottom navigation ---- */
+
+[data-theme="dark"] .bottom-nav {
+    background: rgba(18, 18, 20, 0.97);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow:
+        0 20px 48px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .bottom-nav-link {
+    color: rgba(210, 210, 210, 0.38);
+}
+
+[data-theme="dark"] .bottom-nav-link.active {
+    color: #e0e0e0;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .bottom-nav-link:hover {
+    color: #c8c8c8;
+}
+
+/* ---- Footer ---- */
+
+[data-theme="dark"] .app-footer {
+    border-color: rgba(255, 255, 255, 0.06);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.05),
+            rgba(255, 255, 255, 0.02)
+        );
+    color: #787878;
+}
+
+[data-theme="dark"] .app-footer a {
+    color: #787878;
+}
+
+/* ---- Estado vazio ---- */
+
+[data-theme="dark"] .empty-message {
+    color: #b0b0b0;
+}
+
+/* ---- Toasts ---- */
+
+[data-theme="dark"] .toast-info {
+    background-color: #2c2c34;
+}
+
+/* ---- Modais globais ---- */
+
+[data-theme="dark"] .confirm-modal {
+    background-color: #1e1e24;
+    color: #d0d0d0;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65);
+}
+
+[data-theme="dark"] .confirm-modal input {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #d0d0d0;
+}
+
+[data-theme="dark"] .confirm-modal-actions button {
+    background-color: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #d0d0d0;
+}
+
+[data-theme="dark"] .confirm-modal-actions button:hover {
+    background-color: rgba(225, 225, 225, 0.9);
+    color: #111111;
+}
+
+[data-theme="dark"] .confirm-button {
+    background-color: rgba(225, 225, 225, 0.92) !important;
+    color: #111111 !important;
+}
+
+[data-theme="dark"] .confirm-button:hover {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+/* =========================
+   Painéis compartilhados (padrão glassmorphism escuro)
+========================= */
+
+[data-theme="dark"] .tasks-form-panel,
+[data-theme="dark"] .tasks-stats-panel,
+[data-theme="dark"] .tasks-controls-panel,
+[data-theme="dark"] .tasks-list-panel,
+[data-theme="dark"] .completed-tasks-stats-panel,
+[data-theme="dark"] .completed-tasks-controls-panel,
+[data-theme="dark"] .completed-tasks-list-panel,
+[data-theme="dark"] .log-summary-panel,
+[data-theme="dark"] .log-controls-panel,
+[data-theme="dark"] .log-list-panel {
+    border-color: rgba(255, 255, 255, 0.07);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.06),
+            rgba(255, 255, 255, 0.03)
+        );
+    box-shadow:
+        0 14px 32px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* =========================
+   TasksPage
+========================= */
+
+[data-theme="dark"] .tasks-page-header h2 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .tasks-page-header p {
+    color: rgba(200, 200, 200, 0.62);
+}
+
+[data-theme="dark"] .tasks-page-header span {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #b8b8b8;
+    box-shadow: none;
+}
+
+[data-theme="dark"] .tasks-page .task-form input,
+[data-theme="dark"] .tasks-page .task-form textarea,
+[data-theme="dark"] .tasks-page .task-form select {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #d0d0d0;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .tasks-page .task-form input:focus,
+[data-theme="dark"] .tasks-page .task-form textarea:focus,
+[data-theme="dark"] .tasks-page .task-form select:focus {
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow:
+        0 0 0 4px rgba(255, 255, 255, 0.06),
+        inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .tasks-page .task-stats h3 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .tasks-page .stats-card {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-right-color: rgba(255, 255, 255, 0.06);
+    border-top-color: rgba(255, 255, 255, 0.06);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+    color: #c8c8c8;
+}
+
+[data-theme="dark"] .tasks-page .stats-card:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+}
+
+[data-theme="dark"] .tasks-page .stats-card.is-active {
+    background-color: rgba(255, 255, 255, 0.12);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 8px 18px rgba(0, 0, 0, 0.22);
+}
+
+[data-theme="dark"] .tasks-page .stats-card strong {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .tasks-page .stats-card span {
+    color: rgba(200, 200, 200, 0.58);
+}
+
+[data-theme="dark"] .tasks-page .task-filters input,
+[data-theme="dark"] .tasks-page .task-filters select {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #d0d0d0;
+}
+
+[data-theme="dark"] .tasks-page .task-filters input:focus,
+[data-theme="dark"] .tasks-page .task-filters select:focus {
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .tasks-page .task-filters button,
+[data-theme="dark"] .tasks-export-toolbar button {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #c8c8c8;
+}
+
+[data-theme="dark"] .tasks-page .task-filters button:hover:not(:disabled),
+[data-theme="dark"] .tasks-export-toolbar button:hover:not(:disabled) {
+    background-color: rgba(225, 225, 225, 0.9);
+    color: #111111;
+}
+
+[data-theme="dark"] .tasks-filter-status {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #c8c8c8;
+}
+
+[data-theme="dark"] .tasks-list-header h3 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .tasks-list-header span {
+    color: rgba(200, 200, 200, 0.58);
+}
+
+[data-theme="dark"] .tasks-page .task-item {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-right-color: rgba(255, 255, 255, 0.06);
+    border-top-color: rgba(255, 255, 255, 0.06);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .tasks-page .task-summary-title {
+    color: #d8d8d8;
+}
+
+[data-theme="dark"] .tasks-page .task-summary-indicators {
+    color: rgba(200, 200, 200, 0.58);
+}
+
+[data-theme="dark"] .tasks-page .task-details {
+    border-top-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .tasks-page .task-text small {
+    color: rgba(200, 200, 200, 0.72);
+}
+
+[data-theme="dark"] .tasks-page .task-text em {
+    color: rgba(200, 200, 200, 0.52);
+}
+
+[data-theme="dark"] .tasks-page .task-actions button,
+[data-theme="dark"] .tasks-page .file-upload-button,
+[data-theme="dark"] .tasks-page .task-edit button,
+[data-theme="dark"] .tasks-page .task-file-actions button {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #c8c8c8;
+}
+
+[data-theme="dark"] .tasks-page .task-actions button:hover:not(:disabled),
+[data-theme="dark"] .tasks-page .file-upload-button:hover,
+[data-theme="dark"] .tasks-page .task-edit button:hover:not(:disabled),
+[data-theme="dark"] .tasks-page .task-file-actions button:hover:not(:disabled) {
+    background-color: rgba(225, 225, 225, 0.9);
+    color: #111111;
+}
+
+[data-theme="dark"] .tasks-page .task-locked-message,
+[data-theme="dark"] .tasks-page .task-files-empty {
+    color: rgba(200, 200, 200, 0.5);
+}
+
+[data-theme="dark"] .tasks-page .task-files {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .tasks-page .task-files strong {
+    color: #d0d0d0;
+}
+
+[data-theme="dark"] .tasks-page .task-file-item {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .tasks-page .export-selection {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #c8c8c8;
+}
+
+/* =========================
+   CompletedTasksPage
+========================= */
+
+[data-theme="dark"] .completed-tasks-page-header h2 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .completed-tasks-page-header p {
+    color: rgba(200, 200, 200, 0.62);
+}
+
+[data-theme="dark"] .completed-tasks-page .task-stats h3 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .completed-tasks-page .stats-card {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-right-color: rgba(255, 255, 255, 0.06);
+    border-top-color: rgba(255, 255, 255, 0.06);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+    color: #c8c8c8;
+}
+
+[data-theme="dark"] .completed-tasks-page .stats-card:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .completed-tasks-page .stats-card strong {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .completed-tasks-page .stats-card span {
+    color: rgba(200, 200, 200, 0.58);
+}
+
+/* CompletedTasksPage reutiliza .task-item, .task-actions, etc. das tasks page */
+
+/* =========================
+    LogPage
+========================= */
+
+[data-theme="dark"] .log-page-header h2 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .log-page-header p {
+    color: rgba(200, 200, 200, 0.62);
+}
+
+[data-theme="dark"] .log-summary-header h3 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .log-summary-header span {
+    color: rgba(200, 200, 200, 0.58);
+}
+
+[data-theme="dark"] .log-summary-card {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-right-color: rgba(255, 255, 255, 0.06);
+    border-top-color: rgba(255, 255, 255, 0.06);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+    color: #c8c8c8;
+}
+
+[data-theme="dark"] .log-summary-card:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+}
+
+[data-theme="dark"] .log-summary-card.is-active {
+    background-color: rgba(255, 255, 255, 0.12);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 8px 18px rgba(0, 0, 0, 0.22);
+}
+
+[data-theme="dark"] .log-summary-card strong {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .log-summary-card span {
+    color: rgba(200, 200, 200, 0.58);
+}
+
+[data-theme="dark"] .log-filters input,
+[data-theme="dark"] .log-filters select,
+[data-theme="dark"] .log-date-field {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #d0d0d0;
+}
+
+[data-theme="dark"] .log-date-field input {
+    background: transparent;
+    color: #d0d0d0;
+}
+
+[data-theme="dark"] .log-date-field span {
+    color: rgba(200, 200, 200, 0.55);
+}
+
+[data-theme="dark"] .log-filters input:focus,
+[data-theme="dark"] .log-filters select:focus {
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .log-date-field:focus-within {
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .log-filters button,
+[data-theme="dark"] .log-actions-toolbar button {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #c8c8c8;
+}
+
+[data-theme="dark"] .log-filters button:hover:not(:disabled),
+[data-theme="dark"] .log-actions-toolbar button:hover:not(:disabled) {
+    background-color: rgba(225, 225, 225, 0.9);
+    color: #111111;
+}
+
+[data-theme="dark"] .log-list-header h3 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .log-list-header span {
+    color: rgba(200, 200, 200, 0.58);
+}
+
+[data-theme="dark"] .log-card {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .log-card-header h3 {
+    color: #d8d8d8;
+}
+
+[data-theme="dark"] .log-card-header small {
+    color: rgba(200, 200, 200, 0.52);
+}
+
+/* =========================
+    HelpPage
+========================= */
+
+[data-theme="dark"] .help-card {
+    background-color: rgba(30, 30, 38, 0.98);
+    border-color: rgba(255, 255, 255, 0.07);
+    box-shadow:
+        0 24px 56px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .help-content {
+    color: #d0d0d0;
+}
+
+[data-theme="dark"] .help-header h2 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .help-header span,
+[data-theme="dark"] .help-header p {
+    color: rgba(200, 200, 200, 0.62);
+}
+
+[data-theme="dark"] .help-about-card,
+[data-theme="dark"] .help-version-card,
+[data-theme="dark"] .help-item-card {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.07);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .help-about-card h3,
+[data-theme="dark"] .help-version-card h3,
+[data-theme="dark"] .help-item-card h3 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .help-about-card p,
+[data-theme="dark"] .help-version-card p,
+[data-theme="dark"] .help-item-card p {
+    color: rgba(200, 200, 200, 0.7);
+}
+
+[data-theme="dark"] .help-about-card a {
+    color: #b0b0b0;
+}
+
+[data-theme="dark"] .help-about-card a:hover {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .help-version-card strong {
+    color: #e0e0e0;
+}
+
+/* =========================
+    LoginPage
+========================= */
+
+[data-theme="dark"] .login-card {
+    background-color: rgba(30, 30, 38, 0.98);
+    border-color: rgba(255, 255, 255, 0.07);
+    box-shadow:
+        0 24px 56px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .login-header h2 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .login-header p,
+[data-theme="dark"] .login-google-status {
+    color: rgba(200, 200, 200, 0.62);
+}
+
+[data-theme="dark"] .login-divider {
+    color: rgba(200, 200, 200, 0.45);
+}
+
+[data-theme="dark"] .login-divider::before,
+[data-theme="dark"] .login-divider::after {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .login-field label {
+    color: #b8b8b8;
+}
+
+[data-theme="dark"] .login-field input {
+    background-color: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #d8d8d8;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .login-field input:focus {
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow:
+        0 0 0 4px rgba(255, 255, 255, 0.06),
+        inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .login-password-button {
+    color: rgba(200, 200, 200, 0.6);
+}
+
+[data-theme="dark"] .login-password-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .login-forgot-password-link {
+    color: rgba(200, 200, 200, 0.7);
+}
+
+[data-theme="dark"] .login-forgot-password-link:hover {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .login-footer p {
+    color: rgba(200, 200, 200, 0.58);
+}
+
+[data-theme="dark"] .login-footer a {
+    color: #c0c0c0;
+}
+
+[data-theme="dark"] .login-footer a:hover {
+    color: #e0e0e0;
+}
+
+/* =========================
+    RegisterPage
+========================= */
+
+[data-theme="dark"] .register-card {
+    background-color: rgba(30, 30, 38, 0.98);
+    border-color: rgba(255, 255, 255, 0.07);
+    box-shadow:
+        0 24px 56px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .register-header h2 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .register-header p,
+[data-theme="dark"] .register-google-help {
+    color: rgba(200, 200, 200, 0.62);
+}
+
+[data-theme="dark"] .register-divider {
+    color: rgba(200, 200, 200, 0.45);
+}
+
+[data-theme="dark"] .register-divider::before,
+[data-theme="dark"] .register-divider::after {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .register-field label {
+    color: #b8b8b8;
+}
+
+[data-theme="dark"] .register-field input {
+    background-color: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #d8d8d8;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .register-field input:focus {
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow:
+        0 0 0 4px rgba(255, 255, 255, 0.06),
+        inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .register-password-button {
+    color: rgba(200, 200, 200, 0.6);
+}
+
+[data-theme="dark"] .register-password-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .register-password-requirements {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .register-password-requirements span {
+    color: rgba(200, 200, 200, 0.62);
+}
+
+[data-theme="dark"] .register-terms-box {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .register-terms-header strong {
+    color: #d8d8d8;
+}
+
+[data-theme="dark"] .register-terms-header span {
+    color: rgba(200, 200, 200, 0.55);
+}
+
+[data-theme="dark"] .register-footer p {
+    color: rgba(200, 200, 200, 0.58);
+}
+
+[data-theme="dark"] .register-footer a {
+    color: #c0c0c0;
+}
+
+[data-theme="dark"] .register-footer a:hover {
+    color: #e0e0e0;
+}
+
+/* =========================
+    EsqueciSenhaPage
+========================= */
+
+[data-theme="dark"] .esqueci-senha-card {
+    background-color: rgba(30, 30, 38, 0.98);
+    border-color: rgba(255, 255, 255, 0.07);
+    box-shadow:
+        0 24px 56px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .esqueci-senha-header h2 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .esqueci-senha-header p {
+    color: rgba(200, 200, 200, 0.62);
+}
+
+[data-theme="dark"] .esqueci-senha-step-label {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: rgba(200, 200, 200, 0.62);
+}
+
+[data-theme="dark"] .esqueci-senha-step-indicator span {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .esqueci-senha-field label {
+    color: #b8b8b8;
+}
+
+[data-theme="dark"] .esqueci-senha-field input {
+    background-color: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #d8d8d8;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .esqueci-senha-field input:focus {
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow:
+        0 0 0 4px rgba(255, 255, 255, 0.06),
+        inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .esqueci-senha-field small {
+    color: rgba(200, 200, 200, 0.58);
+}
+
+[data-theme="dark"] .esqueci-senha-password-button {
+    color: rgba(200, 200, 200, 0.6);
+}
+
+[data-theme="dark"] .esqueci-senha-password-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+}
+
+/* =========================
+    ConfirmEmailPage
+========================= */
+
+[data-theme="dark"] .confirm-email-card {
+    background-color: rgba(30, 30, 38, 0.98);
+    border-color: rgba(255, 255, 255, 0.07);
+    box-shadow:
+        0 24px 56px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .confirm-email-header h2 {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .confirm-email-header p {
+    color: rgba(200, 200, 200, 0.62);
+}
+
+/* ConfirmEmailPage usa .esqueci-senha-field/.login-field internamente — coberto acima */
+
+/* =========================
+    ValidacaoSenha (cores semânticas, mantidas em dark mode)
+========================= */
+
+[data-theme="dark"] .validacao-senha-titulo {
+    color: #b8b8b8;
+}
+
+/* ---- Placeholders globais ---- */
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+    color: rgba(200, 200, 200, 0.38);
+}
+
+/* ---- RegisterPage: termos scroll ---- */
+
+[data-theme="dark"] .register-terms-scroll {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+    color: rgba(200, 200, 200, 0.75);
+}
+
+[data-theme="dark"] .register-terms-scroll h3 {
+    color: #c8c8c8;
+}
+
+[data-theme="dark"] .register-terms-scroll p {
+    color: rgba(200, 200, 200, 0.68);
+}
+
+[data-theme="dark"] .register-terms-final-text {
+    color: rgba(200, 200, 200, 0.55) !important;
+}
+
+[data-theme="dark"] .register-terms-help {
+    color: rgba(200, 200, 200, 0.55);
+}
+
+[data-theme="dark"] .register-terms-status {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: rgba(200, 200, 200, 0.58);
+}
+
+[data-theme="dark"] .register-terms-status-ok {
+    background-color: rgba(80, 200, 120, 0.18);
+    color: rgba(140, 220, 160, 0.9);
+}
+
+[data-theme="dark"] .register-terms-checkbox {
+    color: #c0c0c0;
+}
+
+[data-theme="dark"] .register-terms-checkbox input[type="checkbox"]:disabled + span {
+    color: rgba(200, 200, 200, 0.38);
+}
+
+[data-theme="dark"] .register-password-requirement-error {
+    color: rgba(220, 140, 140, 0.85);
+}
+
+[data-theme="dark"] .register-password-requirement-ok {
+    color: rgba(140, 220, 160, 0.85);
+}
+
+/* ---- Status boxes (confirm-email, esqueci-senha) ---- */
+
+[data-theme="dark"] .confirm-email-status-box,
+[data-theme="dark"] .esqueci-senha-status-box {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.09);
+    color: #c8c8c8;
+}
+
+[data-theme="dark"] .confirm-email-status-box span,
+[data-theme="dark"] .esqueci-senha-status-box span {
+    color: rgba(200, 200, 200, 0.55);
+}
+
+[data-theme="dark"] .confirm-email-status-box strong,
+[data-theme="dark"] .esqueci-senha-status-box strong {
+    color: #d8d8d8;
+}
+
+[data-theme="dark"] .confirm-email-status-box small,
+[data-theme="dark"] .esqueci-senha-status-box small {
+    color: rgba(200, 200, 200, 0.52);
+}
+
+[data-theme="dark"] .confirm-email-status-box-warning {
+    background-color: rgba(220, 160, 80, 0.1);
+    border-color: rgba(220, 160, 80, 0.25);
+}
+
+/* ---- EsqueciSenhaPage: requisitos e erros de senha ---- */
+
+[data-theme="dark"] .esqueci-senha-password-requirements {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .esqueci-senha-password-requirements span {
+    color: rgba(200, 200, 200, 0.62);
+}
+
+[data-theme="dark"] .esqueci-senha-password-requirement-error {
+    color: rgba(220, 140, 140, 0.85);
+}
+
+[data-theme="dark"] .esqueci-senha-password-requirement-ok {
+    color: rgba(140, 220, 160, 0.85);
+}
+
+[data-theme="dark"] .esqueci-senha-field-error {
+    color: rgba(220, 140, 140, 0.9);
+}
+
+[data-theme="dark"] .esqueci-senha-footer p {
+    color: rgba(200, 200, 200, 0.58);
+}
+
+[data-theme="dark"] .esqueci-senha-footer a {
+    color: #c0c0c0;
+}
+
+[data-theme="dark"] .esqueci-senha-footer a:hover {
+    color: #e0e0e0;
+}
+
+/* ---- ConfirmEmailPage: footer ---- */
+
+[data-theme="dark"] .confirm-email-field label {
+    color: #b8b8b8;
+}
+
+[data-theme="dark"] .confirm-email-field input {
+    background-color: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #d8d8d8;
+}
+
+[data-theme="dark"] .confirm-email-field input:focus {
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow:
+        0 0 0 4px rgba(255, 255, 255, 0.06),
+        inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .confirm-email-field small {
+    color: rgba(200, 200, 200, 0.55);
+}
+
+[data-theme="dark"] .confirm-email-footer p {
+    color: rgba(200, 200, 200, 0.58);
+}
+
+[data-theme="dark"] .confirm-email-footer a {
+    color: #c0c0c0;
+}
+
+[data-theme="dark"] .confirm-email-footer a:hover {
+    color: #e0e0e0;
+}
+
+/* ---- Log badges ---- */
+
+[data-theme="dark"] .log-badge {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #c0c0c0;
+}
+
+/* =========================
+    Scrollbars globais
+========================= */
+
+[data-theme="dark"] * {
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: transparent;
+}

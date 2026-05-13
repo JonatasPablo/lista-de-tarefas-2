@@ -1,4 +1,3 @@
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { registerSW } from 'virtual:pwa-register'
 import { GoogleOAuthProvider } from '@react-oauth/google'
@@ -19,13 +18,11 @@ const appTree = (
 )
 
 createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-        {isGoogleLoginConfigured ? (
-            <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-                {appTree}
-            </GoogleOAuthProvider>
-        ) : (
-            appTree
-        )}
-    </StrictMode>
+    isGoogleLoginConfigured ? (
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+            {appTree}
+        </GoogleOAuthProvider>
+    ) : (
+        appTree
+    )
 )

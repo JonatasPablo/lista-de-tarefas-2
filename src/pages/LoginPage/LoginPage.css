@@ -137,20 +137,22 @@
 
 .login-google-button-wrapper {
     width: 100%;
-    max-width: 400px;
+    max-width: 200px;
+    min-width: 0;
     min-height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
     justify-self: center;
-    overflow: hidden;
+    overflow: visible;
     border-radius: 14px;
 }
 
-.login-google-button-wrapper iframe {
+/* .login-google-button-wrapper iframe {
     width: 100% !important;
     max-width: 100% !important;
-}
+    display: block !important;
+} */
 
 .login-google-status {
     color: rgba(64, 64, 64, 0.72);
@@ -599,7 +601,7 @@
     .login-google-button-wrapper {
         min-height: 48px;
         width: 100%;
-        max-width: 400px;
+        max-width: 200px;
         justify-self: center;
     }
 
