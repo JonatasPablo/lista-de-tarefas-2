@@ -295,6 +295,41 @@ a {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18);
 }
 
+.header-user-avatar-button {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    box-shadow: none;
+}
+
+.header-user-avatar-image {
+    position: absolute;
+    inset: 0;
+    object-fit: cover;
+}
+
+.header-user-avatar-button:hover,
+.header-user-avatar-button:focus-visible {
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.header-user-avatar-button:focus-visible .header-user-avatar {
+    box-shadow:
+        0 0 0 3px rgba(64, 64, 64, 0.18),
+        0 8px 16px rgba(0, 0, 0, 0.18);
+}
+
 .header-user-info {
     display: grid;
     min-width: 0;
@@ -802,6 +837,13 @@ a {
         font-size: 11px;
     }
 
+    .header:has(.header-user) .header-user-avatar-button {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+        min-height: 30px;
+    }
+
     .header:has(.header-user) .header-user-info strong {
         max-width: 64px;
         font-size: 11px;
@@ -962,11 +1004,11 @@ a {
     }
 
     .toast-container {
-        top: 132px;
+        top: 50%;
         right: 50%;
         bottom: auto;
         width: min(440px, calc(100% - 32px));
-        transform: translateX(50%);
+        transform: translate(50%, -50%);
     }
 }
 
@@ -994,7 +1036,6 @@ a {
     }
 
     .toast-container {
-        top: 142px;
         width: min(500px, calc(100% - 48px));
     }
 
@@ -1030,9 +1071,11 @@ a {
     }
 
     .toast-container {
-        top: auto;
-        bottom: calc(env(safe-area-inset-bottom, 0px) + 84px);
+        top: 50%;
+        right: 50%;
+        bottom: auto;
         width: min(430px, calc(100% - 28px));
+        transform: translate(50%, -50%);
     }
 
     .app-footer {
@@ -1200,6 +1243,13 @@ a {
         font-size: 10px;
     }
 
+    .header:has(.header-user) .header-user-avatar-button {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        min-height: 28px;
+    }
+
     .header:has(.header-user) .header-logout-button {
         min-width: 40px;
         min-height: 28px;
@@ -1210,7 +1260,7 @@ a {
     .toast-container {
         right: 50%;
         width: calc(100% - 24px);
-        transform: translateX(50%);
+        transform: translate(50%, -50%);
     }
 
     .toast-message {
@@ -1301,6 +1351,13 @@ a {
         width: 27px;
         height: 27px;
         font-size: 10px;
+    }
+
+    .container:has(.help-page) .header-user-avatar-button {
+        width: 27px;
+        height: 27px;
+        min-width: 27px;
+        min-height: 27px;
     }
 
     .container:has(.help-page) .header-logout-button {

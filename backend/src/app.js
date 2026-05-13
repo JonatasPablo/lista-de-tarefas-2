@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit')
 
 const authRoutes = require('./routes/auth.routes')
 const tasksRoutes = require('./routes/tasks.routes')
+const usersRoutes = require('./routes/users.routes')
 const authMiddleware = require('./middlewares/authMiddleware')
 const errorHandler = require('./middlewares/errorHandler')
 
@@ -121,6 +122,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/auth', authRoutes)
+app.use('/users', authMiddleware, usersRoutes)
 app.use('/tasks', authMiddleware, tasksRoutes)
 
 app.use(errorHandler)

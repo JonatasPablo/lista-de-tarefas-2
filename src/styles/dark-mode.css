@@ -66,6 +66,12 @@
     color: #c8c8c8;
 }
 
+[data-theme="dark"] .header-user-avatar-button:focus-visible .header-user-avatar {
+    box-shadow:
+        0 0 0 3px rgba(225, 225, 225, 0.22),
+        0 8px 16px rgba(0, 0, 0, 0.32);
+}
+
 [data-theme="dark"] .header-logout-button {
     background-color: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.12);
@@ -947,6 +953,98 @@
 }
 
 /* ConfirmEmailPage usa .esqueci-senha-field/.login-field internamente — coberto acima */
+
+/* =========================
+   MinhaContaPage
+========================= */
+
+[data-theme="dark"] .minha-conta-header h2,
+[data-theme="dark"] .minha-conta-profile-text h3,
+[data-theme="dark"] .minha-conta-card-header h3,
+[data-theme="dark"] .minha-conta-dados dd {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .minha-conta-header p,
+[data-theme="dark"] .minha-conta-profile-text p,
+[data-theme="dark"] .minha-conta-avatar-actions p,
+[data-theme="dark"] .minha-conta-google-message {
+    color: rgba(200, 200, 200, 0.68);
+}
+
+[data-theme="dark"] .minha-conta-header span,
+[data-theme="dark"] .minha-conta-card-header span {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #c8c8c8;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+}
+
+[data-theme="dark"] .minha-conta-card {
+    border-color: rgba(255, 255, 255, 0.06);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.05),
+            rgba(255, 255, 255, 0.025)
+        );
+    box-shadow:
+        0 14px 32px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .minha-conta-avatar-actions strong,
+[data-theme="dark"] .minha-conta-field span {
+    color: #c8c8c8;
+}
+
+[data-theme="dark"] .minha-conta-dados div,
+[data-theme="dark"] .minha-conta-google-message {
+    border-color: rgba(255, 255, 255, 0.06);
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .minha-conta-dados dt {
+    color: rgba(200, 200, 200, 0.48);
+}
+
+[data-theme="dark"] .minha-conta-field input {
+    border-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #e0e0e0;
+    box-shadow:
+        inset 0 1px 2px rgba(0, 0, 0, 0.22),
+        0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="dark"] .minha-conta-field input:focus {
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow:
+        0 0 0 4px rgba(255, 255, 255, 0.08),
+        inset 0 1px 2px rgba(0, 0, 0, 0.22);
+}
+
+[data-theme="dark"] .minha-conta-password-button {
+    color: rgba(210, 210, 210, 0.7);
+}
+
+[data-theme="dark"] .minha-conta-password-button:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .minha-conta-feedback {
+    color: #fda4af;
+}
+
+[data-theme="dark"] .minha-conta-remove-avatar-button {
+    border-color: rgba(253, 164, 175, 0.3) !important;
+    color: #fda4af !important;
+}
+
+[data-theme="dark"] .minha-conta-remove-avatar-button:hover:not(:disabled) {
+    background: rgba(253, 164, 175, 0.08) !important;
+    border-color: rgba(253, 164, 175, 0.55) !important;
+}
 
 /* =========================
     ValidacaoSenha (cores semânticas, mantidas em dark mode)

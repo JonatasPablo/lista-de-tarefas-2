@@ -30,6 +30,20 @@ const createAuthLimiter = ({ max, windowMs, message }) => {
     })
 }
 
+const createAuthenticatedUserLimiter = ({ max, windowMs, message }) => {
+    return rateLimit({
+        windowMs,
+        max,
+        standardHeaders: true,
+        legacyHeaders: false,
+        keyGenerator: (req) =>
+            `${getIpKey(req)}:${req.user?.id || 'sem-usuario'}`,
+        message: {
+            message,
+        },
+    })
+}
+
 const loginLimiter = createAuthLimiter({
     windowMs: 15 * 60 * 1000,
     max: 8,
@@ -65,10 +79,18 @@ const passwordResetAttemptLimiter = createAuthLimiter({
         'Muitas tentativas de redefinicao de senha. Aguarde alguns minutos e tente novamente.',
 })
 
+const accountPasswordChangeLimiter = createAuthenticatedUserLimiter({
+    windowMs: 15 * 60 * 1000,
+    max: 8,
+    message:
+        'Muitas tentativas de alteracao de senha. Aguarde alguns minutos e tente novamente.',
+})
+
 module.exports = {
     loginLimiter,
     emailConfirmationLimiter,
     resendConfirmationLimiter,
     passwordResetRequestLimiter,
     passwordResetAttemptLimiter,
+    accountPasswordChangeLimiter,
 }

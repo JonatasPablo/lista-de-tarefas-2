@@ -6,7 +6,8 @@
       "Bash(npx tsc *)",
       "Bash(Get-ChildItem -Path \"g:\\\\Projetos\\\\lista-de-tarefas-2\" -Recurse -Directory)",
       "Bash(Select-Object -ExpandProperty FullName)",
-      "Bash(Sort-Object)"
+      "Bash(Sort-Object)",
+      "Bash(Get-ChildItem -Force)"
     ]
   }
 }

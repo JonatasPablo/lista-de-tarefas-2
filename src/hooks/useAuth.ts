@@ -278,6 +278,10 @@ export const useAuth = ({
         }
     }
 
+    const atualizarUsuarioLogado = (usuarioAtualizado: AuthUser) => {
+        setUser(usuarioAtualizado)
+    }
+
     useEffect(() => {
         let isMounted = true
 
@@ -320,5 +324,6 @@ export const useAuth = ({
         handleValidarCodigoRedefinicaoSenha,
         handleRedefinirSenha,
         handleLogout,
+        atualizarUsuarioLogado,
     }
 }

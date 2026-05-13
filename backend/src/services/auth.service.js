@@ -18,6 +18,7 @@ const TERMS_VERSION = process.env.TERMS_VERSION || '1.0'
 const PROVEDOR_LOCAL = 'local'
 const PROVEDOR_GOOGLE = 'google'
 const PROVEDOR_APPLE = 'apple'
+let userProfileFieldsAvailableCache = null
 
 const getGoogleClientId = () => {
     return (
@@ -326,6 +327,41 @@ const limitText = (value, maxLength) => {
     return value.trim().slice(0, maxLength)
 }
 
+const hasUserProfileFields = async (db = connection) => {
+    if (userProfileFieldsAvailableCache !== null) {
+        return userProfileFieldsAvailableCache
+    }
+
+    const [columns] = await db.query(`
+        SHOW COLUMNS FROM users LIKE 'avatar_path'
+    `)
+
+    userProfileFieldsAvailableCache = columns.length > 0
+
+    return userProfileFieldsAvailableCache
+}
+
+const getUserProfileSelectFields = async (db = connection, tablePrefix = '') => {
+    const hasProfileFields = await hasUserProfileFields(db)
+    const prefix = tablePrefix ? `${tablePrefix}.` : ''
+
+    if (!hasProfileFields) {
+        return `
+                NULL AS avatar_path,
+                NULL AS avatar_original_name,
+                NULL AS avatar_mime_type,
+                NULL AS avatar_size_bytes,
+                NULL AS profile_updated_at,`
+    }
+
+    return `
+                ${prefix}avatar_path,
+                ${prefix}avatar_original_name,
+                ${prefix}avatar_mime_type,
+                ${prefix}avatar_size_bytes,
+                ${prefix}profile_updated_at,`
+}
+
 const mapUser = (user) => {
     if (!user) {
         return null
@@ -337,6 +373,9 @@ const mapUser = (user) => {
         email: user.email,
         provider: user.provider,
         role: user.role || 'user',
+        has_password: Boolean(user.password_hash),
+        has_avatar: Boolean(user.avatar_path),
+        avatar_updated_at: user.profile_updated_at,
         email_verified_at: user.email_verified_at,
         terms_accepted_at: user.terms_accepted_at,
         terms_version: user.terms_version,
@@ -408,6 +447,7 @@ const buildPasswordResetUrl = (email) => {
 const createSession = async (userId) => {
     const token = crypto.randomBytes(64).toString('hex')
     const tokenHash = hashToken(token)
+    const profileFields = await getUserProfileSelectFields(connection, 'u')
     const expiresAt = createSessionExpirationDate()
 
     await connection.query(
@@ -429,6 +469,8 @@ const createSession = async (userId) => {
 }
 
 const findUserByEmail = async (email) => {
+    const profileFields = await getUserProfileSelectFields()
+
     const [users] = await connection.query(
         `
             SELECT
@@ -440,6 +482,7 @@ const findUserByEmail = async (email) => {
                 role,
                 google_id,
                 apple_id,
+                ${profileFields}
                 created_at,
                 email_verified_at,
                 terms_accepted_at,
@@ -462,6 +505,8 @@ const findUserByEmail = async (email) => {
 }
 
 const findUserByGoogleId = async (googleId) => {
+    const profileFields = await getUserProfileSelectFields()
+
     const [users] = await connection.query(
         `
             SELECT
@@ -473,6 +518,7 @@ const findUserByGoogleId = async (googleId) => {
                 role,
                 google_id,
                 apple_id,
+                ${profileFields}
                 created_at,
                 email_verified_at,
                 terms_accepted_at,
@@ -495,16 +541,20 @@ const findUserByGoogleId = async (googleId) => {
 }
 
 const findUserById = async (id, db = connection) => {
+    const profileFields = await getUserProfileSelectFields(db)
+
     const [users] = await db.query(
         `
             SELECT
                 id,
                 name,
                 email,
+                password_hash,
                 provider,
                 role,
                 google_id,
                 apple_id,
+                ${profileFields}
                 created_at,
                 email_verified_at,
                 terms_accepted_at,
@@ -528,6 +578,7 @@ const findUserBySessionToken = async (token) => {
     }
 
     const tokenHash = hashToken(token)
+    const profileFields = await getUserProfileSelectFields(connection, 'u')
 
     const [sessions] = await connection.query(
         `
@@ -539,8 +590,10 @@ const findUserBySessionToken = async (token) => {
                 u.id,
                 u.name,
                 u.email,
+                u.password_hash,
                 u.provider,
                 u.role,
+                ${profileFields}
                 u.created_at,
                 u.email_verified_at,
                 u.terms_accepted_at,
@@ -1400,6 +1453,11 @@ const me = async (userId) => {
 }
 
 module.exports = {
+    validateName,
+    validatePassword,
+    mapUser,
+    getUserProfileSelectFields,
+    hasUserProfileFields,
     register,
     login,
     loginGoogle,

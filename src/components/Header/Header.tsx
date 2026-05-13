@@ -1,5 +1,6 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import type { AuthUser } from '../../services/authApi'
+import { usuariosApi } from '../../services/usuariosApi'
 
 interface HeaderProps {
     user: AuthUser | null
@@ -25,6 +26,9 @@ const getInitials = (name: string) => {
 }
 
 export const Header = ({ user, onLogout, isDark, onToggleTheme }: HeaderProps) => {
+    const navigate = useNavigate()
+    const avatarUrl = user ? usuariosApi.getAvatarUrl(user) : null
+
     const getNavLinkClass = ({ isActive }: { isActive: boolean }) => {
         return isActive ? 'nav-link active' : 'nav-link'
     }
@@ -73,6 +77,13 @@ export const Header = ({ user, onLogout, isDark, onToggleTheme }: HeaderProps) =
                     <nav className="main-nav">
                         {user ? (
                             <>
+                                <NavLink
+                                    to="/minha-conta"
+                                    className={getNavLinkClass}
+                                >
+                                    Minha conta
+                                </NavLink>
+
                                 <NavLink to="/" end className={getNavLinkClass}>
                                     Pendentes
                                 </NavLink>
@@ -117,9 +128,28 @@ export const Header = ({ user, onLogout, isDark, onToggleTheme }: HeaderProps) =
                             className="header-user"
                             title={`Usuário logado: ${user.name}`}
                         >
-                            <div className="header-user-avatar">
-                                {getInitials(user.name)}
-                            </div>
+                            <button
+                                type="button"
+                                className="header-user-avatar-button"
+                                onClick={() => navigate('/minha-conta')}
+                                aria-label="Abrir minha conta"
+                                title="Abrir minha conta"
+                            >
+                                <span className="header-user-avatar">
+                                    {getInitials(user.name)}
+                                </span>
+                                {avatarUrl ? (
+                                    <img
+                                        src={avatarUrl}
+                                        alt=""
+                                        className="header-user-avatar header-user-avatar-image"
+                                        onError={(event) => {
+                                            event.currentTarget.style.display =
+                                                'none'
+                                        }}
+                                    />
+                                ) : null}
+                            </button>
 
                             <div className="header-user-info">
                                 <strong>{user.name}</strong>

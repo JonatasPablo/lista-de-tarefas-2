@@ -28,6 +28,7 @@ import { LoginPage } from './pages/LoginPage/LoginPage'
 import { RegisterPage } from './pages/RegisterPage/RegisterPage'
 import { TasksPage } from './pages/TasksPage/TasksPage'
 import { LogPage } from './pages/LogPage/LogPage'
+import { MinhaContaPage } from './pages/MinhaContaPage/MinhaContaPage'
 import './styles/global.css'
 import './styles/dark-mode.css'
 
@@ -83,6 +84,7 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
         handleValidarCodigoRedefinicaoSenha,
         handleRedefinirSenha,
         handleLogout,
+        atualizarUsuarioLogado,
     } = useAuth({
         isGoogleLoginConfigured,
         navigate,
@@ -335,6 +337,23 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
                             element={
                                 user ? (
                                     <LogPage />
+                                ) : (
+                                    <Navigate to="/login" replace />
+                                )
+                            }
+                        />
+
+                        <Route
+                            path="/minha-conta"
+                            element={
+                                user ? (
+                                    <MinhaContaPage
+                                        user={user}
+                                        onUsuarioAtualizado={
+                                            atualizarUsuarioLogado
+                                        }
+                                        showToast={showToast}
+                                    />
                                 ) : (
                                     <Navigate to="/login" replace />
                                 )
