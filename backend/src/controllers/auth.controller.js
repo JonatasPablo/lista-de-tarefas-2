@@ -156,6 +156,12 @@ const loginGoogle = async (req, res) => {
     })
 }
 
+const config = async (req, res) => {
+    return res.json({
+        googleLoginEnabled: Boolean(process.env.GOOGLE_CLIENT_ID?.trim()),
+    })
+}
+
 const logout = async (req, res) => {
     if (req.sessionToken) {
         await authService.revokeSession(req.sessionToken)
@@ -182,6 +188,7 @@ module.exports = {
     redefinirSenha,
     login,
     loginGoogle,
+    config,
     logout,
     me,
 }

@@ -72,7 +72,15 @@ type SolicitarRedefinicaoSenhaResponse = {
     action?: 'confirm_email' | 'reset_password'
 }
 
+type AuthConfigResponse = {
+    googleLoginEnabled: boolean
+}
+
 export const authApi = {
+    async getConfig() {
+        return apiRequest<AuthConfigResponse>('/auth/config')
+    },
+
     async register(payload: RegisterPayload) {
         return apiRequest<AuthResponse>('/auth/register', {
             method: 'POST',

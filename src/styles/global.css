@@ -197,9 +197,11 @@ a {
     white-space: normal;
 }
 
-/* Header oculto nas páginas de cadastro e ajuda (sem usuário logado) */
+/* Header oculto nas páginas de autenticação sem título próprio */
 
 .container:has(.register-page) .header,
+.container:has(.confirm-email-page) .header,
+.container:has(.esqueci-senha-page) .header,
 .container:has(.help-page) .header:not(:has(.header-user)) {
     display: none;
 }

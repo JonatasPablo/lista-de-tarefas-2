@@ -27,6 +27,7 @@ authRoutes.post(
 authRoutes.post('/reset-password', asyncHandler(authController.redefinirSenha))
 authRoutes.post('/login', asyncHandler(authController.login))
 authRoutes.post('/google', asyncHandler(authController.loginGoogle))
+authRoutes.get('/config', asyncHandler(authController.config))
 authRoutes.post('/logout', authMiddleware, asyncHandler(authController.logout))
 authRoutes.get('/me', authMiddleware, asyncHandler(authController.me))
 

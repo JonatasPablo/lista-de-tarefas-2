@@ -70,6 +70,8 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
     const [tasks, setTasks] = useState<Task[]>([])
     const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
     const [isLoadingTasks, setIsLoadingTasks] = useState(false)
+    const [isBackendGoogleLoginEnabled, setIsBackendGoogleLoginEnabled] =
+        useState(false)
 
     const { toasts, showToast, removeToast } = useToast()
     const { confirm, confirmState, handleConfirm, handleCancel } = useConfirm()
@@ -83,6 +85,8 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
 
     const pendingTasks = tasks.filter((task) => !task.completed)
     const completedTasks = tasks.filter((task) => task.completed)
+    const isGoogleLoginAvailable =
+        isGoogleLoginConfigured && isBackendGoogleLoginEnabled
 
     const handleLogin = async (email: string, password: string) => {
         try {
@@ -771,6 +775,41 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
     }, [])
 
     useEffect(() => {
+        let isMounted = true
+
+        if (!isGoogleLoginConfigured) {
+            return () => {
+                isMounted = false
+            }
+        }
+
+        const loadAuthConfig = async () => {
+            try {
+                const config = await authApi.getConfig()
+
+                if (isMounted) {
+                    setIsBackendGoogleLoginEnabled(config.googleLoginEnabled)
+                }
+            } catch (error) {
+                console.error(
+                    'Erro ao carregar configuração de autenticação:',
+                    error
+                )
+
+                if (isMounted) {
+                    setIsBackendGoogleLoginEnabled(false)
+                }
+            }
+        }
+
+        loadAuthConfig()
+
+        return () => {
+            isMounted = false
+        }
+    }, [isGoogleLoginConfigured])
+
+    useEffect(() => {
         const storedVersion = localStorage.getItem(APP_VERSION_STORAGE_KEY)
 
         if (!storedVersion) {
@@ -884,7 +923,7 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
                                 <LoginPage
                                     onLogin={handleLogin}
                                     onLoginGoogle={
-                                        isGoogleLoginConfigured
+                                        isGoogleLoginAvailable
                                             ? handleLoginGoogle
                                             : undefined
                                     }
@@ -902,7 +941,7 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
                                 <RegisterPage
                                     onRegister={handleRegister}
                                     onLoginGoogle={
-                                        isGoogleLoginConfigured
+                                        isGoogleLoginAvailable
                                             ? handleLoginGoogle
                                             : undefined
                                     }
