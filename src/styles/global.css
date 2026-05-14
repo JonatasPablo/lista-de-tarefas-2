@@ -1775,6 +1775,168 @@ select:focus {
     border-color: rgba(46, 168, 39, 0.28);
 }
 
+/* ---- Task action buttons ---- */
+
+.task-action,
+.file-upload-button,
+.task-file-btn {
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-surface);
+    color: var(--color-text-secondary);
+    transition:
+        background var(--transition-fast),
+        color var(--transition-fast),
+        border-color var(--transition-fast),
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.task-action--complete {
+    background: var(--btn-success-bg);
+    border-color: var(--btn-success-border);
+    color: var(--btn-success-color);
+    box-shadow: 0 2px 8px rgba(5, 116, 1, 0.2);
+}
+
+.task-action--complete:hover:not(:disabled) {
+    background: var(--btn-success-bg-hover);
+    transform: translateY(-1px);
+}
+
+.task-action--edit:hover:not(:disabled),
+.task-action--reopen:hover:not(:disabled) {
+    background: var(--color-bg-active);
+    color: var(--color-text);
+    transform: translateY(-1px);
+}
+
+.task-action--attach:hover:not(:disabled) {
+    background: var(--color-accent-bg);
+    border-color: rgba(26, 110, 245, 0.22);
+    color: var(--color-accent);
+    transform: translateY(-1px);
+}
+
+.task-action--delete {
+    background: var(--color-danger-bg);
+    border-color: var(--color-priority-high-border);
+    color: var(--color-danger);
+}
+
+.task-action--delete:hover:not(:disabled) {
+    background: var(--btn-danger-bg);
+    border-color: var(--btn-danger-border);
+    color: var(--btn-danger-color);
+    transform: translateY(-1px);
+}
+
+/* ---- Attachments v2.0.37 ---- */
+
+.task-file-thumb {
+    width: 58px;
+    height: 48px;
+    flex: 0 0 58px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-input-muted);
+    color: var(--color-text-muted);
+    font-size: 10px;
+    font-weight: var(--font-weight-extrabold);
+}
+
+.task-file-thumb--image {
+    padding: 0;
+    cursor: pointer;
+}
+
+.task-file-thumb--image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform var(--transition-base);
+}
+
+.task-file-thumb--image:hover img,
+.task-file-thumb--image:focus-visible img {
+    transform: scale(1.06);
+}
+
+.task-file-menu {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.task-file-menu-trigger {
+    width: 36px;
+    height: 36px;
+    display: inline-grid;
+    place-items: center;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-surface);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-extrabold);
+    line-height: 1;
+}
+
+.task-file-menu-trigger:hover,
+.task-file-menu-trigger[aria-expanded='true'] {
+    background: var(--color-bg-active);
+    color: var(--color-text);
+}
+
+.task-file-menu-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: calc(var(--z-dropdown) + 5);
+    min-width: 148px;
+    display: grid;
+    gap: 2px;
+    padding: 6px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-input);
+    box-shadow: var(--shadow-lg);
+}
+
+.task-file-menu-popover button {
+    width: 100%;
+    min-height: 34px;
+    padding: 7px 10px;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    text-align: left;
+}
+
+.task-file-menu-popover button:hover:not(:disabled) {
+    background: var(--color-bg-hover);
+    color: var(--color-text);
+}
+
+.task-file-menu-popover button:disabled {
+    opacity: 0.45;
+}
+
+.task-file-menu-popover .task-file-menu-danger {
+    color: var(--color-danger);
+}
+
+.task-file-menu-popover .task-file-menu-danger:hover:not(:disabled) {
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+}
+
 /* ---- Skeleton / loading genérico ---- */
 
 @keyframes skeleton-shimmer {

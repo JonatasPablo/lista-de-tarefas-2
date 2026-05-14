@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import type { TaskFile } from '../../types/task'
 import { taskFilesApi } from '../../services/taskFilesApi'
@@ -13,29 +13,96 @@ interface TaskFilesProps {
     onDeleteFile: (fileId: string) => void
 }
 
+interface TaskFileThumbnailProps {
+    taskId: string
+    file: TaskFile
+    onPreview: () => void
+}
+
 const isImageFile = (file: TaskFile): boolean =>
     file.mimeType.startsWith('image/')
 
-const getFileIcon = (file: TaskFile): string => {
-    if (isImageFile(file)) return '🖼'
-    if (file.mimeType.includes('pdf')) return '📄'
+const getFileTypeLabel = (file: TaskFile): string => {
+    if (isImageFile(file)) return 'Imagem'
+    if (file.mimeType.includes('pdf')) return 'PDF'
     if (
         file.mimeType.includes('zip') ||
         file.mimeType.includes('rar') ||
         file.mimeType.includes('7z')
+    ) {
+        return 'Arquivo compactado'
+    }
+    if (file.mimeType.includes('word') || file.mimeType.includes('document')) {
+        return 'Documento'
+    }
+    if (file.mimeType.includes('sheet') || file.mimeType.includes('excel')) {
+        return 'Planilha'
+    }
+    return 'Arquivo'
+}
+
+const TaskFileThumbnail = ({
+    taskId,
+    file,
+    onPreview,
+}: TaskFileThumbnailProps) => {
+    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null)
+    const isImage = isImageFile(file)
+
+    useEffect(() => {
+        if (!isImage) return
+
+        let objectUrl: string | null = null
+        let cancelled = false
+
+        const loadThumbnail = async () => {
+            try {
+                objectUrl = await taskFilesApi.getImagePreviewBlob(
+                    taskId,
+                    file.id
+                )
+
+                if (!cancelled) {
+                    setThumbnailUrl(objectUrl)
+                }
+            } catch {
+                if (!cancelled) {
+                    setThumbnailUrl(null)
+                }
+            }
+        }
+
+        loadThumbnail()
+
+        return () => {
+            cancelled = true
+            if (objectUrl) URL.revokeObjectURL(objectUrl)
+        }
+    }, [file.id, isImage, taskId])
+
+    if (!isImage) {
+        return (
+            <div className="task-file-thumb task-file-thumb--file">
+                <span aria-hidden="true">FILE</span>
+            </div>
+        )
+    }
+
+    return (
+        <button
+            type="button"
+            className="task-file-thumb task-file-thumb--image"
+            onClick={onPreview}
+            aria-label={`Visualizar imagem ${file.displayName}`}
+            title={`Visualizar ${file.displayName}`}
+        >
+            {thumbnailUrl ? (
+                <img src={thumbnailUrl} alt="" loading="lazy" />
+            ) : (
+                <span aria-hidden="true">IMG</span>
+            )}
+        </button>
     )
-        return '🗜'
-    if (
-        file.mimeType.includes('word') ||
-        file.mimeType.includes('document')
-    )
-        return '📝'
-    if (
-        file.mimeType.includes('sheet') ||
-        file.mimeType.includes('excel')
-    )
-        return '📊'
-    return '📎'
 }
 
 export const TaskFiles = ({
@@ -49,6 +116,19 @@ export const TaskFiles = ({
         null
     )
     const [previewFile, setPreviewFile] = useState<TaskFile | null>(null)
+    const [openMenuFileId, setOpenMenuFileId] = useState<string | null>(null)
+
+    const imageFiles = useMemo(() => files.filter(isImageFile), [files])
+
+    useEffect(() => {
+        if (!openMenuFileId) return
+
+        const closeMenu = () => setOpenMenuFileId(null)
+
+        document.addEventListener('click', closeMenu)
+
+        return () => document.removeEventListener('click', closeMenu)
+    }, [openMenuFileId])
 
     const handleDownloadFile = async (file: TaskFile) => {
         try {
@@ -56,11 +136,23 @@ export const TaskFiles = ({
             await taskFilesApi.downloadTaskFile(taskId, file)
         } finally {
             setDownloadingFileId(null)
+            setOpenMenuFileId(null)
         }
     }
 
     const handlePreviewImage = (file: TaskFile) => {
         setPreviewFile(file)
+        setOpenMenuFileId(null)
+    }
+
+    const handleRenameFile = (file: TaskFile) => {
+        onRequestRenameFile(file)
+        setOpenMenuFileId(null)
+    }
+
+    const handleDeleteFile = (file: TaskFile) => {
+        onDeleteFile(file.id)
+        setOpenMenuFileId(null)
     }
 
     if (files.length === 0) {
@@ -72,7 +164,7 @@ export const TaskFiles = ({
             <div className="task-files">
                 <div className="task-files-header">
                     <span className="task-files-icon" aria-hidden="true">
-                        📎
+                        ANX
                     </span>
                     <strong>
                         {files.length === 1
@@ -84,21 +176,22 @@ export const TaskFiles = ({
                 <ul>
                     {files.map((file) => {
                         const isDownloading = downloadingFileId === file.id
-                        const ehImagem = isImageFile(file)
-                        const icone = getFileIcon(file)
+                        const isImage = isImageFile(file)
+                        const isMenuOpen = openMenuFileId === file.id
 
                         return (
                             <li
                                 key={file.id}
-                                className={`task-file-item ${ehImagem ? 'task-file-item--image' : ''}`}
+                                className={`task-file-item ${isImage ? 'task-file-item--image' : ''}`}
                             >
                                 <div className="task-file-info">
-                                    <span
-                                        className="task-file-icon"
-                                        aria-hidden="true"
-                                    >
-                                        {icone}
-                                    </span>
+                                    <TaskFileThumbnail
+                                        taskId={taskId}
+                                        file={file}
+                                        onPreview={() =>
+                                            handlePreviewImage(file)
+                                        }
+                                    />
 
                                     <div className="task-file-meta">
                                         <span
@@ -108,74 +201,86 @@ export const TaskFiles = ({
                                             {file.displayName}
                                         </span>
                                         <small className="task-file-size">
+                                            {getFileTypeLabel(file)} |{' '}
                                             {formatFileSize(file.sizeBytes)}
                                         </small>
                                     </div>
                                 </div>
 
-                                <div className="task-file-actions">
-                                    {ehImagem ? (
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handlePreviewImage(file)
-                                            }
-                                            className="task-file-btn task-file-btn--preview"
-                                            aria-label={`Visualizar imagem ${file.displayName}`}
-                                            title={`Visualizar ${file.displayName}`}
+                                <div
+                                    className="task-file-menu"
+                                    onClick={(event) => event.stopPropagation()}
+                                >
+                                    <button
+                                        type="button"
+                                        className="task-file-menu-trigger"
+                                        aria-label={`Abrir menu do arquivo ${file.displayName}`}
+                                        aria-expanded={isMenuOpen}
+                                        onClick={() =>
+                                            setOpenMenuFileId((current) =>
+                                                current === file.id
+                                                    ? null
+                                                    : file.id
+                                            )
+                                        }
+                                    >
+                                        ...
+                                    </button>
+
+                                    {isMenuOpen && (
+                                        <div
+                                            className="task-file-menu-popover"
+                                            role="menu"
                                         >
-                                            Visualizar
-                                        </button>
-                                    ) : null}
+                                            {isImage && (
+                                                <button
+                                                    type="button"
+                                                    role="menuitem"
+                                                    onClick={() =>
+                                                        handlePreviewImage(file)
+                                                    }
+                                                >
+                                                    Visualizar
+                                                </button>
+                                            )}
 
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            handleDownloadFile(file)
-                                        }
-                                        disabled={isDownloading}
-                                        className="task-file-btn"
-                                        aria-label={`Baixar arquivo ${file.displayName}`}
-                                        title={`Baixar ${file.displayName}`}
-                                    >
-                                        {isDownloading
-                                            ? 'Baixando…'
-                                            : 'Baixar'}
-                                    </button>
+                                            <button
+                                                type="button"
+                                                role="menuitem"
+                                                disabled={isDownloading}
+                                                onClick={() =>
+                                                    handleDownloadFile(file)
+                                                }
+                                            >
+                                                {isDownloading
+                                                    ? 'Baixando...'
+                                                    : 'Baixar'}
+                                            </button>
 
-                                    <button
-                                        type="button"
-                                        disabled={isTaskCompleted}
-                                        onClick={() =>
-                                            onRequestRenameFile(file)
-                                        }
-                                        className="task-file-btn"
-                                        aria-label={`Renomear arquivo ${file.displayName}`}
-                                        title={
-                                            isTaskCompleted
-                                                ? 'Tarefa concluída'
-                                                : `Renomear ${file.displayName}`
-                                        }
-                                    >
-                                        Renomear
-                                    </button>
+                                            <button
+                                                type="button"
+                                                role="menuitem"
+                                                disabled={isTaskCompleted}
+                                                onClick={() =>
+                                                    handleRenameFile(file)
+                                                }
+                                            >
+                                                Renomear
+                                            </button>
 
-                                    <button
-                                        type="button"
-                                        disabled={isTaskCompleted}
-                                        onClick={() =>
-                                            onDeleteFile(file.id)
-                                        }
-                                        className="task-file-btn task-file-btn--danger"
-                                        aria-label={`Excluir arquivo ${file.displayName}`}
-                                        title={
-                                            isTaskCompleted
-                                                ? 'Tarefa concluída'
-                                                : `Excluir ${file.displayName}`
-                                        }
-                                    >
-                                        Excluir
-                                    </button>
+                                            <button
+                                                type="button"
+                                                role="menuitem"
+                                                disabled={isTaskCompleted}
+                                                className="task-file-menu-danger"
+                                                onClick={() =>
+                                                    handleDeleteFile(file)
+                                                }
+                                            >
+                                                Excluir
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </li>
                         )
@@ -187,6 +292,7 @@ export const TaskFiles = ({
                 <ImagePreviewModal
                     taskId={taskId}
                     file={previewFile}
+                    files={imageFiles}
                     onClose={() => setPreviewFile(null)}
                 />
             )}

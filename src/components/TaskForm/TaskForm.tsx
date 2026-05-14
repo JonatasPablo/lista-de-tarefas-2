@@ -21,10 +21,7 @@ export const TaskForm = ({ onAddTask }: TaskFormProps) => {
     const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        if (!canSubmit) {
-            alert('O título da tarefa não pode ficar vazio.')
-            return
-        }
+        if (!canSubmit) return
 
         onAddTask(normalizedTitle, normalizedDescription, priority)
 
@@ -35,19 +32,19 @@ export const TaskForm = ({ onAddTask }: TaskFormProps) => {
 
     return (
         <form className="task-form" onSubmit={handleSubmit}>
-            <label htmlFor="task-form-title">Título da tarefa</label>
+            <label htmlFor="task-form-title">Titulo da tarefa</label>
 
             <input
                 id="task-form-title"
                 type="text"
-                placeholder="Ex: Ajustar relatório de vendas"
+                placeholder="Ex: Ajustar relatorio de vendas"
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
                 maxLength={120}
                 autoComplete="off"
             />
 
-            <label htmlFor="task-form-description">Descrição</label>
+            <label htmlFor="task-form-description">Descricao</label>
 
             <textarea
                 id="task-form-description"
@@ -68,7 +65,7 @@ export const TaskForm = ({ onAddTask }: TaskFormProps) => {
                 }
             >
                 <option value="alta">Alta prioridade</option>
-                <option value="media">Média prioridade</option>
+                <option value="media">Media prioridade</option>
                 <option value="baixa">Baixa prioridade</option>
             </select>
 

@@ -35,14 +35,6 @@ export class ErrorBoundary extends Component<
     }
 
     handleClearLocalData = () => {
-        const confirmClear = window.confirm(
-            'Deseja limpar os dados locais e recarregar a aplicação?'
-        )
-
-        if (!confirmClear) {
-            return
-        }
-
         localStorage.removeItem('tasks')
         window.location.reload()
     }
@@ -55,27 +47,27 @@ export class ErrorBoundary extends Component<
                         <h1>Ops, algo deu errado.</h1>
 
                         <p>
-                            O sistema encontrou um erro inesperado. Você pode
-                            tentar recarregar a página.
+                            O sistema encontrou um erro inesperado. Voce pode
+                            tentar recarregar a pagina.
                         </p>
 
                         {this.state.errorMessage && (
                             <details>
-                                <summary>Ver detalhes técnicos</summary>
+                                <summary>Ver detalhes tecnicos</summary>
                                 <code>{this.state.errorMessage}</code>
                             </details>
                         )}
 
                         <div className="error-actions">
                             <button type="button" onClick={this.handleReload}>
-                                Recarregar página
+                                Recarregar pagina
                             </button>
 
                             <button
                                 type="button"
                                 onClick={this.handleClearLocalData}
                             >
-                                Limpar dados locais
+                                Limpar dados locais e recarregar
                             </button>
                         </div>
                     </section>

@@ -1,5 +1,11 @@
 import { useMemo, useState } from 'react'
-import type { Task, TaskFile, TaskPriority } from '../../types/task'
+import type {
+    ChecklistSummary,
+    Task,
+    TaskFile,
+    TaskPriority,
+} from '../../types/task'
+import { TaskDetailModal } from '../TaskDetailModal/TaskDetailModal'
 import { TaskItem } from '../TaskItem/TaskItem'
 
 interface TaskListProps {
@@ -37,30 +43,42 @@ export const TaskList = ({
     onDeleteTask,
     onUpdateTask,
     onAddFiles,
-    onRenameFile,
     onDeleteFile,
 }: TaskListProps) => {
-    const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null)
+    const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
+    const [checklistSummaries, setChecklistSummaries] = useState<
+        Record<string, ChecklistSummary | null>
+    >({})
 
     const selectedTaskIdsSet = useMemo(
         () => new Set(selectedTaskIds),
         [selectedTaskIds]
     )
 
-    const availableTaskIdsSet = useMemo(
-        () => new Set(tasks.map((task) => task.id)),
-        [tasks]
+    const tasksWithChecklistSummary = useMemo(
+        () =>
+            tasks.map((task) => ({
+                ...task,
+                checklistSummary:
+                    task.id in checklistSummaries
+                        ? checklistSummaries[task.id] || undefined
+                        : task.checklistSummary,
+            })),
+        [checklistSummaries, tasks]
     )
 
-    const activeExpandedTaskId =
-        expandedTaskId && availableTaskIdsSet.has(expandedTaskId)
-            ? expandedTaskId
-            : null
+    const activeTask =
+        tasksWithChecklistSummary.find((task) => task.id === activeTaskId) ||
+        null
 
-    const handleToggleExpandedTask = (taskId: string) => {
-        setExpandedTaskId((currentTaskId) =>
-            currentTaskId === taskId ? null : taskId
-        )
+    const handleChecklistProgressChange = (
+        taskId: string,
+        summary: ChecklistSummary | null
+    ) => {
+        setChecklistSummaries((current) => ({
+            ...current,
+            [taskId]: summary,
+        }))
     }
 
     if (tasks.length === 0) {
@@ -72,25 +90,33 @@ export const TaskList = ({
     }
 
     return (
-        <ul className="task-list">
-            {tasks.map((task) => (
-                <TaskItem
-                    key={task.id}
-                    task={task}
-                    expanded={activeExpandedTaskId === task.id}
-                    selected={selectedTaskIdsSet.has(task.id)}
-                    selectable={selectable}
-                    onToggleExpanded={() => handleToggleExpandedTask(task.id)}
+        <>
+            <ul className="task-list">
+                {tasksWithChecklistSummary.map((task) => (
+                    <TaskItem
+                        key={task.id}
+                        task={task}
+                        selected={selectedTaskIdsSet.has(task.id)}
+                        selectable={selectable}
+                        onOpen={() => setActiveTaskId(task.id)}
+                        onSelectTask={onSelectTask}
+                    />
+                ))}
+            </ul>
+
+            {activeTask && (
+                <TaskDetailModal
+                    task={activeTask}
+                    onClose={() => setActiveTaskId(null)}
                     onToggleTask={onToggleTask}
-                    onSelectTask={onSelectTask}
-                    onUpdateTask={onUpdateTask}
                     onDeleteTask={onDeleteTask}
-                    onRequestRenameFile={onRequestRenameFile}
+                    onUpdateTask={onUpdateTask}
                     onAddFiles={onAddFiles}
                     onDeleteFile={onDeleteFile}
-                    onRenameFile={onRenameFile}
+                    onRequestRenameFile={onRequestRenameFile}
+                    onChecklistProgressChange={handleChecklistProgressChange}
                 />
-            ))}
-        </ul>
+            )}
+        </>
     )
 }

@@ -335,6 +335,12 @@
     gap: 10px;
 }
 
+.completed-tasks-page .task-summary-copy {
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+}
+
 .completed-tasks-page .task-summary-title {
     overflow: hidden;
     color: var(--color-text);
@@ -524,6 +530,46 @@
     white-space: nowrap;
 }
 
+.completed-tasks-page .task-summary-description {
+    overflow: hidden;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-snug);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.completed-tasks-page .task-attachment-indicator {
+    min-width: 24px;
+    min-height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: var(--color-bg-badge);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-extrabold);
+    line-height: 1;
+}
+
+.completed-tasks-page .task-expand-indicator {
+    min-width: 48px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 9px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-bg-badge);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-extrabold);
+    flex-shrink: 0;
+}
+
 .completed-tasks-page .task-file-size {
     color: var(--color-text-muted);
     font-size: 11px;
@@ -535,6 +581,10 @@
     flex-wrap: wrap;
     gap: 6px;
     justify-content: flex-end;
+}
+
+.completed-tasks-page .task-file-menu {
+    align-self: center;
 }
 
 .completed-tasks-page .task-file-btn--preview {
@@ -1007,6 +1057,10 @@
         font-size: 14px;
     }
 
+    .completed-tasks-page .task-summary-description {
+        display: none;
+    }
+
     .completed-tasks-page .task-summary-indicators {
         gap: 6px;
         font-size: 12px;
@@ -1079,19 +1133,10 @@
         font-size: 10px;
     }
 
-    .completed-tasks-page .task-file-actions {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 5px;
-    }
-
-    .completed-tasks-page .task-file-actions button {
-        width: 100%;
-        min-height: 31px;
-        padding: 6px 5px;
-        border-radius: 11px;
-        font-size: 11px;
-        line-height: 1;
+    .completed-tasks-page .task-file-thumb {
+        width: 52px;
+        height: 44px;
+        flex-basis: 52px;
     }
 }
 

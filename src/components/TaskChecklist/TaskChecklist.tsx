@@ -92,18 +92,6 @@ export const TaskChecklist = ({
     // Confirmações antes de excluir
     // ---------------------------------------------------------------
 
-    const confirmarExcluirGrupo = (grupoId: string, titulo: string) => {
-        if (window.confirm(`Excluir a lista "${titulo}" e todos os seus itens?`)) {
-            excluirGrupo(grupoId)
-        }
-    }
-
-    const confirmarExcluirItem = (grupoId: string, itemId: string, titulo: string) => {
-        if (window.confirm(`Excluir o item "${titulo}"?`)) {
-            excluirItem(grupoId, itemId)
-        }
-    }
-
     // ---------------------------------------------------------------
     // Render de item individual
     // ---------------------------------------------------------------
@@ -181,9 +169,7 @@ export const TaskChecklist = ({
                         </button>
                         <button
                             type="button"
-                            onClick={() =>
-                                confirmarExcluirItem(grupoId, item.id, item.title)
-                            }
+                            onClick={() => excluirItem(grupoId, item.id)}
                             title="Excluir item"
                             aria-label="Excluir item"
                             className="cl-icon-btn cl-icon-btn--danger"
@@ -287,10 +273,7 @@ export const TaskChecklist = ({
                                                     <button
                                                         type="button"
                                                         onClick={() =>
-                                                            confirmarExcluirGrupo(
-                                                                grupo.id,
-                                                                grupo.title
-                                                            )
+                                                            excluirGrupo(grupo.id)
                                                         }
                                                         title="Excluir lista"
                                                         aria-label="Excluir lista"
