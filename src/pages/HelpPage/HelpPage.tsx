@@ -15,34 +15,84 @@ interface HelpPageProps {
 
 const helpItems = [
     {
-        title: 'Como criar uma tarefa',
+        title: 'Cadastro',
         description:
-            'Informe o título, uma descrição opcional, escolha a prioridade e clique em Adicionar.',
+            'Acesse a tela de cadastro, informe seu nome, e-mail e senha. Após criar a conta, confirme o e-mail pelo código enviado para a sua caixa de entrada antes de fazer o primeiro login.',
     },
     {
-        title: 'Como anexar arquivos',
+        title: 'Login',
         description:
-            'Em uma tarefa pendente, clique em Anexar arquivo. Você pode selecionar vários arquivos de uma vez. O limite planejado é de 100 MB por arquivo.',
+            'Entre com seu e-mail e senha cadastrados. O e-mail precisa estar confirmado para acessar o sistema. Se errar a senha muitas vezes, o acesso será temporariamente bloqueado.',
     },
     {
-        title: 'Como concluir uma tarefa',
+        title: 'Login com Google',
         description:
-            'Marque a tarefa como concluída. Ela será enviada para o histórico e ficará bloqueada para edição e novos anexos.',
+            'Clique em "Entrar com Google" na tela de login ou cadastro para usar sua conta Google sem precisar criar uma senha.',
     },
     {
-        title: 'Como reabrir uma tarefa',
+        title: 'Redefinição de senha',
         description:
-            'Na página de histórico, clique em Reabrir tarefa. Ela volta para a lista de pendentes.',
+            'Na tela de login, clique em "Esqueci minha senha". Informe seu e-mail, receba o código de verificação e crie uma nova senha.',
     },
     {
-        title: 'Como exportar tarefas',
+        title: 'Minha Conta',
         description:
-            'Na página de pendentes, você pode selecionar tarefas específicas ou exportar todas as tarefas filtradas.',
+            'Acesse Minha Conta pelo menu para alterar seu nome ou senha. A senha atual é exigida para confirmar qualquer alteração.',
     },
     {
-        title: 'Anexos de arquivos',
+        title: 'Foto de perfil',
         description:
-            'O sistema salva seus arquivos para que você consiga baixar em outros dispositivos.',
+            'Em Minha Conta, faça upload de uma imagem de até 20 MB. Você pode trocar ou remover a foto a qualquer momento. Sem foto, o sistema exibe suas iniciais.',
+    },
+    {
+        title: 'Dark mode',
+        description:
+            'Alterne entre o tema claro e escuro pelo botão de tema no cabeçalho. Sua preferência é salva automaticamente e mantida entre sessões.',
+    },
+    {
+        title: 'Instalar como app (PWA)',
+        description:
+            'Em navegadores compatíveis (Chrome, Edge, Android), você verá uma opção para instalar o sistema como aplicativo. No iOS, use o botão Compartilhar e depois "Adicionar à Tela de Início". Ao abrir o app, atualizações são aplicadas automaticamente.',
+    },
+    {
+        title: 'Criar e editar tarefas',
+        description:
+            'Informe o título, uma descrição opcional e escolha a prioridade (baixa, média ou alta). Tarefas pendentes podem ser editadas a qualquer momento.',
+    },
+    {
+        title: 'Concluir e filtrar tarefas',
+        description:
+            'Marque uma tarefa como concluída para enviá-la ao histórico. Use os filtros disponíveis para encontrar tarefas por título, prioridade ou outros critérios.',
+    },
+    {
+        title: 'Exportar tarefas',
+        description:
+            'Na página de pendentes, selecione tarefas específicas ou exporte todas as tarefas filtradas de uma vez.',
+    },
+    {
+        title: 'Anexos',
+        description:
+            'Adicione arquivos a tarefas pendentes. O limite é de 100 MB por arquivo, até 20 arquivos por tarefa e 500 MB de armazenamento total por conta. É possível baixar ou remover arquivos individualmente.',
+    },
+    {
+        title: 'Histórico',
+        description:
+            'Acesse o histórico para visualizar as tarefas concluídas. Use os filtros para localizar registros e reabra uma tarefa para movê-la de volta à lista de pendentes.',
+    },
+    {
+        title: 'Log de ações',
+        description:
+            'O log registra automaticamente as principais ações realizadas no sistema. Use os filtros para localizar eventos específicos e exporte os dados em formato CSV.',
+    },
+    {
+        title: 'Segurança',
+        description:
+            'A sessão é mantida por cookie seguro e httpOnly. O acesso exige e-mail confirmado. Tentativas excessivas de login são bloqueadas automaticamente para proteger a conta.',
+    },
+    {
+        title: 'Responsividade',
+        description:
+            'O sistema funciona em desktop, notebook, tablet e celular. O layout se adapta automaticamente ao tamanho da tela sem perda de funcionalidade.',
     },
 ]
 
@@ -52,8 +102,8 @@ export const HelpPage = ({ isDark, onToggleTheme, isLoggedIn }: HelpPageProps) =
             <section className="help-card">
                 <aside className="help-hero" aria-hidden="true">
                     <p className="help-hero-description">
-                        Tire dúvidas rápidas sobre tarefas, anexos, histórico e
-                        versão do sistema.
+                        Tire dúvidas sobre conta, tarefas, anexos e
+                        configurações do sistema.
                     </p>
 
                     <strong className="help-hero-title">
