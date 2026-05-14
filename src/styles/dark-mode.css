@@ -1294,79 +1294,12 @@
 
 /* =========================
    TaskChecklist — dark mode
+   Os tokens de design-tokens.css cobrem o dark mode automaticamente.
+   Apenas ajuste fino na barra de progresso do grupo.
 ========================= */
 
-[data-theme="dark"] .task-checklist {
-    border-top-color: rgba(255, 255, 255, 0.07);
-}
-
-[data-theme="dark"] .checklist-loading {
-    color: rgba(200, 200, 200, 0.5);
-}
-
-[data-theme="dark"] .checklist-progress {
-    color: rgba(200, 200, 200, 0.52);
-}
-
-[data-theme="dark"] .checklist-item-label span {
-    color: rgba(200, 200, 200, 0.82);
-}
-
-[data-theme="dark"] .checklist-item.is-completed .checklist-item-label span {
-    color: rgba(200, 200, 200, 0.38);
-}
-
-[data-theme="dark"] .checklist-item-actions button {
-    color: rgba(200, 200, 200, 0.5);
-}
-
-[data-theme="dark"] .checklist-item-actions button:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-    color: #d8d8d8;
-}
-
-[data-theme="dark"] .checklist-item-edit input {
-    background-color: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.12);
-    color: #d0d0d0;
-}
-
-[data-theme="dark"] .checklist-item-edit input:focus {
-    border-color: rgba(255, 255, 255, 0.22);
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="dark"] .checklist-item-edit button {
-    background-color: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #c8c8c8;
-}
-
-[data-theme="dark"] .checklist-item-edit button:hover {
-    background-color: rgba(225, 225, 225, 0.9);
-    color: #111111;
-}
-
-[data-theme="dark"] .checklist-add input {
-    background-color: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #d0d0d0;
-}
-
-[data-theme="dark"] .checklist-add input:focus {
-    border-color: rgba(255, 255, 255, 0.22);
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="dark"] .checklist-add button {
-    background-color: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #c8c8c8;
-}
-
-[data-theme="dark"] .checklist-add button:hover:not(:disabled) {
-    background-color: rgba(225, 225, 225, 0.9);
-    color: #111111;
+[data-theme="dark"] .cl-grupo-progress-bar {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* =========================

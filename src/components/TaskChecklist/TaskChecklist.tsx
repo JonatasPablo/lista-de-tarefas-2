@@ -289,6 +289,17 @@ export const TaskChecklist = ({
                                     )}
                                 </div>
 
+                                {total > 0 && (
+                                    <div className="cl-grupo-progress-bar">
+                                        <div
+                                            className="cl-grupo-progress-fill"
+                                            style={{
+                                                width: `${Math.round((concluidos / total) * 100)}%`,
+                                            }}
+                                        />
+                                    </div>
+                                )}
+
                                 {/* Itens do grupo */}
                                 {grupo.items.length > 0 && (
                                     <ul className="cl-lista">

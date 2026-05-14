@@ -1,32 +1,33 @@
 /* =========================
-   TaskChecklist — v2.0.34
+   TaskChecklist — v2.0.36
    Checklist multi-grupo estilo Trello
+   Usa design tokens globais
 ========================= */
 
 .task-checklist {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--cl-border, rgba(0, 0, 0, 0.08));
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--space-3);
 }
 
 /* ---- Loading ---- */
 
 .cl-loading {
-    font-size: 0.78rem;
-    color: var(--cl-text-muted, #888);
-    padding: 4px 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    padding: var(--space-1) 0;
 }
 
 /* ---- Progresso geral ---- */
 
 .cl-progresso-geral {
-    font-size: 0.72rem;
-    color: var(--cl-text-muted, #777);
     margin: 0;
-    font-style: italic;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-muted);
     letter-spacing: 0.01em;
 }
 
@@ -35,17 +36,23 @@
 .cl-grupos {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--space-2);
 }
 
 .cl-grupo {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: var(--cl-grupo-bg, rgba(0, 0, 0, 0.025));
-    border: 1px solid var(--cl-border, rgba(0, 0, 0, 0.07));
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-xs);
+    transition: box-shadow var(--transition-fast);
+}
+
+.cl-grupo:hover {
+    box-shadow: var(--shadow-sm);
 }
 
 /* ---- Cabeçalho do grupo ---- */
@@ -53,36 +60,39 @@
 .cl-grupo-header {
     display: flex;
     align-items: center;
-    gap: 6px;
-    min-height: 24px;
+    gap: var(--space-2);
+    min-height: 22px;
 }
 
 .cl-grupo-titulo {
     flex: 1;
     margin: 0;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--cl-titulo-color, #303030);
-    letter-spacing: -0.01em;
-    line-height: 1.2;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-extrabold);
+    color: var(--color-text);
+    letter-spacing: -0.015em;
+    line-height: var(--line-height-tight);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .cl-grupo-progresso {
-    font-size: 0.7rem;
-    color: var(--cl-text-muted, #888);
-    font-weight: 600;
-    white-space: nowrap;
     flex-shrink: 0;
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    background-color: var(--color-bg-badge);
+    padding: 2px 7px;
+    border-radius: var(--radius-full);
 }
 
 .cl-grupo-actions {
     display: flex;
     gap: 2px;
     opacity: 0;
-    transition: opacity 0.15s ease;
+    transition: opacity var(--transition-fast);
     flex-shrink: 0;
 }
 
@@ -90,12 +100,29 @@
     opacity: 1;
 }
 
+/* ---- Barra de progresso do grupo ---- */
+
+.cl-grupo-progress-bar {
+    height: 4px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-border);
+    overflow: hidden;
+}
+
+.cl-grupo-progress-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    background-color: var(--color-success);
+    transition: width 0.4s ease;
+    min-width: 0;
+}
+
 /* ---- Edição de grupo ---- */
 
 .cl-grupo-edit {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--space-2);
     flex: 1;
     flex-wrap: wrap;
 }
@@ -103,19 +130,22 @@
 .cl-grupo-edit input {
     flex: 1;
     min-width: 80px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    padding: 4px 8px;
-    border: 1px solid var(--cl-input-border, #bbb);
-    border-radius: 6px;
-    background: var(--cl-input-bg, #fff);
-    color: var(--cl-input-color, #222);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-input);
+    color: var(--color-text);
+    transition:
+        border-color var(--transition-base),
+        box-shadow var(--transition-base);
 }
 
 .cl-grupo-edit input:focus {
     outline: none;
-    border-color: var(--cl-focus-border, #888);
-    box-shadow: 0 0 0 2px var(--cl-focus-ring, rgba(0, 0, 0, 0.07));
+    border-color: var(--color-focus-border);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
 /* ---- Lista de itens ---- */
@@ -123,10 +153,10 @@
 .cl-lista {
     list-style: none;
     padding: 0;
-    margin: 2px 0 4px;
+    margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
 }
 
 /* ---- Item ---- */
@@ -134,16 +164,16 @@
 .cl-item {
     display: flex;
     align-items: flex-start;
-    gap: 5px;
-    font-size: 0.875rem;
-    min-height: 26px;
-    border-radius: 6px;
-    padding: 2px 4px;
-    transition: background-color 0.12s ease;
+    gap: var(--space-2);
+    font-size: var(--font-size-md);
+    min-height: 28px;
+    border-radius: var(--radius-sm);
+    padding: 3px var(--space-1);
+    transition: background-color var(--transition-fast);
 }
 
 .cl-item:hover {
-    background: var(--cl-item-hover, rgba(0, 0, 0, 0.03));
+    background-color: var(--color-bg-hover);
 }
 
 /* Label checkbox + texto */
@@ -151,47 +181,50 @@
 .cl-item-label {
     display: flex;
     align-items: flex-start;
-    gap: 7px;
+    gap: var(--space-2);
     flex: 1;
     cursor: pointer;
     user-select: none;
-    padding-top: 1px;
+    padding-top: 2px;
 }
 
 .cl-item-label input[type='checkbox'] {
-    width: 14px;
-    height: 14px;
+    width: 15px;
+    height: 15px;
     flex-shrink: 0;
     cursor: pointer;
-    margin-top: 2px;
+    margin-top: 1px;
+    accent-color: var(--color-success);
 }
 
 .cl-item-label input[type='checkbox']:disabled {
     cursor: default;
-    opacity: 0.6;
+    opacity: 0.55;
 }
 
 .cl-item-text {
-    line-height: 1.4;
+    line-height: var(--line-height-snug);
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
 }
 
 /* Item concluído */
 
 .cl-item--done .cl-item-text {
     text-decoration: line-through;
-    opacity: 0.45;
+    color: var(--color-text-subtle);
 }
 
 /* Data de conclusão — bem discreta */
 
 .cl-item-completed-at {
-    font-size: 0.68rem;
-    color: var(--cl-text-muted, #999);
+    font-size: var(--font-size-2xs);
+    color: var(--color-text-subtle);
     white-space: nowrap;
     flex-shrink: 0;
     align-self: center;
     line-height: 1;
-    margin-left: 2px;
+    margin-left: var(--space-1);
 }
 
 /* Ações de editar/excluir item */
@@ -200,7 +233,7 @@
     display: flex;
     gap: 1px;
     opacity: 0;
-    transition: opacity 0.15s ease;
+    transition: opacity var(--transition-fast);
     flex-shrink: 0;
     align-self: center;
 }
@@ -212,134 +245,153 @@
 /* ---- Edição de item ---- */
 
 .cl-item--editing {
-    background: var(--cl-item-hover, rgba(0, 0, 0, 0.03));
+    background-color: var(--color-bg-hover);
     align-items: center;
 }
 
 .cl-item-edit {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: var(--space-1);
     flex: 1;
 }
 
 .cl-item-edit input {
-    font-size: 0.875rem;
-    padding: 4px 8px;
-    border: 1px solid var(--cl-input-border, #bbb);
-    border-radius: 6px;
-    background: var(--cl-input-bg, #fff);
-    color: var(--cl-input-color, #222);
+    font-size: var(--font-size-sm);
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-input);
+    color: var(--color-text);
     width: 100%;
+    transition:
+        border-color var(--transition-base),
+        box-shadow var(--transition-base);
 }
 
 .cl-item-edit input:focus {
     outline: none;
-    border-color: var(--cl-focus-border, #888);
-    box-shadow: 0 0 0 2px var(--cl-focus-ring, rgba(0, 0, 0, 0.07));
+    border-color: var(--color-focus-border);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
 .cl-item-edit-actions {
     display: flex;
-    gap: 5px;
+    gap: var(--space-1);
 }
 
 /* ---- Adicionar item ---- */
 
 .cl-add-item {
     display: flex;
-    gap: 6px;
-    margin-top: 2px;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
 }
 
 .cl-add-item input {
     flex: 1;
-    font-size: 0.82rem;
-    padding: 4px 8px;
-    border: 1px solid var(--cl-input-border, #ccc);
-    border-radius: 6px;
-    background: var(--cl-input-bg, rgba(255, 255, 255, 0.75));
-    color: var(--cl-input-color, #333);
+    font-size: var(--font-size-xs);
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-bg-input-muted);
+    color: var(--color-text);
+    transition:
+        border-color var(--transition-base),
+        box-shadow var(--transition-base),
+        background-color var(--transition-fast);
 }
 
 .cl-add-item input:focus {
     outline: none;
-    border-color: var(--cl-focus-border, #888);
-    box-shadow: 0 0 0 2px var(--cl-focus-ring, rgba(0, 0, 0, 0.07));
-    background: var(--cl-input-bg-focus, #fff);
+    border-color: var(--color-focus-border);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
+    background-color: var(--color-bg-input);
 }
 
 /* ---- Adicionar lista ---- */
 
 .cl-add-grupo {
     display: flex;
-    gap: 6px;
-    padding-top: 4px;
-    border-top: 1px dashed var(--cl-border-dashed, rgba(0, 0, 0, 0.1));
+    gap: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px dashed var(--color-border);
 }
 
 .cl-add-grupo input {
     flex: 1;
-    font-size: 0.82rem;
-    padding: 5px 10px;
-    border: 1px solid var(--cl-input-border, #ccc);
-    border-radius: 6px;
-    background: var(--cl-input-bg, rgba(255, 255, 255, 0.75));
-    color: var(--cl-input-color, #333);
+    font-size: var(--font-size-xs);
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-input-muted);
+    color: var(--color-text);
+    transition:
+        border-color var(--transition-base),
+        box-shadow var(--transition-base),
+        background-color var(--transition-fast);
 }
 
 .cl-add-grupo input:focus {
     outline: none;
-    border-color: var(--cl-focus-border, #888);
-    box-shadow: 0 0 0 2px var(--cl-focus-ring, rgba(0, 0, 0, 0.07));
-    background: var(--cl-input-bg-focus, #fff);
+    border-color: var(--color-focus-border);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
+    background-color: var(--color-bg-input);
 }
 
 /* ---- Botões ---- */
 
 .cl-btn {
-    font-size: 0.76rem;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--cl-btn-border, rgba(0, 0, 0, 0.15));
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
     cursor: pointer;
     white-space: nowrap;
+    line-height: var(--line-height-snug);
     transition:
-        background-color 0.15s ease,
-        color 0.15s ease,
-        transform 0.1s ease;
-    line-height: 1.4;
+        background-color var(--transition-fast),
+        color var(--transition-fast),
+        border-color var(--transition-fast),
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
 }
 
 .cl-btn--save {
-    background: var(--cl-btn-save-bg, #404040);
-    color: var(--cl-btn-save-color, #fff);
-    border-color: transparent;
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-color);
+    border-color: var(--btn-primary-border);
 }
 
 .cl-btn--save:hover {
-    background: var(--cl-btn-save-hover, #222);
+    background: var(--btn-primary-bg-hover);
     transform: translateY(-1px);
+    box-shadow: var(--shadow-xs);
 }
 
 .cl-btn--cancel {
-    background: var(--cl-btn-cancel-bg, #f0f0f0);
-    color: var(--cl-btn-cancel-color, #555);
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-secondary);
+    border-color: var(--color-border);
 }
 
 .cl-btn--cancel:hover {
-    background: var(--cl-btn-cancel-hover, #e0e0e0);
+    background-color: var(--color-bg-hover);
+    color: var(--color-text);
 }
 
 .cl-btn--add {
-    background: var(--cl-btn-add-bg, rgba(255, 255, 255, 0.8));
-    color: var(--cl-btn-add-color, #404040);
-    font-size: 0.75rem;
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-secondary);
+    border-color: var(--color-border);
+    font-size: var(--font-size-xs);
 }
 
 .cl-btn--add:hover:not(:disabled) {
-    background: var(--cl-btn-add-hover, rgba(255, 255, 255, 0.95));
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    border-color: var(--color-primary);
     transform: translateY(-1px);
 }
 
@@ -350,14 +402,15 @@
 }
 
 .cl-btn--add-grupo {
-    background: var(--cl-btn-add-grupo-bg, rgba(64, 64, 64, 0.08));
-    color: var(--cl-btn-add-grupo-color, #404040);
-    font-size: 0.75rem;
+    background-color: var(--color-bg-badge);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
     border-color: transparent;
 }
 
 .cl-btn--add-grupo:hover:not(:disabled) {
-    background: var(--cl-btn-add-grupo-hover, rgba(64, 64, 64, 0.14));
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
     transform: translateY(-1px);
 }
 
@@ -374,23 +427,23 @@
     border: none;
     cursor: pointer;
     padding: 2px 5px;
-    font-size: 0.75rem;
-    color: var(--cl-icon-color, #999);
-    border-radius: 4px;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-subtle);
+    border-radius: var(--radius-xs);
     line-height: 1;
     transition:
-        background-color 0.12s ease,
-        color 0.12s ease;
+        background-color var(--transition-fast),
+        color var(--transition-fast);
 }
 
 .cl-icon-btn:hover {
-    background: var(--cl-icon-hover-bg, rgba(0, 0, 0, 0.07));
-    color: var(--cl-icon-hover-color, #333);
+    background-color: var(--color-bg-hover);
+    color: var(--color-text-secondary);
 }
 
 .cl-icon-btn--danger:hover {
-    background: var(--cl-icon-danger-bg, rgba(129, 1, 1, 0.1));
-    color: var(--cl-icon-danger-color, #810101);
+    background-color: var(--color-danger-bg);
+    color: var(--color-danger);
 }
 
 /* ---- Mobile ---- */
@@ -414,109 +467,4 @@
     .cl-item-completed-at {
         display: none;
     }
-}
-
-/* ---- Dark mode ---- */
-
-[data-theme='dark'] .cl-grupo {
-    background: var(--cl-grupo-bg, rgba(255, 255, 255, 0.04));
-    border-color: rgba(255, 255, 255, 0.08);
-}
-
-[data-theme='dark'] .cl-grupo-titulo {
-    color: #c8c8c8;
-}
-
-[data-theme='dark'] .cl-grupo-progresso {
-    color: rgba(200, 200, 200, 0.5);
-}
-
-[data-theme='dark'] .cl-progresso-geral {
-    color: rgba(200, 200, 200, 0.5);
-}
-
-[data-theme='dark'] .cl-item:hover {
-    background: rgba(255, 255, 255, 0.04);
-}
-
-[data-theme='dark'] .cl-item-completed-at {
-    color: rgba(200, 200, 200, 0.35);
-}
-
-[data-theme='dark'] .cl-grupo-edit input,
-[data-theme='dark'] .cl-item-edit input,
-[data-theme='dark'] .cl-add-item input,
-[data-theme='dark'] .cl-add-grupo input {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.15);
-    color: #d0d0d0;
-}
-
-[data-theme='dark'] .cl-grupo-edit input:focus,
-[data-theme='dark'] .cl-item-edit input:focus,
-[data-theme='dark'] .cl-add-item input:focus,
-[data-theme='dark'] .cl-add-grupo input:focus {
-    background: rgba(255, 255, 255, 0.09);
-    border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.07);
-}
-
-[data-theme='dark'] .cl-btn--save {
-    background: rgba(225, 225, 225, 0.9);
-    color: #111;
-}
-
-[data-theme='dark'] .cl-btn--save:hover {
-    background: rgba(255, 255, 255, 1);
-}
-
-[data-theme='dark'] .cl-btn--cancel {
-    background: rgba(255, 255, 255, 0.08);
-    color: #c0c0c0;
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme='dark'] .cl-btn--cancel:hover {
-    background: rgba(255, 255, 255, 0.12);
-}
-
-[data-theme='dark'] .cl-btn--add {
-    background: rgba(255, 255, 255, 0.07);
-    color: #c0c0c0;
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme='dark'] .cl-btn--add:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.12);
-}
-
-[data-theme='dark'] .cl-btn--add-grupo {
-    background: rgba(255, 255, 255, 0.06);
-    color: #c0c0c0;
-}
-
-[data-theme='dark'] .cl-btn--add-grupo:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme='dark'] .cl-icon-btn {
-    color: rgba(200, 200, 200, 0.4);
-}
-
-[data-theme='dark'] .cl-icon-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #d0d0d0;
-}
-
-[data-theme='dark'] .cl-icon-btn--danger:hover {
-    background: rgba(200, 50, 50, 0.15);
-    color: #e07070;
-}
-
-[data-theme='dark'] .cl-add-grupo {
-    border-top-color: rgba(255, 255, 255, 0.08);
-}
-
-[data-theme='dark'] .cl-loading {
-    color: rgba(200, 200, 200, 0.5);
 }
