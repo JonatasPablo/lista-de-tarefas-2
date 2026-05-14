@@ -117,7 +117,7 @@
 
 .login-header h2 {
     margin: 0;
-    color: #202020;
+    color: var(--color-text);
     font-size: 44px;
     line-height: 1;
     letter-spacing: -0.055em;
@@ -125,9 +125,9 @@
 
 .login-header p {
     margin: 0;
-    color: rgba(64, 64, 64, 0.72);
-    font-size: 14px;
-    line-height: 1.45;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-base);
 }
 
 .login-google-area {
@@ -193,36 +193,32 @@
 }
 
 .login-field label {
-    color: #303030;
-    font-size: 13px;
-    font-weight: 800;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
 }
 
 .login-field input {
     width: 100%;
-    min-height: 44px;
+    min-height: var(--input-height-lg);
     padding: 10px 14px;
-    border: 1px solid rgba(64, 64, 64, 0.08);
-    border-radius: 14px;
-    background-color: rgba(250, 250, 250, 0.98);
-    color: #303030;
-    font-size: 14px;
-    box-shadow:
-        inset 0 1px 2px rgba(0, 0, 0, 0.04),
-        0 1px 0 rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg-input);
+    color: var(--color-text);
+    font-size: var(--font-size-md);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
     transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.15s ease;
+        border-color var(--transition-base),
+        box-shadow var(--transition-base);
 }
 
 .login-field input:focus {
-    border-color: rgba(64, 64, 64, 0.2);
+    border-color: var(--color-focus-border);
     box-shadow:
-        0 0 0 4px rgba(64, 64, 64, 0.08),
+        0 0 0 3px var(--color-focus-ring),
         inset 0 1px 2px rgba(0, 0, 0, 0.04);
     outline: none;
-    transform: translateY(-1px);
 }
 
 .login-password-wrapper {
@@ -277,33 +273,41 @@
 .login-forgot-password-link {
     width: fit-content;
     justify-self: end;
-    color: rgba(32, 32, 32, 0.78);
-    font-size: 13px;
-    font-weight: 900;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-extrabold);
     text-decoration: none;
+    transition: color var(--transition-fast);
 }
 
 .login-forgot-password-link:hover {
-    color: #202020;
+    color: var(--color-text);
     text-decoration: underline;
 }
 
 .login-submit-button {
     width: 100%;
-    min-height: 44px;
+    min-height: var(--input-height-lg);
     margin-top: 2px;
-    border-radius: 14px;
-    border: 1px solid #111111;
-    background: linear-gradient(135deg, #252525 0%, #050505 100%);
-    color: #ffffff;
-    font-size: 15px;
-    font-weight: 800;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--btn-primary-border);
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-color);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-extrabold);
     letter-spacing: 0.01em;
+    box-shadow: var(--shadow-btn);
+    transition:
+        background var(--transition-fast),
+        box-shadow var(--transition-fast),
+        transform var(--transition-fast);
 }
 
 .login-submit-button:hover:not(:disabled) {
-    background: linear-gradient(135deg, #1f1f1f 0%, #000000 100%);
-    color: #ffffff;
+    background: var(--btn-primary-bg-hover);
+    color: var(--btn-primary-color);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
 }
 
 .login-submit-button:disabled {
@@ -318,19 +322,21 @@
 
 .login-footer p {
     margin: 0;
-    color: rgba(64, 64, 64, 0.72);
-    font-size: 13px;
-    line-height: 1.5;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-base);
     text-align: center;
 }
 
 .login-footer a {
-    color: #303030;
-    font-weight: 800;
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-bold);
     text-decoration: none;
+    transition: color var(--transition-fast);
 }
 
 .login-footer a:hover {
+    color: var(--color-text);
     text-decoration: underline;
 }
 

@@ -80,6 +80,11 @@
     /* --- Sombra interna glass --- */
     --shadow-glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.55);
 
+    /* --- Painéis glass-morphism --- */
+    --color-bg-glass:        linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.42));
+    --color-bg-glass-border: rgba(255, 255, 255, 0.64);
+    --shadow-glass:          0 14px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+
     /* --- Tipografia --- */
     --font-size-2xs: 0.68rem;
     --font-size-xs:  0.75rem;
@@ -104,6 +109,20 @@
     --transition-fast:  0.12s ease;
     --transition-base:  0.18s ease;
     --transition-slow:  0.28s ease;
+
+    /* --- Botão primário (light mode) --- */
+    --btn-primary-bg:       linear-gradient(135deg, #252525 0%, #050505 100%);
+    --btn-primary-bg-hover: linear-gradient(135deg, #1f1f1f 0%, #000000 100%);
+    --btn-primary-color:    #ffffff;
+    --btn-primary-border:   #111111;
+
+    /* --- Cores de prioridade --- */
+    --color-priority-high:      #810101;
+    --color-priority-high-bg:   rgba(129, 1, 1, 0.08);
+    --color-priority-medium:    #9b7c00;
+    --color-priority-medium-bg: rgba(155, 124, 0, 0.08);
+    --color-priority-low:       #057401;
+    --color-priority-low-bg:    rgba(5, 116, 1, 0.08);
 
     /* --- Botão base --- */
     --btn-height-sm:  30px;
@@ -184,8 +203,22 @@
 
     --shadow-glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 
+    /* --- Painéis glass-morphism dark --- */
+    --color-bg-glass:        linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+    --color-bg-glass-border: rgba(255, 255, 255, 0.06);
+    --shadow-glass:          0 14px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
     /* --- Botão base (cores) --- */
     --btn-primary-bg:       rgba(225, 225, 225, 0.9);
-    --btn-primary-color:    #111111;
     --btn-primary-bg-hover: rgba(255, 255, 255, 1);
+    --btn-primary-color:    #111111;
+    --btn-primary-border:   rgba(255, 255, 255, 0.15);
+
+    /* --- Prioridades dark mode --- */
+    --color-priority-high:      #e07070;
+    --color-priority-high-bg:   rgba(200, 50, 50, 0.12);
+    --color-priority-medium:    #c9a400;
+    --color-priority-medium-bg: rgba(201, 164, 0, 0.10);
+    --color-priority-low:       #2ea827;
+    --color-priority-low-bg:    rgba(46, 168, 39, 0.10);
 }

@@ -43,36 +43,29 @@
 
 .log-page-header h2 {
     margin: 0;
-    color: #202020;
+    color: var(--color-text);
     font-size: 34px;
-    font-weight: 800;
+    font-weight: var(--font-weight-extrabold);
     line-height: 1;
     letter-spacing: -0.055em;
 }
 
 .log-page-header p {
     margin: 0;
-    color: rgba(64, 64, 64, 0.72);
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 1.35;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-snug);
 }
 
 .log-summary-panel,
 .log-controls-panel,
 .log-list-panel {
     min-height: 0;
-    border: 1px solid rgba(255, 255, 255, 0.64);
+    border: 1px solid var(--color-bg-glass-border);
     border-radius: 22px;
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255, 255, 255, 0.72),
-            rgba(255, 255, 255, 0.42)
-        );
-    box-shadow:
-        0 14px 32px rgba(0, 0, 0, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    background: var(--color-bg-glass);
+    box-shadow: var(--shadow-glass);
     backdrop-filter: blur(8px);
     overflow: hidden;
 }
@@ -96,16 +89,16 @@
 
 .log-summary-header h3 {
     margin: 0;
-    color: #202020;
-    font-size: 14px;
-    font-weight: 700;
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
     line-height: 1.2;
 }
 
 .log-summary-header span {
-    color: rgba(64, 64, 64, 0.68);
-    font-size: 12px;
-    font-weight: 600;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
     text-align: right;
 }
 
@@ -122,62 +115,63 @@
     place-items: center;
     gap: 2px;
     padding: 7px 8px;
-    border: 1px solid rgba(64, 64, 64, 0.06);
+    border: 1px solid var(--color-border);
     border-left-width: 5px;
-    border-radius: 14px;
-    background-color: rgba(255, 255, 255, 0.66);
-    color: #303030;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg-card);
+    color: var(--color-text-secondary);
     cursor: pointer;
     transition:
-        background-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.15s ease;
+        background-color var(--transition-base),
+        border-color var(--transition-base),
+        box-shadow var(--transition-base),
+        transform var(--transition-fast);
 }
 
 .log-summary-card:hover {
     transform: translateY(-1px);
-    background-color: rgba(255, 255, 255, 0.92);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    background-color: var(--color-bg-surface);
+    box-shadow: var(--shadow-sm);
 }
 
 .log-summary-card.is-active {
-    background-color: rgba(64, 64, 64, 0.08);
+    background-color: var(--color-bg-active);
     box-shadow:
-        inset 0 0 0 1px rgba(64, 64, 64, 0.12),
-        0 8px 18px rgba(0, 0, 0, 0.08);
+        inset 0 0 0 1px var(--color-border-strong),
+        var(--shadow-sm);
 }
 
 .log-summary-total {
-    border-left-color: #404040;
+    border-left-color: var(--color-primary);
 }
 
 .log-summary-created {
-    border-left-color: #057401;
+    border-left-color: var(--color-priority-low);
 }
 
 .log-summary-updated {
-    border-left-color: #9b7c00;
+    border-left-color: var(--color-priority-medium);
 }
 
 .log-summary-status {
-    border-left-color: #404040;
+    border-left-color: var(--color-primary);
 }
 
 .log-summary-deleted {
-    border-left-color: #810101;
+    border-left-color: var(--color-priority-high);
 }
 
 .log-summary-card strong {
-    color: #202020;
+    color: var(--color-text);
     font-size: 19px;
-    font-weight: 800;
+    font-weight: var(--font-weight-extrabold);
     line-height: 1;
 }
 
 .log-summary-card span {
-    color: rgba(64, 64, 64, 0.7);
-    font-size: 11px;
-    font-weight: 700;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-extrabold);
 }
 
 /* =========================
@@ -217,14 +211,17 @@
 .log-filters select,
 .log-date-field {
     width: 100%;
-    min-height: 38px;
-    padding: 8px 12px;
-    border: 1px solid rgba(64, 64, 64, 0.08);
-    border-radius: 14px;
-    background-color: rgba(250, 250, 250, 0.98);
-    color: #303030;
-    font-size: 13px;
-    font-weight: 500;
+    min-height: var(--btn-height-md);
+    padding: var(--space-2) var(--input-padding-x);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg-input);
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition:
+        border-color var(--transition-base),
+        box-shadow var(--transition-base);
 }
 
 .log-date-field {
@@ -236,9 +233,9 @@
 }
 
 .log-date-field span {
-    color: rgba(64, 64, 64, 0.64);
+    color: var(--color-text-muted);
     font-size: 11px;
-    font-weight: 800;
+    font-weight: var(--font-weight-extrabold);
     line-height: 1;
     white-space: nowrap;
 }
@@ -251,21 +248,21 @@
     border: 0;
     border-radius: 0;
     background: transparent;
-    color: #303030;
-    font-size: 12px;
-    font-weight: 600;
+    color: var(--color-text);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
 }
 
 .log-filters input:focus,
 .log-filters select:focus {
-    border-color: rgba(64, 64, 64, 0.2);
-    box-shadow: 0 0 0 4px rgba(64, 64, 64, 0.08);
+    border-color: var(--color-focus-border);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
     outline: none;
 }
 
 .log-date-field:focus-within {
-    border-color: rgba(64, 64, 64, 0.2);
-    box-shadow: 0 0 0 4px rgba(64, 64, 64, 0.08);
+    border-color: var(--color-focus-border);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
 .log-date-field input:focus {
@@ -275,21 +272,26 @@
 
 .log-filters button,
 .log-actions-toolbar button {
-    min-height: 38px;
-    padding: 8px 12px;
-    border: 1px solid rgba(64, 64, 64, 0.14);
-    border-radius: 14px;
-    background-color: rgba(255, 255, 255, 0.82);
-    color: #303030;
-    font-size: 13px;
-    font-weight: 700;
+    min-height: var(--btn-height-md);
+    padding: var(--space-2) var(--btn-padding-x-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-extrabold);
     white-space: nowrap;
+    transition:
+        background-color var(--transition-fast),
+        color var(--transition-fast),
+        transform var(--transition-fast);
 }
 
 .log-filters button:hover:not(:disabled),
 .log-actions-toolbar button:hover:not(:disabled) {
-    background-color: #404040;
-    color: #ffffff;
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    transform: translateY(-1px);
 }
 
 .log-filters button:disabled,
@@ -336,16 +338,16 @@
 
 .log-list-header h3 {
     margin: 0;
-    color: #202020;
+    color: var(--color-text);
     font-size: 18px;
-    font-weight: 700;
+    font-weight: var(--font-weight-extrabold);
     line-height: 1.2;
 }
 
 .log-list-header span {
-    color: rgba(64, 64, 64, 0.68);
-    font-size: 12px;
-    font-weight: 700;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-extrabold);
     text-align: right;
 }
 
@@ -366,12 +368,19 @@
     display: grid;
     gap: 10px;
     padding: 11px;
-    border: 1px solid rgba(64, 64, 64, 0.08);
-    border-radius: 18px;
-    background-color: rgba(255, 255, 255, 0.82);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg-card);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.86),
-        0 8px 18px rgba(0, 0, 0, 0.05);
+        var(--shadow-glass-inset),
+        var(--shadow-xs);
+    transition: box-shadow var(--transition-base), transform var(--transition-fast);
+}
+
+.log-card:hover {
+    box-shadow:
+        var(--shadow-glass-inset),
+        var(--shadow-sm);
 }
 
 .log-card-header {
@@ -384,18 +393,18 @@
 .log-card-header h3 {
     margin: 0;
     overflow: hidden;
-    color: #202020;
-    font-size: 15px;
-    font-weight: 700;
-    line-height: 1.25;
+    color: var(--color-text);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-snug);
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .log-card-header small {
-    color: rgba(64, 64, 64, 0.62);
+    color: var(--color-text-muted);
     font-size: 11px;
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
 }
 
 .log-action-badge {
@@ -404,31 +413,31 @@
     align-items: center;
     justify-content: center;
     padding: 6px 10px;
-    border-radius: 999px;
+    border-radius: var(--radius-full);
     color: #ffffff;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: var(--font-weight-extrabold);
     white-space: nowrap;
 }
 
 .log-action-created {
-    background-color: #057401;
+    background-color: var(--color-priority-low);
 }
 
 .log-action-updated {
-    background-color: #9b7c00;
+    background-color: var(--color-priority-medium);
 }
 
 .log-action-status {
-    background-color: #404040;
+    background-color: var(--color-primary);
 }
 
 .log-action-deleted {
-    background-color: #810101;
+    background-color: var(--color-priority-high);
 }
 
 .log-action-default {
-    background-color: #404040;
+    background-color: var(--color-primary);
 }
 
 .log-values-grid {
@@ -442,23 +451,23 @@
     display: grid;
     gap: 6px;
     padding: 10px;
-    border: 1px solid rgba(64, 64, 64, 0.06);
-    border-radius: 14px;
-    background-color: rgba(247, 247, 247, 0.86);
-    color: rgba(64, 64, 64, 0.82);
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 1.35;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg-surface-2);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-snug);
 }
 
 .log-value-card > strong {
-    color: #202020;
-    font-size: 12px;
-    font-weight: 700;
+    color: var(--color-text);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
 }
 
 .log-empty-value {
-    color: rgba(64, 64, 64, 0.5);
+    color: var(--color-text-muted);
     font-style: italic;
 }
 
@@ -472,9 +481,9 @@
 .log-card-footer {
     display: flex;
     justify-content: flex-end;
-    color: rgba(64, 64, 64, 0.62);
+    color: var(--color-text-muted);
     font-size: 11px;
-    font-weight: 600;
+    font-weight: var(--font-weight-bold);
 }
 
 /* =========================
