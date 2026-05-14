@@ -1204,12 +1204,12 @@
     }
 
     .tasks-page .task-filters {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         gap: 6px;
     }
 
     .tasks-page .task-filters input {
-        grid-column: 1 / -1;
+        grid-column: auto;
         height: 34px;
     }
 
@@ -1219,10 +1219,7 @@
     }
 
     .tasks-page .task-filters button {
-        grid-column: 1 / -1;
-        height: 34px;
-        min-height: 34px;
-        max-height: 34px;
+        display: none;
     }
 
     .tasks-page .task-filters button:disabled {
@@ -1239,20 +1236,22 @@
     }
 
     .tasks-export-toolbar {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 6px;
     }
 
     .tasks-export-toolbar button {
         min-width: 0;
-        min-height: 34px;
-        padding: 6px 7px;
+        min-height: 36px;
+        padding: 6px 4px;
         border-radius: 12px;
         font-size: 12px;
+        line-height: 1.05;
+        white-space: normal;
     }
 
     .tasks-bulk-select-btn {
-        grid-column: 1 / -1;
+        grid-column: auto;
     }
 
     .tasks-bulk-complete-btn,
@@ -1456,6 +1455,7 @@
     }
 
     .tasks-page .task-filters {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         gap: 5px;
     }
 
@@ -1475,16 +1475,15 @@
     }
 
     .tasks-export-toolbar button {
-        min-height: 30px;
-        height: 30px;
-        max-height: 30px;
+        min-height: 36px;
         padding: 5px 6px;
         border-radius: 11px;
         font-size: 11px;
+        line-height: 1.05;
     }
 
     .tasks-bulk-select-btn {
-        grid-column: 1 / -1;
+        grid-column: auto;
     }
 
     .tasks-bulk-complete-btn,
