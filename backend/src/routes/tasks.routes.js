@@ -2,6 +2,7 @@ const { Router } = require('express')
 
 const tasksController = require('../controllers/tasks.controller')
 const taskFilesController = require('../controllers/taskFiles.controller')
+const checklistController = require('../controllers/checklist.controller')
 const asyncHandler = require('../helpers/asyncHandler')
 const uploadTaskFile = require('../middlewares/uploadTaskFile')
 
@@ -39,6 +40,11 @@ tasksRoutes.delete(
 )
 
 tasksRoutes.get('/:id/history', asyncHandler(tasksController.listTaskHistory))
+
+tasksRoutes.get('/:taskId/checklist', asyncHandler(checklistController.listChecklist))
+tasksRoutes.post('/:taskId/checklist', asyncHandler(checklistController.createChecklistItem))
+tasksRoutes.patch('/:taskId/checklist/:itemId', asyncHandler(checklistController.updateChecklistItem))
+tasksRoutes.delete('/:taskId/checklist/:itemId', asyncHandler(checklistController.deleteChecklistItem))
 
 tasksRoutes.put('/:id', asyncHandler(tasksController.updateTask))
 tasksRoutes.patch('/:id/status', asyncHandler(tasksController.updateTaskStatus))

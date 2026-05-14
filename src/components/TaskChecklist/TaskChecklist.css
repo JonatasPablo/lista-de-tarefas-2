@@ -1,0 +1,201 @@
+/* =========================
+   TaskChecklist
+========================= */
+
+.task-checklist {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.checklist-loading {
+    font-size: 0.78rem;
+    color: #888;
+    padding: 4px 0;
+}
+
+.checklist-progress {
+    font-size: 0.75rem;
+    color: #666;
+    margin: 0 0 8px;
+    font-style: italic;
+}
+
+/* Lista de itens */
+
+.checklist-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    min-height: 28px;
+}
+
+/* Label com checkbox + texto */
+
+.checklist-item-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checklist-item-label input[type='checkbox'] {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.checklist-item-label input[type='checkbox']:disabled {
+    cursor: default;
+    opacity: 0.65;
+}
+
+.checklist-item.is-completed .checklist-item-label span {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+/* Ações de editar/excluir */
+
+.checklist-item-actions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.15s;
+    flex-shrink: 0;
+}
+
+.checklist-item:hover .checklist-item-actions {
+    opacity: 1;
+}
+
+.checklist-item-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 5px;
+    font-size: 0.78rem;
+    color: #888;
+    border-radius: 3px;
+    line-height: 1;
+}
+
+.checklist-item-actions button:hover {
+    background-color: rgba(0, 0, 0, 0.07);
+    color: #333;
+}
+
+/* Edição inline de item */
+
+.checklist-item-edit {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.checklist-item-edit input {
+    flex: 1;
+    min-width: 80px;
+    font-size: 0.875rem;
+    padding: 3px 7px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #222;
+}
+
+.checklist-item-edit input:focus {
+    outline: none;
+    border-color: #888;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.06);
+}
+
+.checklist-item-edit button {
+    font-size: 0.78rem;
+    padding: 3px 9px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #f5f5f5;
+    color: #333;
+    white-space: nowrap;
+}
+
+.checklist-item-edit button:hover {
+    background-color: #e8e8e8;
+}
+
+/* Adicionar novo item */
+
+.checklist-add {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.checklist-add input {
+    flex: 1;
+    font-size: 0.875rem;
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #222;
+}
+
+.checklist-add input:focus {
+    outline: none;
+    border-color: #888;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.06);
+}
+
+.checklist-add button {
+    font-size: 0.8rem;
+    padding: 4px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #f5f5f5;
+    color: #333;
+    white-space: nowrap;
+}
+
+.checklist-add button:hover:not(:disabled) {
+    background-color: #e8e8e8;
+}
+
+.checklist-add button:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+/* Mobile */
+
+@media (max-width: 480px) {
+    .checklist-item-actions {
+        opacity: 1;
+    }
+
+    .checklist-item-edit {
+        gap: 4px;
+    }
+
+    .checklist-add {
+        gap: 4px;
+    }
+}

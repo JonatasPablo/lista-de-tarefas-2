@@ -1,6 +1,7 @@
 import { useState, type ChangeEvent, type KeyboardEvent } from 'react'
 import type { Task, TaskFile, TaskPriority } from '../../types/task'
 import { MAX_FILE_SIZE_BYTES, formatFileSize } from '../../utils/file'
+import { TaskChecklist } from '../TaskChecklist/TaskChecklist'
 import { TaskFiles } from '../TaskFiles/TaskFiles'
 
 interface TaskItemProps {
@@ -341,6 +342,12 @@ export const TaskItem = ({
                                     estão bloqueados.
                                 </p>
                             )}
+
+                            <TaskChecklist
+                                taskId={task.id}
+                                isTaskCompleted={isTaskCompleted}
+                                expanded={shouldShowDetails}
+                            />
 
                             <TaskFiles
                                 taskId={task.id}
