@@ -15,7 +15,6 @@ interface TaskFiltersProps {
     priorityFilter: PriorityFilter
     sortOption: TaskSortOption
     onSearchChange: (value: string) => void
-    onPriorityChange: (value: PriorityFilter) => void
     onSortChange: (value: TaskSortOption) => void
     onClearFilters: () => void
 }
@@ -25,7 +24,6 @@ export const TaskFilters = ({
     priorityFilter,
     sortOption,
     onSearchChange,
-    onPriorityChange,
     onSortChange,
     onClearFilters,
 }: TaskFiltersProps) => {
@@ -46,23 +44,6 @@ export const TaskFilters = ({
                 onChange={(event) => onSearchChange(event.target.value)}
                 autoComplete="off"
             />
-
-            <label htmlFor="task-filter-priority">
-                Filtrar por prioridade
-            </label>
-
-            <select
-                id="task-filter-priority"
-                value={priorityFilter}
-                onChange={(event) =>
-                    onPriorityChange(event.target.value as PriorityFilter)
-                }
-            >
-                <option value="todas">Todas as prioridades</option>
-                <option value="alta">Alta</option>
-                <option value="media">Média</option>
-                <option value="baixa">Baixa</option>
-            </select>
 
             <label htmlFor="task-filter-sort">Ordenar tarefas</label>
 

@@ -323,6 +323,10 @@
     color: #c8c8c8;
 }
 
+[data-theme="dark"] .tasks-export-toolbar {
+    border-left-color: rgba(255, 255, 255, 0.1);
+}
+
 [data-theme="dark"] .tasks-bulk-complete-btn {
     background-color: rgba(5, 116, 1, 0.15) !important;
     border-color: rgba(5, 116, 1, 0.35) !important;

@@ -81,6 +81,10 @@ export const TasksPage = ({
         selectedTaskIds.includes(task.id)
     )
 
+    const allVisibleSelected =
+        filteredTasks.length > 0 &&
+        filteredTasks.every((task) => selectedTaskIds.includes(task.id))
+
     const hasActiveFilters =
         searchTerm.trim() !== '' ||
         priorityFilter !== 'todas' ||
@@ -111,11 +115,6 @@ export const TasksPage = ({
         onClearSelectedTasks()
     }
 
-    const handlePriorityChange = (value: PriorityFilter) => {
-        setPriorityFilter(value)
-        onClearSelectedTasks()
-    }
-
     const handleSortChange = (value: TaskSortOption) => {
         setSortOption(value)
         onClearSelectedTasks()
@@ -124,6 +123,14 @@ export const TasksPage = ({
     const handleStatsFilterChange = (value: PriorityFilter) => {
         setPriorityFilter(value)
         onClearSelectedTasks()
+    }
+
+    const handleSelectToggle = () => {
+        if (allVisibleSelected) {
+            onClearSelectedTasks()
+        } else {
+            onSelectAllVisibleTasks(filteredTasks.map((task) => task.id))
+        }
     }
 
     return (
@@ -174,7 +181,6 @@ export const TasksPage = ({
                     priorityFilter={priorityFilter}
                     sortOption={sortOption}
                     onSearchChange={handleSearchChange}
-                    onPriorityChange={handlePriorityChange}
                     onSortChange={handleSortChange}
                     onClearFilters={handleClearFilters}
                 />
@@ -182,22 +188,11 @@ export const TasksPage = ({
                 <div className="tasks-export-toolbar">
                     <button
                         type="button"
-                        onClick={() =>
-                            onSelectAllVisibleTasks(
-                                filteredTasks.map((task) => task.id)
-                            )
-                        }
+                        className="tasks-bulk-select-btn"
+                        onClick={handleSelectToggle}
                         disabled={filteredTasks.length === 0}
                     >
-                        Sel. todas
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={onClearSelectedTasks}
-                        disabled={selectedTaskIds.length === 0}
-                    >
-                        Limpar
+                        {allVisibleSelected ? 'Desmarcar todas' : 'Sel. todas'}
                     </button>
 
                     <button

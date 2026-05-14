@@ -259,7 +259,7 @@
 .tasks-page .task-filters {
     min-height: 0;
     display: grid;
-    grid-template-columns: minmax(230px, 1fr) 190px 170px 116px;
+    grid-template-columns: minmax(230px, 1fr) 170px 116px;
     align-items: center;
     gap: 8px;
 }
@@ -324,6 +324,8 @@
     flex-wrap: nowrap;
     gap: 8px;
     overflow: hidden;
+    border-left: 1px solid rgba(64, 64, 64, 0.1);
+    padding-left: 8px;
 }
 
 .tasks-export-toolbar button {
@@ -719,7 +721,7 @@
     }
 
     .tasks-page .task-filters {
-        grid-template-columns: minmax(190px, 1fr) 150px 135px 104px;
+        grid-template-columns: minmax(190px, 1fr) 135px 104px;
         gap: 7px;
     }
 
@@ -832,7 +834,7 @@
     }
 
     .tasks-page .task-filters {
-        grid-template-columns: minmax(170px, 1fr) 135px 125px 96px;
+        grid-template-columns: minmax(170px, 1fr) 125px 96px;
         gap: 6px;
     }
 
@@ -968,15 +970,12 @@
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
         gap: 8px;
+        border-left: none;
+        padding-left: 0;
     }
 
     .tasks-export-toolbar button {
         min-width: 0;
-    }
-
-    .tasks-bulk-complete-btn,
-    .tasks-bulk-delete-btn {
-        grid-column: span 1;
     }
 
     .tasks-filter-status {
@@ -1066,7 +1065,7 @@
     }
 
     .tasks-page .task-filters {
-        grid-template-columns: minmax(240px, 1fr) 1fr 1fr 130px;
+        grid-template-columns: minmax(240px, 1fr) 1fr 130px;
     }
 
     .tasks-page .task-filters input {
@@ -1075,11 +1074,6 @@
 
     .tasks-export-toolbar {
         grid-template-columns: repeat(3, 1fr);
-    }
-
-    .tasks-bulk-complete-btn,
-    .tasks-bulk-delete-btn {
-        grid-column: span 1;
     }
 
     .tasks-page .task-filters input,
@@ -1245,7 +1239,7 @@
     }
 
     .tasks-export-toolbar {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: 1fr 1fr;
         gap: 6px;
     }
 
@@ -1257,12 +1251,13 @@
         font-size: 12px;
     }
 
-    .tasks-bulk-complete-btn {
-        grid-column: 1 / 3;
+    .tasks-bulk-select-btn {
+        grid-column: 1 / -1;
     }
 
+    .tasks-bulk-complete-btn,
     .tasks-bulk-delete-btn {
-        grid-column: 3;
+        grid-column: auto;
     }
 
     .tasks-filter-status {
@@ -1488,12 +1483,13 @@
         font-size: 11px;
     }
 
-    .tasks-bulk-complete-btn {
-        grid-column: 1 / 3;
+    .tasks-bulk-select-btn {
+        grid-column: 1 / -1;
     }
 
+    .tasks-bulk-complete-btn,
     .tasks-bulk-delete-btn {
-        grid-column: 3;
+        grid-column: auto;
     }
 
     .tasks-list-panel {

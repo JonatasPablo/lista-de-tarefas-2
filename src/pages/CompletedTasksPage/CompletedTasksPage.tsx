@@ -72,10 +72,6 @@ export const CompletedTasksPage = ({
         setSearchTerm(value)
     }
 
-    const handlePriorityChange = (value: PriorityFilter) => {
-        setPriorityFilter(value)
-    }
-
     const handleSortChange = (value: TaskSortOption) => {
         setSortOption(value)
     }
@@ -111,7 +107,6 @@ export const CompletedTasksPage = ({
                     priorityFilter={priorityFilter}
                     sortOption={sortOption}
                     onSearchChange={handleSearchChange}
-                    onPriorityChange={handlePriorityChange}
                     onSortChange={handleSortChange}
                     onClearFilters={handleClearFilters}
                 />
