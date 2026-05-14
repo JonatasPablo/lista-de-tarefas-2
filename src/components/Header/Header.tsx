@@ -37,11 +37,15 @@ export const Header = ({ user, onLogout, isDark, onToggleTheme }: HeaderProps) =
         <header className="header">
                 <div className="header-brand">
                     {user ? (
-                        <img
-                            src={appLogoUrl}
-                            alt="Lista de Tarefas"
-                            className="header-logo"
-                        />
+                        <div className="header-brand-inner">
+                            <img
+                                src={appLogoUrl}
+                                alt="Lista de Tarefas"
+                                className="header-logo"
+                                title="Lista de Tarefas"
+                            />
+                            <span className="header-brand-name">Lista de Tarefas</span>
+                        </div>
                     ) : (
                         <h1>Lista de Tarefas</h1>
                     )}
