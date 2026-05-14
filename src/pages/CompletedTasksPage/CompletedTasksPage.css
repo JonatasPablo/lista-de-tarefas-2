@@ -450,6 +450,18 @@
     border: 1px solid var(--color-border);
 }
 
+.completed-tasks-page .task-files-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.completed-tasks-page .task-files-icon {
+    font-size: 14px;
+    line-height: 1;
+    opacity: 0.7;
+}
+
 .completed-tasks-page .task-files strong {
     color: var(--color-text);
     font-size: var(--font-size-sm);
@@ -472,15 +484,38 @@
     padding: 8px;
     border-radius: var(--radius-md);
     background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    transition: box-shadow var(--transition-fast);
 }
 
-.completed-tasks-page .task-file-item div:first-child {
+.completed-tasks-page .task-file-item:hover {
+    box-shadow: var(--shadow-xs);
+}
+
+.completed-tasks-page .task-file-item--image {
+    border-left: 3px solid var(--color-accent);
+}
+
+.completed-tasks-page .task-file-info {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.completed-tasks-page .task-file-icon {
+    font-size: 16px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.completed-tasks-page .task-file-meta {
     min-width: 0;
     display: grid;
-    gap: 2px;
+    gap: 1px;
 }
 
-.completed-tasks-page .task-file-item span {
+.completed-tasks-page .task-file-name {
     overflow: hidden;
     color: var(--color-text);
     font-size: var(--font-size-xs);
@@ -489,7 +524,7 @@
     white-space: nowrap;
 }
 
-.completed-tasks-page .task-file-item small {
+.completed-tasks-page .task-file-size {
     color: var(--color-text-muted);
     font-size: 11px;
     font-weight: var(--font-weight-medium);
@@ -500,6 +535,30 @@
     flex-wrap: wrap;
     gap: 6px;
     justify-content: flex-end;
+}
+
+.completed-tasks-page .task-file-btn--preview {
+    color: var(--color-accent);
+    border-color: var(--color-accent-bg);
+    background-color: var(--color-accent-bg);
+}
+
+.completed-tasks-page .task-file-btn--preview:hover:not(:disabled) {
+    background: var(--btn-accent-bg);
+    border-color: var(--btn-accent-border);
+    color: var(--btn-accent-color);
+}
+
+.completed-tasks-page .task-file-btn--danger {
+    color: var(--color-danger);
+    border-color: var(--color-priority-high-border);
+    background-color: var(--color-danger-bg);
+}
+
+.completed-tasks-page .task-file-btn--danger:hover:not(:disabled) {
+    background: var(--btn-danger-bg);
+    color: var(--btn-danger-color);
+    border-color: transparent;
 }
 
 /* =========================
@@ -1022,7 +1081,7 @@
 
     .completed-tasks-page .task-file-actions {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 5px;
     }
 

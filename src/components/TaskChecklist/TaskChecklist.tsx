@@ -1,4 +1,4 @@
-import { type KeyboardEvent } from 'react'
+import { type KeyboardEvent, useEffect } from 'react'
 import { useChecklist } from '../../hooks/useChecklist'
 import type { ChecklistItem } from '../../services/checklistApi'
 import './TaskChecklist.css'
@@ -7,12 +7,14 @@ interface TaskChecklistProps {
     taskId: string
     isTaskCompleted: boolean
     expanded: boolean
+    onProgressChange?: (summary: { total: number; concluidos: number } | null) => void
 }
 
 export const TaskChecklist = ({
     taskId,
     isTaskCompleted,
     expanded,
+    onProgressChange,
 }: TaskChecklistProps) => {
     const {
         grupos,
@@ -44,6 +46,19 @@ export const TaskChecklist = ({
         alternarItem,
         progressoGeral,
     } = useChecklist(taskId, isTaskCompleted, expanded)
+
+    // Notifica o pai sempre que o progresso mudar
+    useEffect(() => {
+        if (!onProgressChange) return
+        if (progressoGeral.total === 0) {
+            onProgressChange(null)
+        } else {
+            onProgressChange({
+                total: progressoGeral.total,
+                concluidos: progressoGeral.concluidos,
+            })
+        }
+    }, [progressoGeral.total, progressoGeral.concluidos, onProgressChange])
 
     // ---------------------------------------------------------------
     // Handlers de teclado

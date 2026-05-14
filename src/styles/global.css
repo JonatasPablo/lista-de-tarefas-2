@@ -1541,7 +1541,7 @@ a {
 }
 
 /* =============================================================
-   Design System Global — melhorias de UX (v2.0.34)
+   Design System Global — v2.0.36
    Usa os tokens de design-tokens.css
 ============================================================= */
 
@@ -1678,32 +1678,101 @@ select:focus {
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
-    padding: 2px 8px;
+    padding: 3px 9px;
     border-radius: var(--radius-full);
     font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-bold);
     background: var(--color-bg-badge);
     color: var(--color-text-secondary);
     border: 1px solid var(--color-border);
     line-height: var(--line-height-snug);
+    white-space: nowrap;
 }
 
 .badge--success {
     background: var(--color-success-bg);
     color: var(--color-success);
-    border-color: transparent;
+    border-color: rgba(5, 116, 1, 0.18);
 }
 
 .badge--danger {
     background: var(--color-danger-bg);
     color: var(--color-danger);
-    border-color: transparent;
+    border-color: rgba(192, 0, 30, 0.18);
 }
 
 .badge--warning {
     background: var(--color-warning-bg);
     color: var(--color-warning);
-    border-color: transparent;
+    border-color: rgba(138, 108, 0, 0.18);
+}
+
+.badge--accent {
+    background: var(--color-accent-bg);
+    color: var(--color-accent);
+    border-color: rgba(26, 110, 245, 0.18);
+}
+
+/* ---- Badges de prioridade globais ---- */
+
+.task-priority-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-extrabold);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    border: 1px solid transparent;
+}
+
+.task-priority-badge--alta {
+    background: var(--color-priority-high-bg);
+    color: var(--color-priority-high);
+    border-color: var(--color-priority-high-border);
+}
+
+.task-priority-badge--media {
+    background: var(--color-priority-medium-bg);
+    color: var(--color-priority-medium);
+    border-color: var(--color-priority-medium-border);
+}
+
+.task-priority-badge--baixa {
+    background: var(--color-priority-low-bg);
+    color: var(--color-priority-low);
+    border-color: var(--color-priority-low-border);
+}
+
+/* ---- Badge de checklist na linha do título ---- */
+
+.task-checklist-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-bold);
+    background: var(--color-bg-badge);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition:
+        background-color var(--transition-fast),
+        color var(--transition-fast);
+}
+
+.task-checklist-badge--done {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+    border-color: rgba(5, 116, 1, 0.18);
+}
+
+[data-theme='dark'] .task-checklist-badge--done {
+    border-color: rgba(46, 168, 39, 0.28);
 }
 
 /* ---- Skeleton / loading genérico ---- */

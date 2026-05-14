@@ -1,6 +1,7 @@
 /* =========================
    TaskChecklist — v2.0.36
    Checklist multi-grupo estilo Trello
+   Visual mais profissional: checkbox, progresso, grupos
    Usa design tokens globais
 ========================= */
 
@@ -18,17 +19,27 @@
 .cl-loading {
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
-    padding: var(--space-1) 0;
+    padding: var(--space-2) 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 /* ---- Progresso geral ---- */
 
 .cl-progresso-geral {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin: 0;
     font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-bold);
     color: var(--color-text-muted);
-    letter-spacing: 0.01em;
+    background-color: var(--color-bg-badge);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    padding: 4px 12px;
+    width: fit-content;
 }
 
 /* ---- Grupos ---- */
@@ -36,17 +47,18 @@
 .cl-grupos {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
+    gap: var(--space-3);
 }
 
 .cl-grupo {
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
-    padding: var(--space-3);
+    padding: var(--space-3) var(--space-3);
     border-radius: var(--radius-lg);
     background-color: var(--color-bg-surface);
     border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-accent);
     box-shadow: var(--shadow-xs);
     transition: box-shadow var(--transition-fast);
 }
@@ -61,7 +73,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    min-height: 22px;
+    min-height: 24px;
 }
 
 .cl-grupo-titulo {
@@ -70,7 +82,7 @@
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-extrabold);
     color: var(--color-text);
-    letter-spacing: -0.015em;
+    letter-spacing: -0.01em;
     line-height: var(--line-height-tight);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -79,13 +91,16 @@
 
 .cl-grupo-progresso {
     flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
     font-size: var(--font-size-2xs);
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-extrabold);
     color: var(--color-text-muted);
     white-space: nowrap;
     background-color: var(--color-bg-badge);
-    padding: 2px 7px;
+    padding: 2px 8px;
     border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
 }
 
 .cl-grupo-actions {
@@ -96,14 +111,15 @@
     flex-shrink: 0;
 }
 
-.cl-grupo:hover .cl-grupo-actions {
+.cl-grupo:hover .cl-grupo-actions,
+.cl-grupo:focus-within .cl-grupo-actions {
     opacity: 1;
 }
 
 /* ---- Barra de progresso do grupo ---- */
 
 .cl-grupo-progress-bar {
-    height: 4px;
+    height: 6px;
     border-radius: var(--radius-full);
     background-color: var(--color-border);
     overflow: hidden;
@@ -112,9 +128,15 @@
 .cl-grupo-progress-fill {
     height: 100%;
     border-radius: var(--radius-full);
-    background-color: var(--color-success);
-    transition: width 0.4s ease;
+    background: linear-gradient(90deg, var(--color-success), #0fa50a);
+    transition: width 0.5s ease;
     min-width: 0;
+}
+
+/* Quando 100%, cor especial */
+.cl-grupo-progress-fill[style*='width: 100%'] {
+    background: linear-gradient(90deg, var(--color-success), #0fa50a);
+    box-shadow: 0 0 6px rgba(5, 116, 1, 0.36);
 }
 
 /* ---- Edição de grupo ---- */
@@ -156,7 +178,7 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
 }
 
 /* ---- Item ---- */
@@ -166,9 +188,9 @@
     align-items: flex-start;
     gap: var(--space-2);
     font-size: var(--font-size-md);
-    min-height: 28px;
+    min-height: 30px;
     border-radius: var(--radius-sm);
-    padding: 3px var(--space-1);
+    padding: 4px var(--space-1);
     transition: background-color var(--transition-fast);
 }
 
@@ -185,21 +207,55 @@
     flex: 1;
     cursor: pointer;
     user-select: none;
-    padding-top: 2px;
+    padding-top: 3px;
 }
 
+/* Checkbox com visual melhorado */
 .cl-item-label input[type='checkbox'] {
-    width: 15px;
-    height: 15px;
-    flex-shrink: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    border: 2px solid var(--color-border-strong);
+    border-radius: 4px;
+    background-color: var(--color-bg-input);
     cursor: pointer;
-    margin-top: 1px;
-    accent-color: var(--color-success);
+    position: relative;
+    transition:
+        border-color var(--transition-fast),
+        background-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.cl-item-label input[type='checkbox']:hover:not(:disabled) {
+    border-color: var(--color-success);
+}
+
+.cl-item-label input[type='checkbox']:checked {
+    background-color: var(--color-success);
+    border-color: var(--color-success);
+}
+
+.cl-item-label input[type='checkbox']:checked::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+    background-size: 10px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.cl-item-label input[type='checkbox']:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
+    border-color: var(--color-focus-border);
 }
 
 .cl-item-label input[type='checkbox']:disabled {
     cursor: default;
-    opacity: 0.55;
+    opacity: 0.45;
 }
 
 .cl-item-text {
@@ -212,7 +268,8 @@
 
 .cl-item--done .cl-item-text {
     text-decoration: line-through;
-    color: var(--color-text-subtle);
+    text-decoration-color: var(--color-text-subtle);
+    color: var(--color-text-muted);
 }
 
 /* Data de conclusão — bem discreta */
@@ -225,6 +282,10 @@
     align-self: center;
     line-height: 1;
     margin-left: var(--space-1);
+    background: var(--color-bg-badge);
+    padding: 1px 6px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
 }
 
 /* Ações de editar/excluir item */
@@ -238,7 +299,8 @@
     align-self: center;
 }
 
-.cl-item:hover .cl-item-actions {
+.cl-item:hover .cl-item-actions,
+.cl-item:focus-within .cl-item-actions {
     opacity: 1;
 }
 
@@ -247,6 +309,8 @@
 .cl-item--editing {
     background-color: var(--color-bg-hover);
     align-items: center;
+    border-left: 2px solid var(--color-accent);
+    padding-left: calc(var(--space-1) + 2px);
 }
 
 .cl-item-edit {
@@ -286,13 +350,14 @@
     display: flex;
     gap: var(--space-2);
     margin-top: var(--space-1);
+    padding-top: var(--space-1);
 }
 
 .cl-add-item input {
     flex: 1;
     font-size: var(--font-size-xs);
     padding: var(--space-1) var(--space-2);
-    border: 1px solid var(--color-border-input);
+    border: 1px dashed var(--color-border-input);
     border-radius: var(--radius-sm);
     background-color: var(--color-bg-input-muted);
     color: var(--color-text);
@@ -304,6 +369,7 @@
 
 .cl-add-item input:focus {
     outline: none;
+    border-style: solid;
     border-color: var(--color-focus-border);
     box-shadow: 0 0 0 3px var(--color-focus-ring);
     background-color: var(--color-bg-input);
@@ -314,15 +380,16 @@
 .cl-add-grupo {
     display: flex;
     gap: var(--space-2);
-    padding-top: var(--space-2);
+    padding-top: var(--space-3);
     border-top: 1px dashed var(--color-border);
+    margin-top: var(--space-1);
 }
 
 .cl-add-grupo input {
     flex: 1;
     font-size: var(--font-size-xs);
     padding: var(--space-1) var(--space-3);
-    border: 1px solid var(--color-border-input);
+    border: 1px dashed var(--color-border-input);
     border-radius: var(--radius-md);
     background-color: var(--color-bg-input-muted);
     color: var(--color-text);
@@ -334,6 +401,7 @@
 
 .cl-add-grupo input:focus {
     outline: none;
+    border-style: solid;
     border-color: var(--color-focus-border);
     box-shadow: 0 0 0 3px var(--color-focus-ring);
     background-color: var(--color-bg-input);
@@ -342,6 +410,9 @@
 /* ---- Botões ---- */
 
 .cl-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-bold);
     padding: var(--space-1) var(--space-3);
@@ -351,7 +422,7 @@
     white-space: nowrap;
     line-height: var(--line-height-snug);
     transition:
-        background-color var(--transition-fast),
+        background var(--transition-fast),
         color var(--transition-fast),
         border-color var(--transition-fast),
         transform var(--transition-fast),
@@ -377,7 +448,7 @@
 }
 
 .cl-btn--cancel:hover {
-    background-color: var(--color-bg-hover);
+    background-color: var(--color-bg-active);
     color: var(--color-text);
 }
 
@@ -389,14 +460,14 @@
 }
 
 .cl-btn--add:hover:not(:disabled) {
-    background-color: var(--color-primary);
-    color: var(--color-text-inverse);
-    border-color: var(--color-primary);
+    background: var(--btn-accent-bg);
+    color: var(--btn-accent-color);
+    border-color: var(--btn-accent-border);
     transform: translateY(-1px);
 }
 
 .cl-btn--add:disabled {
-    opacity: 0.4;
+    opacity: 0.38;
     cursor: not-allowed;
     transform: none;
 }
@@ -409,13 +480,14 @@
 }
 
 .cl-btn--add-grupo:hover:not(:disabled) {
-    background-color: var(--color-primary);
-    color: var(--color-text-inverse);
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-color);
+    border-color: transparent;
     transform: translateY(-1px);
 }
 
 .cl-btn--add-grupo:disabled {
-    opacity: 0.4;
+    opacity: 0.38;
     cursor: not-allowed;
     transform: none;
 }
@@ -423,10 +495,14 @@
 /* ---- Botões ícone (editar/excluir) ---- */
 
 .cl-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 2px 5px;
     font-size: var(--font-size-xs);
     color: var(--color-text-subtle);
     border-radius: var(--radius-xs);
@@ -437,7 +513,7 @@
 }
 
 .cl-icon-btn:hover {
-    background-color: var(--color-bg-hover);
+    background-color: var(--color-bg-active);
     color: var(--color-text-secondary);
 }
 
@@ -466,5 +542,9 @@
 
     .cl-item-completed-at {
         display: none;
+    }
+
+    .cl-grupo {
+        border-left-width: 3px;
     }
 }

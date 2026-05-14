@@ -101,6 +101,20 @@ export const taskFilesApi = {
         })
     },
 
+    async getImagePreviewBlob(taskId: string, fileId: string): Promise<string> {
+        const response = await fetch(
+            `${API_URL}/tasks/${taskId}/files/${fileId}/download`,
+            { method: 'GET', credentials: 'include' }
+        )
+
+        if (!response.ok) {
+            throw new Error(`Erro ao carregar imagem: ${response.status}`)
+        }
+
+        const blob = await response.blob()
+        return URL.createObjectURL(blob)
+    },
+
     async downloadTaskFile(taskId: string, file: TaskFile) {
         const response = await fetch(
             `${API_URL}/tasks/${taskId}/files/${file.id}/download`,

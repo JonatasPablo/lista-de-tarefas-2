@@ -19,6 +19,8 @@ type ApiTask = {
     completed_at: string | null
     deleted_at: string | null
     files?: ApiTaskFile[]
+    checklist_total?: number
+    checklist_concluidos?: number
 }
 
 type CreateTaskPayload = {
@@ -52,6 +54,13 @@ const mapApiTaskToTask = (apiTask: ApiTask): Task => {
         updatedAt: formatDateTime(apiTask.updated_at),
         completedAt: formatDateTime(apiTask.completed_at),
         files: apiTask.files?.map(mapApiTaskFileToTaskFile) || [],
+        checklistSummary:
+            apiTask.checklist_total !== undefined
+                ? {
+                      total: Number(apiTask.checklist_total) || 0,
+                      concluidos: Number(apiTask.checklist_concluidos) || 0,
+                  }
+                : undefined,
     }
 }
 

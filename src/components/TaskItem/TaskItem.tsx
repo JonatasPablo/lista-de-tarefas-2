@@ -1,5 +1,14 @@
-import { useState, type ChangeEvent, type KeyboardEvent } from 'react'
-import type { Task, TaskFile, TaskPriority } from '../../types/task'
+import {
+    useState,
+    type ChangeEvent,
+    type KeyboardEvent,
+} from 'react'
+import type {
+    Task,
+    TaskFile,
+    TaskPriority,
+    ChecklistSummary,
+} from '../../types/task'
 import { MAX_FILE_SIZE_BYTES, formatFileSize } from '../../utils/file'
 import { TaskChecklist } from '../TaskChecklist/TaskChecklist'
 import { TaskFiles } from '../TaskFiles/TaskFiles'
@@ -57,11 +66,24 @@ export const TaskItem = ({
     const [editedPriority, setEditedPriority] = useState<TaskPriority>(
         task.priority
     )
+    const [checklistBadgeOverride, setChecklistBadgeOverride] =
+        useState<ChecklistSummary | null | undefined>(undefined)
 
     const isTaskCompleted = task.completed
     const hasAttachments = task.files.length > 0
     const shouldShowDetails = expanded || isEditing
     const priorityLabel = priorityLabelMap[task.priority]
+    const checklistBadge =
+        checklistBadgeOverride === undefined
+            ? task.checklistSummary?.total
+                ? task.checklistSummary
+                : null
+            : checklistBadgeOverride
+
+    const checklistDone =
+        checklistBadge !== null &&
+        checklistBadge.total > 0 &&
+        checklistBadge.concluidos === checklistBadge.total
 
     const handleStartEdit = () => {
         setEditedTitle(task.title)
@@ -243,10 +265,37 @@ export const TaskItem = ({
                             <strong className="task-summary-title">
                                 {task.title}
                             </strong>
+
+                            {checklistBadge && checklistBadge.total > 0 && (
+                                <span
+                                    className={`task-checklist-badge ${checklistDone ? 'task-checklist-badge--done' : ''}`}
+                                    title={`Checklist: ${checklistBadge.concluidos} de ${checklistBadge.total} itens concluídos`}
+                                    aria-label={`Checklist ${checklistBadge.concluidos}/${checklistBadge.total}`}
+                                >
+                                    <svg
+                                        width="11"
+                                        height="11"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        aria-hidden="true"
+                                    >
+                                        <polyline points="9 11 12 14 22 4" />
+                                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                                    </svg>
+                                    {checklistBadge.concluidos}/{checklistBadge.total}
+                                </span>
+                            )}
                         </div>
 
                         <div className="task-summary-indicators">
-                            <span title={`Prioridade ${priorityLabel}`}>
+                            <span
+                                className={`task-priority-badge task-priority-badge--${task.priority}`}
+                                title={`Prioridade ${priorityLabel}`}
+                            >
                                 {priorityLabel}
                             </span>
 
@@ -277,7 +326,9 @@ export const TaskItem = ({
                                         {task.description ? (
                                             <small>{task.description}</small>
                                         ) : (
-                                            <small>Sem descrição.</small>
+                                            <small className="task-text--no-description">
+                                                Sem descrição.
+                                            </small>
                                         )}
 
                                         <em>
@@ -296,6 +347,7 @@ export const TaskItem = ({
                                 {isTaskCompleted ? (
                                     <button
                                         type="button"
+                                        className="task-action task-action--reopen"
                                         onClick={() => onToggleTask(task.id)}
                                     >
                                         Reabrir
@@ -304,6 +356,7 @@ export const TaskItem = ({
                                     <>
                                         <button
                                             type="button"
+                                            className="task-action task-action--complete"
                                             onClick={() => onToggleTask(task.id)}
                                         >
                                             Concluir
@@ -311,12 +364,13 @@ export const TaskItem = ({
 
                                         <button
                                             type="button"
+                                            className="task-action task-action--edit"
                                             onClick={handleStartEdit}
                                         >
                                             Editar
                                         </button>
 
-                                        <label className="file-upload-button">
+                                        <label className="file-upload-button task-action task-action--attach">
                                             Anexar
                                             <input
                                                 type="file"
@@ -330,6 +384,7 @@ export const TaskItem = ({
 
                                 <button
                                     type="button"
+                                    className="task-action task-action--delete"
                                     onClick={() => onDeleteTask(task.id)}
                                 >
                                     Excluir
@@ -347,6 +402,7 @@ export const TaskItem = ({
                                 taskId={task.id}
                                 isTaskCompleted={isTaskCompleted}
                                 expanded={shouldShowDetails}
+                                onProgressChange={setChecklistBadgeOverride}
                             />
 
                             <TaskFiles

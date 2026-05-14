@@ -32,20 +32,35 @@ const listTasks = async (userId) => {
     const [tasks] = await connection.query(
         `
             SELECT
-                id,
-                user_id,
-                title,
-                description,
-                priority,
-                status,
-                created_at,
-                updated_at,
-                completed_at,
-                deleted_at
-            FROM tasks
-            WHERE user_id = ?
-                AND deleted_at IS NULL
-            ORDER BY id DESC
+                t.id,
+                t.user_id,
+                t.title,
+                t.description,
+                t.priority,
+                t.status,
+                t.created_at,
+                t.updated_at,
+                t.completed_at,
+                t.deleted_at,
+                (
+                    SELECT COUNT(*)
+                    FROM task_checklist_items tci
+                    WHERE tci.task_id = t.id
+                      AND tci.user_id = t.user_id
+                      AND tci.deleted_at IS NULL
+                ) AS checklist_total,
+                (
+                    SELECT COUNT(*)
+                    FROM task_checklist_items tci
+                    WHERE tci.task_id = t.id
+                      AND tci.user_id = t.user_id
+                      AND tci.is_completed = 1
+                      AND tci.deleted_at IS NULL
+                ) AS checklist_concluidos
+            FROM tasks t
+            WHERE t.user_id = ?
+                AND t.deleted_at IS NULL
+            ORDER BY t.id DESC
         `,
         [userId]
     )

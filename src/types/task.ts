@@ -9,6 +9,11 @@ export interface TaskFile {
     createdAt: string
 }
 
+export interface ChecklistSummary {
+    total: number
+    concluidos: number
+}
+
 export interface Task {
     id: string
     title: string
@@ -20,4 +25,5 @@ export interface Task {
     updatedAt?: string
     completedAt?: string
     files: TaskFile[]
+    checklistSummary?: ChecklistSummary
 }
