@@ -254,6 +254,116 @@ const deleteTask = async (userId, id) => {
     return true
 }
 
+const bulkCompleteTasks = async (userId, taskIds) => {
+    if (!taskIds.length) {
+        return { completedCount: 0 }
+    }
+
+    const placeholders = taskIds.map(() => '?').join(', ')
+
+    const [tasks] = await connection.query(
+        `
+            SELECT id, title, description, priority, status
+            FROM tasks
+            WHERE id IN (${placeholders})
+                AND user_id = ?
+                AND status = 'pendente'
+                AND deleted_at IS NULL
+        `,
+        [...taskIds, userId]
+    )
+
+    if (!tasks.length) {
+        return { completedCount: 0 }
+    }
+
+    const validIds = tasks.map((t) => t.id)
+    const validPlaceholders = validIds.map(() => '?').join(', ')
+
+    await connection.query(
+        `
+            UPDATE tasks
+            SET
+                status = 'concluida',
+                completed_at = NOW(),
+                updated_at = NOW()
+            WHERE id IN (${validPlaceholders})
+                AND user_id = ?
+                AND deleted_at IS NULL
+        `,
+        [...validIds, userId]
+    )
+
+    for (const task of tasks) {
+        await taskHistoryService.createHistory({
+            taskId: task.id,
+            userId,
+            action: 'status_changed',
+            oldValue: task.status,
+            newValue: 'concluida',
+        })
+    }
+
+    return { completedCount: validIds.length }
+}
+
+const bulkDeleteTasks = async (userId, taskIds) => {
+    if (!taskIds.length) {
+        return { deletedCount: 0 }
+    }
+
+    const placeholders = taskIds.map(() => '?').join(', ')
+
+    const [tasks] = await connection.query(
+        `
+            SELECT id, title, description, priority, status
+            FROM tasks
+            WHERE id IN (${placeholders})
+                AND user_id = ?
+                AND status = 'pendente'
+                AND deleted_at IS NULL
+        `,
+        [...taskIds, userId]
+    )
+
+    if (!tasks.length) {
+        return { deletedCount: 0 }
+    }
+
+    const validIds = tasks.map((t) => t.id)
+    const validPlaceholders = validIds.map(() => '?').join(', ')
+
+    await connection.query(
+        `
+            UPDATE tasks
+            SET
+                deleted_at = NOW(),
+                updated_at = NOW()
+            WHERE id IN (${validPlaceholders})
+                AND user_id = ?
+                AND deleted_at IS NULL
+        `,
+        [...validIds, userId]
+    )
+
+    for (const task of tasks) {
+        await taskHistoryService.createHistory({
+            taskId: task.id,
+            userId,
+            action: 'deleted',
+            oldValue: JSON.stringify({
+                title: task.title,
+                description: task.description,
+                priority: task.priority,
+                status: task.status,
+            }),
+            newValue: null,
+        })
+    }
+
+    return { deletedCount: validIds.length }
+}
+
 const listTaskHistory = async (userId, id) => {
     const task = await getTaskById(id, userId)
 
@@ -279,6 +389,8 @@ module.exports = {
     toggleTask,
     updateTaskStatus,
     deleteTask,
+    bulkCompleteTasks,
+    bulkDeleteTasks,
     listTaskHistory,
     listUserHistory,
 }

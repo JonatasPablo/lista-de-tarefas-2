@@ -12,6 +12,9 @@ tasksRoutes.post('/', asyncHandler(tasksController.createTask))
 
 tasksRoutes.get('/history', asyncHandler(tasksController.listUserHistory))
 
+tasksRoutes.patch('/bulk-complete', asyncHandler(tasksController.bulkCompleteTasks))
+tasksRoutes.delete('/bulk-delete', asyncHandler(tasksController.bulkDeleteTasks))
+
 tasksRoutes.get('/:id/files', asyncHandler(taskFilesController.listTaskFiles))
 
 tasksRoutes.post(

@@ -93,4 +93,24 @@ export const tasksApi = {
             method: 'DELETE',
         })
     },
+
+    async bulkComplete(taskIds: string[]) {
+        return apiRequest<{ message: string; completedCount: number }>(
+            '/tasks/bulk-complete',
+            {
+                method: 'PATCH',
+                body: { taskIds: taskIds.map(Number) },
+            }
+        )
+    },
+
+    async bulkDelete(taskIds: string[]) {
+        return apiRequest<{ message: string; deletedCount: number }>(
+            '/tasks/bulk-delete',
+            {
+                method: 'DELETE',
+                body: { taskIds: taskIds.map(Number) },
+            }
+        )
+    },
 }

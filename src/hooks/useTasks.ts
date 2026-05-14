@@ -10,6 +10,7 @@ type Confirm = (options: {
     message: string
     confirmText?: string
     cancelText?: string
+    isDanger?: boolean
 }) => Promise<boolean>
 
 interface UseTasksOptions {
@@ -187,6 +188,79 @@ export const useTasks = ({ user, showToast, confirm }: UseTasksOptions) => {
         }
     }
 
+    const bulkCompleteTasks = async (visibleSelectedIds: string[]) => {
+        if (visibleSelectedIds.length === 0) return
+
+        const confirmed = await confirm({
+            title: 'Concluir tarefas selecionadas?',
+            message:
+                'Essa ação moverá as tarefas selecionadas para o histórico.',
+            confirmText: 'Concluir',
+            cancelText: 'Cancelar',
+        })
+
+        if (!confirmed) return
+
+        try {
+            await tasksApi.bulkComplete(visibleSelectedIds)
+
+            setTasks((currentTasks) =>
+                currentTasks.map((task) =>
+                    visibleSelectedIds.includes(task.id)
+                        ? {
+                              ...task,
+                              completed: true,
+                              completedAt: new Date().toLocaleString('pt-BR'),
+                          }
+                        : task
+                )
+            )
+
+            setSelectedTaskIds([])
+            showToast('success', 'Tarefas concluídas com sucesso.')
+        } catch (error) {
+            console.error('Erro ao concluir tarefas em massa:', error)
+            showToast(
+                'error',
+                'Não foi possível concluir as tarefas selecionadas.'
+            )
+        }
+    }
+
+    const bulkDeleteTasks = async (visibleSelectedIds: string[]) => {
+        if (visibleSelectedIds.length === 0) return
+
+        const confirmed = await confirm({
+            title: 'Excluir tarefas selecionadas?',
+            message:
+                'Essa ação excluirá as tarefas selecionadas e não poderá ser desfeita.',
+            confirmText: 'Excluir',
+            cancelText: 'Cancelar',
+            isDanger: true,
+        })
+
+        if (!confirmed) return
+
+        try {
+            await tasksApi.bulkDelete(visibleSelectedIds)
+
+            setTasks((currentTasks) =>
+                currentTasks.filter(
+                    (task) => !visibleSelectedIds.includes(task.id)
+                )
+            )
+
+            setSelectedTaskIds([])
+            showToast('success', 'Tarefas excluídas com sucesso.')
+        } catch (error) {
+            console.error('Erro ao excluir tarefas em massa:', error)
+            showToast(
+                'error',
+                'Não foi possível excluir as tarefas selecionadas.'
+            )
+        }
+    }
+
     const selectTaskForExport = (taskId: string) => {
         setSelectedTaskIds((currentSelectedIds) =>
             currentSelectedIds.includes(taskId)
@@ -319,6 +393,8 @@ export const useTasks = ({ user, showToast, confirm }: UseTasksOptions) => {
         toggleTask,
         updateTask,
         deleteTask,
+        bulkCompleteTasks,
+        bulkDeleteTasks,
         selectTaskForExport,
         selectAllVisibleTasks,
         clearSelectedTasks,

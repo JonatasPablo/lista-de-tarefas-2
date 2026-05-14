@@ -104,6 +104,8 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
         toggleTask,
         updateTask,
         deleteTask,
+        bulkCompleteTasks,
+        bulkDeleteTasks,
         selectTaskForExport,
         selectAllVisibleTasks,
         clearSelectedTasks,
@@ -296,6 +298,10 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
                                             onRenameFile={renameTaskFile}
                                             onDeleteFile={deleteTaskFile}
                                             onExportTasks={exportTasks}
+                                            onBulkCompleteTasks={
+                                                bulkCompleteTasks
+                                            }
+                                            onBulkDeleteTasks={bulkDeleteTasks}
                                             onConfirm={confirm}
                                         />
                                     )
@@ -375,6 +381,7 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
                     message={confirmState.message}
                     confirmText={confirmState.confirmText}
                     cancelText={confirmState.cancelText}
+                    isDanger={confirmState.isDanger}
                     onConfirm={handleConfirm}
                     onCancel={handleCancel}
                 />

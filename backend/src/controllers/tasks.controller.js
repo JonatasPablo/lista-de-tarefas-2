@@ -101,6 +101,60 @@ const deleteTask = async (req, res) => {
     return res.status(204).send()
 }
 
+const bulkCompleteTasks = async (req, res) => {
+    const { taskIds } = req.body
+
+    if (!Array.isArray(taskIds) || taskIds.length === 0) {
+        throw new AppError('taskIds deve ser um array com pelo menos um ID.', 400)
+    }
+
+    if (taskIds.length > 100) {
+        throw new AppError('Limite de 100 tarefas por operação.', 400)
+    }
+
+    const validIds = taskIds.filter(
+        (id) => Number.isInteger(id) && id > 0
+    )
+
+    if (validIds.length === 0) {
+        throw new AppError('Nenhum ID válido fornecido.', 400)
+    }
+
+    const result = await tasksService.bulkCompleteTasks(req.user.id, validIds)
+
+    return res.json({
+        message: 'Tarefas concluídas com sucesso.',
+        completedCount: result.completedCount,
+    })
+}
+
+const bulkDeleteTasks = async (req, res) => {
+    const { taskIds } = req.body
+
+    if (!Array.isArray(taskIds) || taskIds.length === 0) {
+        throw new AppError('taskIds deve ser um array com pelo menos um ID.', 400)
+    }
+
+    if (taskIds.length > 100) {
+        throw new AppError('Limite de 100 tarefas por operação.', 400)
+    }
+
+    const validIds = taskIds.filter(
+        (id) => Number.isInteger(id) && id > 0
+    )
+
+    if (validIds.length === 0) {
+        throw new AppError('Nenhum ID válido fornecido.', 400)
+    }
+
+    const result = await tasksService.bulkDeleteTasks(req.user.id, validIds)
+
+    return res.json({
+        message: 'Tarefas excluídas com sucesso.',
+        deletedCount: result.deletedCount,
+    })
+}
+
 const listTaskHistory = async (req, res) => {
     const { id } = req.params
 
@@ -128,6 +182,8 @@ module.exports = {
     toggleTask,
     updateTaskStatus,
     deleteTask,
+    bulkCompleteTasks,
+    bulkDeleteTasks,
     listTaskHistory,
     listUserHistory,
 }

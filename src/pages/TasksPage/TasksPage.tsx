@@ -39,6 +39,8 @@ interface TasksPageProps {
     ) => void
     onDeleteFile: (taskId: string, fileId: string) => void
     onExportTasks: (tasksToExport: Task[]) => void | Promise<void>
+    onBulkCompleteTasks: (taskIds: string[]) => void | Promise<void>
+    onBulkDeleteTasks: (taskIds: string[]) => void | Promise<void>
     onConfirm: (options: {
         title: string
         message: string
@@ -63,6 +65,8 @@ export const TasksPage = ({
     onRenameFile,
     onDeleteFile,
     onExportTasks,
+    onBulkCompleteTasks,
+    onBulkDeleteTasks,
     onConfirm,
 }: TasksPageProps) => {
     const [searchTerm, setSearchTerm] = useState('')
@@ -221,7 +225,7 @@ export const TasksPage = ({
                         }
                         disabled={filteredTasks.length === 0}
                     >
-                        Selecionar
+                        Sel. todas
                     </button>
 
                     <button
@@ -230,6 +234,32 @@ export const TasksPage = ({
                         disabled={selectedTaskIds.length === 0}
                     >
                         Limpar
+                    </button>
+
+                    <button
+                        type="button"
+                        className="tasks-bulk-complete-btn"
+                        onClick={() =>
+                            onBulkCompleteTasks(
+                                selectedVisibleTasks.map((t) => t.id)
+                            )
+                        }
+                        disabled={selectedVisibleTasks.length === 0}
+                    >
+                        Concluir sel.
+                    </button>
+
+                    <button
+                        type="button"
+                        className="tasks-bulk-delete-btn"
+                        onClick={() =>
+                            onBulkDeleteTasks(
+                                selectedVisibleTasks.map((t) => t.id)
+                            )
+                        }
+                        disabled={selectedVisibleTasks.length === 0}
+                    >
+                        Excluir sel.
                     </button>
 
                     {hasActiveFilters && (

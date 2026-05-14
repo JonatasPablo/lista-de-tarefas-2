@@ -5,6 +5,7 @@ interface ConfirmOptions {
     message: string
     confirmText?: string
     cancelText?: string
+    isDanger?: boolean
 }
 
 interface ConfirmState extends ConfirmOptions {
@@ -19,6 +20,7 @@ export const useConfirm = () => {
         message: '',
         confirmText: 'Confirmar',
         cancelText: 'Cancelar',
+        isDanger: false,
     })
 
     const confirm = (options: ConfirmOptions) => {

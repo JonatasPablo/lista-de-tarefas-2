@@ -188,6 +188,16 @@
     color: #000000 !important;
 }
 
+[data-theme="dark"] .confirm-button-danger {
+    background-color: #810101 !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .confirm-button-danger:hover {
+    background-color: #a00000 !important;
+    color: #ffffff !important;
+}
+
 /* =========================
    Painéis compartilhados (padrão glassmorphism escuro)
 ========================= */
@@ -311,6 +321,28 @@
 [data-theme="dark"] .tasks-filter-status {
     background-color: rgba(255, 255, 255, 0.1);
     color: #c8c8c8;
+}
+
+[data-theme="dark"] .tasks-bulk-complete-btn {
+    background-color: rgba(5, 116, 1, 0.15) !important;
+    border-color: rgba(5, 116, 1, 0.35) !important;
+    color: #4caf50 !important;
+}
+
+[data-theme="dark"] .tasks-bulk-complete-btn:hover:not(:disabled) {
+    background-color: #057401 !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .tasks-bulk-delete-btn {
+    background-color: rgba(129, 1, 1, 0.18) !important;
+    border-color: rgba(200, 30, 30, 0.35) !important;
+    color: #e57373 !important;
+}
+
+[data-theme="dark"] .tasks-bulk-delete-btn:hover:not(:disabled) {
+    background-color: #810101 !important;
+    color: #ffffff !important;
 }
 
 [data-theme="dark"] .tasks-list-header h3 {

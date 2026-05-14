@@ -679,6 +679,15 @@ a {
     background-color: #000000 !important;
 }
 
+.confirm-button-danger {
+    background-color: #810101 !important;
+    color: #ffffff !important;
+}
+
+.confirm-button-danger:hover {
+    background-color: #5c0000 !important;
+}
+
 /* =========================
    Desktop grande
 ========================= */
