@@ -38,15 +38,8 @@ interface TasksPageProps {
         displayName: string
     ) => void
     onDeleteFile: (taskId: string, fileId: string) => void
-    onExportTasks: (tasksToExport: Task[]) => void | Promise<void>
     onBulkCompleteTasks: (taskIds: string[]) => void | Promise<void>
     onBulkDeleteTasks: (taskIds: string[]) => void | Promise<void>
-    onConfirm: (options: {
-        title: string
-        message: string
-        confirmText?: string
-        cancelText?: string
-    }) => Promise<boolean>
     onRequestRenameFile: (taskId: string, file: TaskFile) => void
 }
 
@@ -64,10 +57,8 @@ export const TasksPage = ({
     onAddFiles,
     onRenameFile,
     onDeleteFile,
-    onExportTasks,
     onBulkCompleteTasks,
     onBulkDeleteTasks,
-    onConfirm,
 }: TasksPageProps) => {
     const [searchTerm, setSearchTerm] = useState('')
     const [priorityFilter, setPriorityFilter] =
@@ -113,27 +104,6 @@ export const TasksPage = ({
         setPriorityFilter('todas')
         setSortOption('Filtros')
         onClearSelectedTasks()
-    }
-
-    const handleExport = async () => {
-        if (selectedTaskIds.length > 0) {
-            onExportTasks(selectedVisibleTasks)
-            return
-        }
-
-        const confirmExportAll = await onConfirm({
-            title: 'Exportar tarefas',
-            message:
-                'Nenhuma tarefa foi selecionada. Deseja exportar todas as tarefas pendentes filtradas?',
-            confirmText: 'Exportar',
-            cancelText: 'Cancelar',
-        })
-
-        if (!confirmExportAll) {
-            return
-        }
-
-        onExportTasks(filteredTasks)
     }
 
     const handleSearchChange = (value: string) => {
@@ -210,12 +180,6 @@ export const TasksPage = ({
                 />
 
                 <div className="tasks-export-toolbar">
-                    <button type="button" onClick={handleExport}>
-                        {selectedTaskIds.length > 0
-                            ? `Exportar (${selectedVisibleTasks.length})`
-                            : 'Exportar'}
-                    </button>
-
                     <button
                         type="button"
                         onClick={() =>

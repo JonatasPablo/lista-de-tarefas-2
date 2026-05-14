@@ -65,9 +65,9 @@ const helpItems = [
             'Marque uma tarefa como concluída para enviá-la ao histórico. Use os filtros disponíveis para encontrar tarefas por título, prioridade ou outros critérios.',
     },
     {
-        title: 'Exportar tarefas',
+        title: 'Acesso online às tarefas',
         description:
-            'Na página de pendentes, selecione tarefas específicas ou exporte todas as tarefas filtradas de uma vez.',
+            'Suas tarefas ficam salvas online e acessíveis em qualquer dispositivo após o login. Não é necessário exportar dados para manter o acesso.',
     },
     {
         title: 'Anexos',

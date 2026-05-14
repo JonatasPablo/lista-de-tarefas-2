@@ -227,7 +227,7 @@ export const TaskItem = ({
                                 <label
                                     className="export-selection compact-export-selection"
                                     onClick={(event) => event.stopPropagation()}
-                                    title="Selecionar para exportação"
+                                    title="Selecionar tarefa"
                                 >
                                     <span>Sel.</span>
 

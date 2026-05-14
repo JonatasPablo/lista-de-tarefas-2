@@ -277,69 +277,6 @@ export const useTasks = ({ user, showToast, confirm }: UseTasksOptions) => {
         setSelectedTaskIds([])
     }
 
-    const exportTasks = async (tasksToExport: Task[]) => {
-        if (tasksToExport.length === 0) {
-            showToast('warning', 'Nao existem tarefas pendentes para exportar.')
-            return
-        }
-
-        const includeFiles = await confirm({
-            title: 'Incluir arquivos',
-            message: 'Deseja incluir os arquivos anexados na exportacao tambem?',
-            confirmText: 'Incluir',
-            cancelText: 'Somente lista',
-        })
-
-        if (includeFiles) {
-            showToast(
-                'info',
-                'A exportacao dos arquivos em .zip sera implementada em uma proxima etapa.'
-            )
-        }
-
-        const taskText = tasksToExport
-            .map((task, index) => {
-                const filesText =
-                    task.files.length > 0
-                        ? task.files.map((file) => file.displayName).join(', ')
-                        : 'Nenhum arquivo anexado'
-
-                const descriptionText = task.description
-                    ? task.description
-                    : 'Sem descricao'
-
-                const editedAtText = task.updatedAt
-                    ? `- Editada em: ${task.updatedAt}`
-                    : '- Editada em: Nao editada'
-
-                return [
-                    `Tarefa ${index + 1}`,
-                    `- Titulo: ${task.title}`,
-                    `- Descricao: ${descriptionText}`,
-                    '- Status: Pendente',
-                    `- Criada em: ${task.createdAt}`,
-                    `- Prioridade: ${task.priority}`,
-                    `- Arquivos anexados: ${filesText}`,
-                    editedAtText,
-                ].join('\n')
-            })
-            .join('\n\n-----------------------------\n\n')
-
-        const blob = new Blob([taskText], {
-            type: 'text/plain;charset=utf-8',
-        })
-
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-
-        link.href = url
-        link.download = 'lista_de_tarefas_pendentes.txt'
-        link.click()
-
-        URL.revokeObjectURL(url)
-        clearSelectedTasks()
-    }
-
     useEffect(() => {
         let isMounted = true
 
@@ -398,6 +335,5 @@ export const useTasks = ({ user, showToast, confirm }: UseTasksOptions) => {
         selectTaskForExport,
         selectAllVisibleTasks,
         clearSelectedTasks,
-        exportTasks,
     }
 }

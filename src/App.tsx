@@ -109,7 +109,6 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
         selectTaskForExport,
         selectAllVisibleTasks,
         clearSelectedTasks,
-        exportTasks,
     } = useTasks({
         user,
         showToast,
@@ -297,12 +296,10 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
                                             onAddFiles={addFilesToTask}
                                             onRenameFile={renameTaskFile}
                                             onDeleteFile={deleteTaskFile}
-                                            onExportTasks={exportTasks}
                                             onBulkCompleteTasks={
                                                 bulkCompleteTasks
                                             }
                                             onBulkDeleteTasks={bulkDeleteTasks}
-                                            onConfirm={confirm}
                                         />
                                     )
                                 ) : (
