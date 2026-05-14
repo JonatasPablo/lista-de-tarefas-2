@@ -1,3 +1,5 @@
+import { createPortal } from 'react-dom'
+
 interface ConfirmModalProps {
     isOpen: boolean
     title: string
@@ -23,7 +25,7 @@ export const ConfirmModal = ({
         return null
     }
 
-    return (
+    const modal = (
         <div className="modal-overlay">
             <section className="confirm-modal">
                 <h2>{title}</h2>
@@ -46,4 +48,6 @@ export const ConfirmModal = ({
             </section>
         </div>
     )
+
+    return createPortal(modal, document.body)
 }

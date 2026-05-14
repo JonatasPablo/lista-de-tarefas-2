@@ -5,6 +5,7 @@ import {
     useState,
     type MouseEvent,
 } from 'react'
+import { createPortal } from 'react-dom'
 import type { TaskFile } from '../../types/task'
 import { taskFilesApi } from '../../services/taskFilesApi'
 import './ImagePreviewModal.css'
@@ -99,6 +100,27 @@ export const ImagePreviewModal = ({
         return () => document.removeEventListener('keydown', handleKeyDown)
     }, [goToNext, goToPrevious, onClose])
 
+    useEffect(() => {
+        const originalBodyOverflow = document.body.style.overflow
+        const originalBodyPaddingRight = document.body.style.paddingRight
+        const originalHtmlOverflow = document.documentElement.style.overflow
+        const scrollbarWidth =
+            window.innerWidth - document.documentElement.clientWidth
+
+        document.body.style.overflow = 'hidden'
+        document.documentElement.style.overflow = 'hidden'
+
+        if (scrollbarWidth > 0) {
+            document.body.style.paddingRight = `${scrollbarWidth}px`
+        }
+
+        return () => {
+            document.body.style.overflow = originalBodyOverflow
+            document.body.style.paddingRight = originalBodyPaddingRight
+            document.documentElement.style.overflow = originalHtmlOverflow
+        }
+    }, [])
+
     const handleDownload = useCallback(() => {
         taskFilesApi.downloadTaskFile(taskId, currentFile)
     }, [taskId, currentFile])
@@ -113,7 +135,7 @@ export const ImagePreviewModal = ({
         if (event.target === event.currentTarget) onClose()
     }
 
-    return (
+    const modal = (
         <div
             className="img-preview-overlay"
             onClick={handleOverlayClick}
@@ -174,7 +196,10 @@ export const ImagePreviewModal = ({
                     </div>
                 </div>
 
-                <div className="img-preview-body">
+                <div
+                    className="img-preview-body"
+                    onClick={handleOverlayClick}
+                >
                     {hasNavigation && (
                         <button
                             type="button"
@@ -224,4 +249,6 @@ export const ImagePreviewModal = ({
             </div>
         </div>
     )
+
+    return createPortal(modal, document.body)
 }

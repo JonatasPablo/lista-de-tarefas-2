@@ -5,6 +5,7 @@ import {
     type KeyboardEvent as ReactKeyboardEvent,
     type MouseEvent,
 } from 'react'
+import { createPortal } from 'react-dom'
 import type {
     ChecklistSummary,
     Task,
@@ -74,6 +75,27 @@ export const TaskDetailModal = ({
 
         return () => document.removeEventListener('keydown', handleKeyDown)
     }, [isEditing, onClose])
+
+    useEffect(() => {
+        const originalBodyOverflow = document.body.style.overflow
+        const originalBodyPaddingRight = document.body.style.paddingRight
+        const originalHtmlOverflow = document.documentElement.style.overflow
+        const scrollbarWidth =
+            window.innerWidth - document.documentElement.clientWidth
+
+        document.body.style.overflow = 'hidden'
+        document.documentElement.style.overflow = 'hidden'
+
+        if (scrollbarWidth > 0) {
+            document.body.style.paddingRight = `${scrollbarWidth}px`
+        }
+
+        return () => {
+            document.body.style.overflow = originalBodyOverflow
+            document.body.style.paddingRight = originalBodyPaddingRight
+            document.documentElement.style.overflow = originalHtmlOverflow
+        }
+    }, [])
 
     const handleOverlayClick = (event: MouseEvent<HTMLDivElement>) => {
         if (event.target === event.currentTarget && !isEditing) onClose()
@@ -150,7 +172,7 @@ export const TaskDetailModal = ({
         onClose()
     }
 
-    return (
+    const modal = (
         <div
             className="task-detail-overlay"
             role="dialog"
@@ -377,4 +399,6 @@ export const TaskDetailModal = ({
             </article>
         </div>
     )
+
+    return createPortal(modal, document.body)
 }

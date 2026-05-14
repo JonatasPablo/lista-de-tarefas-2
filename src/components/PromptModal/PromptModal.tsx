@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 
 interface PromptModalProps {
     isOpen: boolean
@@ -37,7 +38,7 @@ export const PromptModal = ({
         onConfirm(value)
     }
 
-    return (
+    const modal = (
         <div className="modal-overlay">
             <form className="confirm-modal" onSubmit={handleSubmit}>
                 <h2>{title}</h2>
@@ -63,4 +64,6 @@ export const PromptModal = ({
             </form>
         </div>
     )
+
+    return createPortal(modal, document.body)
 }

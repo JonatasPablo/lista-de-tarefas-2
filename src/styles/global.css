@@ -610,7 +610,7 @@ a {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    z-index: 10000;
+    z-index: calc(var(--z-modal) + 40);
     display: grid;
     place-items: center;
     padding: 20px;
