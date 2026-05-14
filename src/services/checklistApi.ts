@@ -1,9 +1,14 @@
 import { apiRequest } from './api'
 
+// ---------------------------------------------------------------
+// Tipos da API (snake_case vindos do backend)
+// ---------------------------------------------------------------
+
 type ApiChecklistItem = {
     id: number
     task_id: number
     user_id: number
+    group_id: number | null
     title: string
     is_completed: number
     created_at: string
@@ -11,9 +16,25 @@ type ApiChecklistItem = {
     completed_at: string | null
 }
 
+type ApiChecklistGroup = {
+    id: number
+    task_id: number
+    user_id: number
+    title: string
+    position: number
+    created_at: string
+    updated_at: string | null
+    items: ApiChecklistItem[]
+}
+
+// ---------------------------------------------------------------
+// Tipos públicos da aplicação (camelCase)
+// ---------------------------------------------------------------
+
 export type ChecklistItem = {
     id: string
     taskId: string
+    groupId: string | null
     title: string
     isCompleted: boolean
     createdAt: string
@@ -21,9 +42,24 @@ export type ChecklistItem = {
     completedAt?: string
 }
 
-const mapApiItem = (item: ApiChecklistItem): ChecklistItem => ({
+export type ChecklistGroup = {
+    id: string
+    taskId: string
+    title: string
+    position: number
+    createdAt: string
+    updatedAt?: string
+    items: ChecklistItem[]
+}
+
+// ---------------------------------------------------------------
+// Mappers
+// ---------------------------------------------------------------
+
+const mapItem = (item: ApiChecklistItem): ChecklistItem => ({
     id: String(item.id),
     taskId: String(item.task_id),
+    groupId: item.group_id != null ? String(item.group_id) : null,
     title: item.title,
     isCompleted: item.is_completed === 1,
     createdAt: new Date(item.created_at).toLocaleString('pt-BR'),
@@ -35,37 +71,82 @@ const mapApiItem = (item: ApiChecklistItem): ChecklistItem => ({
         : undefined,
 })
 
-type UpdateChecklistItemPayload = {
+const mapGroup = (group: ApiChecklistGroup): ChecklistGroup => ({
+    id: String(group.id),
+    taskId: String(group.task_id),
+    title: group.title,
+    position: group.position,
+    createdAt: new Date(group.created_at).toLocaleString('pt-BR'),
+    updatedAt: group.updated_at
+        ? new Date(group.updated_at).toLocaleString('pt-BR')
+        : undefined,
+    items: group.items.map(mapItem),
+})
+
+// ---------------------------------------------------------------
+// Payloads
+// ---------------------------------------------------------------
+
+type UpdateItemPayload = {
     title?: string
     is_completed?: boolean
 }
 
+// ---------------------------------------------------------------
+// API
+// ---------------------------------------------------------------
+
 export const checklistApi = {
-    async listItems(taskId: string): Promise<ChecklistItem[]> {
-        const items = await apiRequest<ApiChecklistItem[]>(
-            `/tasks/${taskId}/checklist`
+    // Grupos
+    async listGroups(taskId: string): Promise<ChecklistGroup[]> {
+        const groups = await apiRequest<ApiChecklistGroup[]>(
+            `/tasks/${taskId}/checklist/groups`
         )
-        return items.map(mapApiItem)
+        return groups.map(mapGroup)
     },
 
-    async createItem(taskId: string, title: string): Promise<ChecklistItem> {
-        const item = await apiRequest<ApiChecklistItem>(
-            `/tasks/${taskId}/checklist`,
+    async createGroup(taskId: string, title: string): Promise<ChecklistGroup> {
+        const group = await apiRequest<ApiChecklistGroup>(
+            `/tasks/${taskId}/checklist/groups`,
             { method: 'POST', body: { title } }
         )
-        return mapApiItem(item)
+        return mapGroup(group)
+    },
+
+    async updateGroup(taskId: string, groupId: string, title: string): Promise<ChecklistGroup> {
+        const group = await apiRequest<ApiChecklistGroup>(
+            `/tasks/${taskId}/checklist/groups/${groupId}`,
+            { method: 'PATCH', body: { title } }
+        )
+        return { ...mapGroup(group), items: [] }
+    },
+
+    async deleteGroup(taskId: string, groupId: string): Promise<void> {
+        await apiRequest<null>(
+            `/tasks/${taskId}/checklist/groups/${groupId}`,
+            { method: 'DELETE' }
+        )
+    },
+
+    // Itens
+    async createItem(taskId: string, groupId: string, title: string): Promise<ChecklistItem> {
+        const item = await apiRequest<ApiChecklistItem>(
+            `/tasks/${taskId}/checklist/groups/${groupId}/items`,
+            { method: 'POST', body: { title } }
+        )
+        return mapItem(item)
     },
 
     async updateItem(
         taskId: string,
         itemId: string,
-        data: UpdateChecklistItemPayload
+        data: UpdateItemPayload
     ): Promise<ChecklistItem> {
         const item = await apiRequest<ApiChecklistItem>(
             `/tasks/${taskId}/checklist/${itemId}`,
             { method: 'PATCH', body: data }
         )
-        return mapApiItem(item)
+        return mapItem(item)
     },
 
     async deleteItem(taskId: string, itemId: string): Promise<void> {

@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+@import './design-tokens.css';
 
 /* =========================
    Global base — Lista de Tarefas
@@ -1514,4 +1515,199 @@ a {
     .app-footer {
         display: none;
     }
+}
+
+/* =============================================================
+   Design System Global — melhorias de UX (v2.0.34)
+   Usa os tokens de design-tokens.css
+============================================================= */
+
+/* ---- Focus visible global ---- */
+
+:focus-visible {
+    outline: 2px solid var(--color-focus-border);
+    outline-offset: 2px;
+}
+
+/* ---- Inputs e textareas: foco com tokens ---- */
+
+input:not([type='checkbox']):not([type='radio']):not([type='range']):focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--color-focus-border) !important;
+    box-shadow: 0 0 0 3px var(--color-focus-ring) !important;
+}
+
+/* ---- Scrollbars globais discretas ---- */
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.16);
+    border-radius: var(--radius-full);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.26);
+}
+
+/* ---- Estados vazios (melhorado) ---- */
+
+.empty-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+}
+
+/* ---- Modal global (melhorado) ---- */
+
+.confirm-modal {
+    border: 1px solid var(--color-border);
+    transition: box-shadow var(--transition-base);
+}
+
+.confirm-modal input:focus {
+    outline: none;
+    border-color: var(--color-focus-border);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.confirm-modal-actions button {
+    transition:
+        background-color var(--transition-fast),
+        color var(--transition-fast),
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.confirm-modal-actions button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ---- Toast (melhorado) ---- */
+
+.toast-message {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* ---- Nav link — melhorado ---- */
+
+.nav-link {
+    box-shadow: var(--shadow-xs);
+    transition:
+        background-color var(--transition-base),
+        color var(--transition-base),
+        transform var(--transition-fast),
+        box-shadow var(--transition-base);
+}
+
+/* ---- Scrollbars dark mode ---- */
+
+[data-theme='dark'] * {
+    scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+[data-theme='dark'] *::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme='dark'] *::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+/* ---- Seleção de texto ---- */
+
+::selection {
+    background: rgba(64, 64, 64, 0.18);
+}
+
+[data-theme='dark'] ::selection {
+    background: rgba(225, 225, 225, 0.2);
+}
+
+/* ---- Modal dark mode ---- */
+
+[data-theme='dark'] .confirm-modal {
+    border-color: var(--color-border);
+}
+
+/* ---- Badge global ---- */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    background: var(--color-bg-badge);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+    line-height: var(--line-height-snug);
+}
+
+.badge--success {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+    border-color: transparent;
+}
+
+.badge--danger {
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+    border-color: transparent;
+}
+
+.badge--warning {
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+    border-color: transparent;
+}
+
+/* ---- Skeleton / loading genérico ---- */
+
+@keyframes skeleton-shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.06) 25%,
+        rgba(0, 0, 0, 0.10) 50%,
+        rgba(0, 0, 0, 0.06) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease infinite;
+    border-radius: var(--radius-sm);
+}
+
+[data-theme='dark'] .skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.05) 25%,
+        rgba(255, 255, 255, 0.09) 50%,
+        rgba(255, 255, 255, 0.05) 75%
+    );
+    background-size: 200% 100%;
 }

@@ -41,8 +41,16 @@ tasksRoutes.delete(
 
 tasksRoutes.get('/:id/history', asyncHandler(tasksController.listTaskHistory))
 
-tasksRoutes.get('/:taskId/checklist', asyncHandler(checklistController.listChecklist))
-tasksRoutes.post('/:taskId/checklist', asyncHandler(checklistController.createChecklistItem))
+// Checklist — grupos
+tasksRoutes.get('/:taskId/checklist/groups', asyncHandler(checklistController.listGroups))
+tasksRoutes.post('/:taskId/checklist/groups', asyncHandler(checklistController.createGroup))
+tasksRoutes.patch('/:taskId/checklist/groups/:groupId', asyncHandler(checklistController.updateGroup))
+tasksRoutes.delete('/:taskId/checklist/groups/:groupId', asyncHandler(checklistController.deleteGroup))
+
+// Checklist — itens por grupo
+tasksRoutes.post('/:taskId/checklist/groups/:groupId/items', asyncHandler(checklistController.createChecklistItem))
+
+// Checklist — itens individuais (update e delete mantêm rota legada)
 tasksRoutes.patch('/:taskId/checklist/:itemId', asyncHandler(checklistController.updateChecklistItem))
 tasksRoutes.delete('/:taskId/checklist/:itemId', asyncHandler(checklistController.deleteChecklistItem))
 

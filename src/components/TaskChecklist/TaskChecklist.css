@@ -1,201 +1,522 @@
 /* =========================
-   TaskChecklist
+   TaskChecklist — v2.0.34
+   Checklist multi-grupo estilo Trello
 ========================= */
 
 .task-checklist {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--cl-border, rgba(0, 0, 0, 0.08));
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.checklist-loading {
+/* ---- Loading ---- */
+
+.cl-loading {
     font-size: 0.78rem;
-    color: #888;
+    color: var(--cl-text-muted, #888);
     padding: 4px 0;
 }
 
-.checklist-progress {
-    font-size: 0.75rem;
-    color: #666;
-    margin: 0 0 8px;
+/* ---- Progresso geral ---- */
+
+.cl-progresso-geral {
+    font-size: 0.72rem;
+    color: var(--cl-text-muted, #777);
+    margin: 0;
     font-style: italic;
+    letter-spacing: 0.01em;
 }
 
-/* Lista de itens */
+/* ---- Grupos ---- */
 
-.checklist-list {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 8px;
+.cl-grupos {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 12px;
 }
 
-.checklist-item {
+.cl-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--cl-grupo-bg, rgba(0, 0, 0, 0.025));
+    border: 1px solid var(--cl-border, rgba(0, 0, 0, 0.07));
+}
+
+/* ---- Cabeçalho do grupo ---- */
+
+.cl-grupo-header {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.875rem;
-    min-height: 28px;
+    min-height: 24px;
 }
 
-/* Label com checkbox + texto */
+.cl-grupo-titulo {
+    flex: 1;
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--cl-titulo-color, #303030);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
-.checklist-item-label {
+.cl-grupo-progresso {
+    font-size: 0.7rem;
+    color: var(--cl-text-muted, #888);
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.cl-grupo-actions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    flex-shrink: 0;
+}
+
+.cl-grupo:hover .cl-grupo-actions {
+    opacity: 1;
+}
+
+/* ---- Edição de grupo ---- */
+
+.cl-grupo-edit {
     display: flex;
     align-items: center;
     gap: 6px;
     flex: 1;
+    flex-wrap: wrap;
+}
+
+.cl-grupo-edit input {
+    flex: 1;
+    min-width: 80px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border: 1px solid var(--cl-input-border, #bbb);
+    border-radius: 6px;
+    background: var(--cl-input-bg, #fff);
+    color: var(--cl-input-color, #222);
+}
+
+.cl-grupo-edit input:focus {
+    outline: none;
+    border-color: var(--cl-focus-border, #888);
+    box-shadow: 0 0 0 2px var(--cl-focus-ring, rgba(0, 0, 0, 0.07));
+}
+
+/* ---- Lista de itens ---- */
+
+.cl-lista {
+    list-style: none;
+    padding: 0;
+    margin: 2px 0 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+/* ---- Item ---- */
+
+.cl-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+    font-size: 0.875rem;
+    min-height: 26px;
+    border-radius: 6px;
+    padding: 2px 4px;
+    transition: background-color 0.12s ease;
+}
+
+.cl-item:hover {
+    background: var(--cl-item-hover, rgba(0, 0, 0, 0.03));
+}
+
+/* Label checkbox + texto */
+
+.cl-item-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    flex: 1;
     cursor: pointer;
     user-select: none;
+    padding-top: 1px;
 }
 
-.checklist-item-label input[type='checkbox'] {
-    width: 15px;
-    height: 15px;
+.cl-item-label input[type='checkbox'] {
+    width: 14px;
+    height: 14px;
     flex-shrink: 0;
     cursor: pointer;
+    margin-top: 2px;
 }
 
-.checklist-item-label input[type='checkbox']:disabled {
+.cl-item-label input[type='checkbox']:disabled {
     cursor: default;
-    opacity: 0.65;
+    opacity: 0.6;
 }
 
-.checklist-item.is-completed .checklist-item-label span {
+.cl-item-text {
+    line-height: 1.4;
+}
+
+/* Item concluído */
+
+.cl-item--done .cl-item-text {
     text-decoration: line-through;
-    opacity: 0.5;
+    opacity: 0.45;
 }
 
-/* Ações de editar/excluir */
+/* Data de conclusão — bem discreta */
 
-.checklist-item-actions {
-    display: flex;
-    gap: 2px;
-    opacity: 0;
-    transition: opacity 0.15s;
+.cl-item-completed-at {
+    font-size: 0.68rem;
+    color: var(--cl-text-muted, #999);
+    white-space: nowrap;
     flex-shrink: 0;
+    align-self: center;
+    line-height: 1;
+    margin-left: 2px;
 }
 
-.checklist-item:hover .checklist-item-actions {
+/* Ações de editar/excluir item */
+
+.cl-item-actions {
+    display: flex;
+    gap: 1px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    flex-shrink: 0;
+    align-self: center;
+}
+
+.cl-item:hover .cl-item-actions {
     opacity: 1;
 }
 
-.checklist-item-actions button {
+/* ---- Edição de item ---- */
+
+.cl-item--editing {
+    background: var(--cl-item-hover, rgba(0, 0, 0, 0.03));
+    align-items: center;
+}
+
+.cl-item-edit {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+}
+
+.cl-item-edit input {
+    font-size: 0.875rem;
+    padding: 4px 8px;
+    border: 1px solid var(--cl-input-border, #bbb);
+    border-radius: 6px;
+    background: var(--cl-input-bg, #fff);
+    color: var(--cl-input-color, #222);
+    width: 100%;
+}
+
+.cl-item-edit input:focus {
+    outline: none;
+    border-color: var(--cl-focus-border, #888);
+    box-shadow: 0 0 0 2px var(--cl-focus-ring, rgba(0, 0, 0, 0.07));
+}
+
+.cl-item-edit-actions {
+    display: flex;
+    gap: 5px;
+}
+
+/* ---- Adicionar item ---- */
+
+.cl-add-item {
+    display: flex;
+    gap: 6px;
+    margin-top: 2px;
+}
+
+.cl-add-item input {
+    flex: 1;
+    font-size: 0.82rem;
+    padding: 4px 8px;
+    border: 1px solid var(--cl-input-border, #ccc);
+    border-radius: 6px;
+    background: var(--cl-input-bg, rgba(255, 255, 255, 0.75));
+    color: var(--cl-input-color, #333);
+}
+
+.cl-add-item input:focus {
+    outline: none;
+    border-color: var(--cl-focus-border, #888);
+    box-shadow: 0 0 0 2px var(--cl-focus-ring, rgba(0, 0, 0, 0.07));
+    background: var(--cl-input-bg-focus, #fff);
+}
+
+/* ---- Adicionar lista ---- */
+
+.cl-add-grupo {
+    display: flex;
+    gap: 6px;
+    padding-top: 4px;
+    border-top: 1px dashed var(--cl-border-dashed, rgba(0, 0, 0, 0.1));
+}
+
+.cl-add-grupo input {
+    flex: 1;
+    font-size: 0.82rem;
+    padding: 5px 10px;
+    border: 1px solid var(--cl-input-border, #ccc);
+    border-radius: 6px;
+    background: var(--cl-input-bg, rgba(255, 255, 255, 0.75));
+    color: var(--cl-input-color, #333);
+}
+
+.cl-add-grupo input:focus {
+    outline: none;
+    border-color: var(--cl-focus-border, #888);
+    box-shadow: 0 0 0 2px var(--cl-focus-ring, rgba(0, 0, 0, 0.07));
+    background: var(--cl-input-bg-focus, #fff);
+}
+
+/* ---- Botões ---- */
+
+.cl-btn {
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--cl-btn-border, rgba(0, 0, 0, 0.15));
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.1s ease;
+    line-height: 1.4;
+}
+
+.cl-btn--save {
+    background: var(--cl-btn-save-bg, #404040);
+    color: var(--cl-btn-save-color, #fff);
+    border-color: transparent;
+}
+
+.cl-btn--save:hover {
+    background: var(--cl-btn-save-hover, #222);
+    transform: translateY(-1px);
+}
+
+.cl-btn--cancel {
+    background: var(--cl-btn-cancel-bg, #f0f0f0);
+    color: var(--cl-btn-cancel-color, #555);
+}
+
+.cl-btn--cancel:hover {
+    background: var(--cl-btn-cancel-hover, #e0e0e0);
+}
+
+.cl-btn--add {
+    background: var(--cl-btn-add-bg, rgba(255, 255, 255, 0.8));
+    color: var(--cl-btn-add-color, #404040);
+    font-size: 0.75rem;
+}
+
+.cl-btn--add:hover:not(:disabled) {
+    background: var(--cl-btn-add-hover, rgba(255, 255, 255, 0.95));
+    transform: translateY(-1px);
+}
+
+.cl-btn--add:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.cl-btn--add-grupo {
+    background: var(--cl-btn-add-grupo-bg, rgba(64, 64, 64, 0.08));
+    color: var(--cl-btn-add-grupo-color, #404040);
+    font-size: 0.75rem;
+    border-color: transparent;
+}
+
+.cl-btn--add-grupo:hover:not(:disabled) {
+    background: var(--cl-btn-add-grupo-hover, rgba(64, 64, 64, 0.14));
+    transform: translateY(-1px);
+}
+
+.cl-btn--add-grupo:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ---- Botões ícone (editar/excluir) ---- */
+
+.cl-icon-btn {
     background: none;
     border: none;
     cursor: pointer;
     padding: 2px 5px;
-    font-size: 0.78rem;
-    color: #888;
-    border-radius: 3px;
+    font-size: 0.75rem;
+    color: var(--cl-icon-color, #999);
+    border-radius: 4px;
     line-height: 1;
+    transition:
+        background-color 0.12s ease,
+        color 0.12s ease;
 }
 
-.checklist-item-actions button:hover {
-    background-color: rgba(0, 0, 0, 0.07);
-    color: #333;
+.cl-icon-btn:hover {
+    background: var(--cl-icon-hover-bg, rgba(0, 0, 0, 0.07));
+    color: var(--cl-icon-hover-color, #333);
 }
 
-/* Edição inline de item */
-
-.checklist-item-edit {
-    display: flex;
-    gap: 6px;
-    flex: 1;
-    align-items: center;
-    flex-wrap: wrap;
+.cl-icon-btn--danger:hover {
+    background: var(--cl-icon-danger-bg, rgba(129, 1, 1, 0.1));
+    color: var(--cl-icon-danger-color, #810101);
 }
 
-.checklist-item-edit input {
-    flex: 1;
-    min-width: 80px;
-    font-size: 0.875rem;
-    padding: 3px 7px;
-    border: 1px solid #bbb;
-    border-radius: 4px;
-    background-color: #fff;
-    color: #222;
-}
-
-.checklist-item-edit input:focus {
-    outline: none;
-    border-color: #888;
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.06);
-}
-
-.checklist-item-edit button {
-    font-size: 0.78rem;
-    padding: 3px 9px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    background: #f5f5f5;
-    color: #333;
-    white-space: nowrap;
-}
-
-.checklist-item-edit button:hover {
-    background-color: #e8e8e8;
-}
-
-/* Adicionar novo item */
-
-.checklist-add {
-    display: flex;
-    gap: 6px;
-    margin-top: 4px;
-}
-
-.checklist-add input {
-    flex: 1;
-    font-size: 0.875rem;
-    padding: 4px 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #fff;
-    color: #222;
-}
-
-.checklist-add input:focus {
-    outline: none;
-    border-color: #888;
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.06);
-}
-
-.checklist-add button {
-    font-size: 0.8rem;
-    padding: 4px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    background: #f5f5f5;
-    color: #333;
-    white-space: nowrap;
-}
-
-.checklist-add button:hover:not(:disabled) {
-    background-color: #e8e8e8;
-}
-
-.checklist-add button:disabled {
-    opacity: 0.45;
-    cursor: default;
-}
-
-/* Mobile */
+/* ---- Mobile ---- */
 
 @media (max-width: 480px) {
-    .checklist-item-actions {
+    .cl-grupo-actions,
+    .cl-item-actions {
         opacity: 1;
     }
 
-    .checklist-item-edit {
-        gap: 4px;
+    .cl-add-item,
+    .cl-add-grupo {
+        flex-wrap: wrap;
     }
 
-    .checklist-add {
-        gap: 4px;
+    .cl-add-item input,
+    .cl-add-grupo input {
+        min-width: 0;
     }
+
+    .cl-item-completed-at {
+        display: none;
+    }
+}
+
+/* ---- Dark mode ---- */
+
+[data-theme='dark'] .cl-grupo {
+    background: var(--cl-grupo-bg, rgba(255, 255, 255, 0.04));
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='dark'] .cl-grupo-titulo {
+    color: #c8c8c8;
+}
+
+[data-theme='dark'] .cl-grupo-progresso {
+    color: rgba(200, 200, 200, 0.5);
+}
+
+[data-theme='dark'] .cl-progresso-geral {
+    color: rgba(200, 200, 200, 0.5);
+}
+
+[data-theme='dark'] .cl-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme='dark'] .cl-item-completed-at {
+    color: rgba(200, 200, 200, 0.35);
+}
+
+[data-theme='dark'] .cl-grupo-edit input,
+[data-theme='dark'] .cl-item-edit input,
+[data-theme='dark'] .cl-add-item input,
+[data-theme='dark'] .cl-add-grupo input {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #d0d0d0;
+}
+
+[data-theme='dark'] .cl-grupo-edit input:focus,
+[data-theme='dark'] .cl-item-edit input:focus,
+[data-theme='dark'] .cl-add-item input:focus,
+[data-theme='dark'] .cl-add-grupo input:focus {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.07);
+}
+
+[data-theme='dark'] .cl-btn--save {
+    background: rgba(225, 225, 225, 0.9);
+    color: #111;
+}
+
+[data-theme='dark'] .cl-btn--save:hover {
+    background: rgba(255, 255, 255, 1);
+}
+
+[data-theme='dark'] .cl-btn--cancel {
+    background: rgba(255, 255, 255, 0.08);
+    color: #c0c0c0;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .cl-btn--cancel:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme='dark'] .cl-btn--add {
+    background: rgba(255, 255, 255, 0.07);
+    color: #c0c0c0;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .cl-btn--add:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme='dark'] .cl-btn--add-grupo {
+    background: rgba(255, 255, 255, 0.06);
+    color: #c0c0c0;
+}
+
+[data-theme='dark'] .cl-btn--add-grupo:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .cl-icon-btn {
+    color: rgba(200, 200, 200, 0.4);
+}
+
+[data-theme='dark'] .cl-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #d0d0d0;
+}
+
+[data-theme='dark'] .cl-icon-btn--danger:hover {
+    background: rgba(200, 50, 50, 0.15);
+    color: #e07070;
+}
+
+[data-theme='dark'] .cl-add-grupo {
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='dark'] .cl-loading {
+    color: rgba(200, 200, 200, 0.5);
 }

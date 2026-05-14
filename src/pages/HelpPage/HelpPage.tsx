@@ -60,6 +60,11 @@ const helpItems = [
             'Informe o título, uma descrição opcional e escolha a prioridade (baixa, média ou alta). Tarefas pendentes podem ser editadas a qualquer momento.',
     },
     {
+        title: 'Checklist com múltiplas listas',
+        description:
+            'Cada tarefa pode ter várias listas de checklist independentes, estilo Trello — por exemplo "Desenvolvimento", "Testes" ou "Suporte". Dentro de cada lista é possível criar, marcar como concluído, editar e excluir itens. Ao marcar um item como concluído, a data e hora de conclusão são registradas. O progresso é exibido de forma discreta por lista e no total da tarefa. A checklist fica somente leitura no Histórico.',
+    },
+    {
         title: 'Concluir e filtrar tarefas',
         description:
             'Marque uma tarefa como concluída para enviá-la ao histórico. Use os filtros disponíveis para encontrar tarefas por título, prioridade ou outros critérios.',
