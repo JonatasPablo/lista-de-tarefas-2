@@ -12,6 +12,16 @@ const getApiUrl = () => {
 
 export const API_URL = getApiUrl()
 
+export class ApiError extends Error {
+    readonly status: number
+
+    constructor(status: number, message: string) {
+        super(message)
+        this.name = 'ApiError'
+        this.status = status
+    }
+}
+
 type RequestOptions = {
     method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
     body?: unknown
@@ -50,7 +60,7 @@ export const apiRequest = async <ResponseData>(
             }
         }
 
-        throw new Error(errorMessage)
+        throw new ApiError(response.status, errorMessage)
     }
 
     if (response.status === 204) {

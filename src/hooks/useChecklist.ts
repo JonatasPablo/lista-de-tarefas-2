@@ -1,27 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
 import { checklistApi, type ChecklistGroup, type ChecklistItem } from '../services/checklistApi'
-
-// ---------------------------------------------------------------
-// Estado de edição de grupo
-// ---------------------------------------------------------------
+import { sincronizacao } from './sincronizacao'
 
 type EstadoEdicaoGrupo = {
     id: string
     titulo: string
 }
 
-// ---------------------------------------------------------------
-// Estado de edição de item
-// ---------------------------------------------------------------
-
 type EstadoEdicaoItem = {
     id: string
     titulo: string
 }
-
-// ---------------------------------------------------------------
-// Hook principal
-// ---------------------------------------------------------------
 
 export const useChecklist = (
     taskId: string,
@@ -31,23 +20,12 @@ export const useChecklist = (
     const [grupos, setGrupos] = useState<ChecklistGroup[]>([])
     const [carregando, setCarregando] = useState(false)
 
-    // Adição de novo grupo
     const [tituloNovoGrupo, setTituloNovoGrupo] = useState('')
-
-    // Edição de grupo
     const [edicaoGrupo, setEdicaoGrupo] = useState<EstadoEdicaoGrupo | null>(null)
-
-    // Adição de item por grupo: { [groupId]: string }
     const [titulosNovoItem, setTitulosNovoItem] = useState<Record<string, string>>({})
-
-    // Edição de item
     const [edicaoItem, setEdicaoItem] = useState<EstadoEdicaoItem | null>(null)
 
     const inputItemRefs = useRef<Record<string, HTMLInputElement | null>>({})
-
-    // ---------------------------------------------------------------
-    // Carregamento
-    // ---------------------------------------------------------------
 
     useEffect(() => {
         if (!expanded) return
@@ -88,12 +66,16 @@ export const useChecklist = (
 
         if (!titulo || isTaskCompleted) return
 
+        sincronizacao.pausar()
+
         try {
             const grupo = await checklistApi.createGroup(taskId, titulo)
             setGrupos((prev) => [...prev, grupo])
             setTituloNovoGrupo('')
         } catch {
             // silente
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
@@ -112,6 +94,8 @@ export const useChecklist = (
 
         if (!titulo) return
 
+        sincronizacao.pausar()
+
         try {
             const atualizado = await checklistApi.updateGroup(taskId, edicaoGrupo.id, titulo)
             setGrupos((prev) =>
@@ -124,17 +108,23 @@ export const useChecklist = (
             setEdicaoGrupo(null)
         } catch {
             // silente
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
     const excluirGrupo = async (grupoId: string) => {
         if (isTaskCompleted) return
 
+        sincronizacao.pausar()
+
         try {
             await checklistApi.deleteGroup(taskId, grupoId)
             setGrupos((prev) => prev.filter((g) => g.id !== grupoId))
         } catch {
             // silente
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
@@ -153,6 +143,8 @@ export const useChecklist = (
 
         if (!titulo || isTaskCompleted) return
 
+        sincronizacao.pausar()
+
         try {
             const item = await checklistApi.createItem(taskId, grupoId, titulo)
 
@@ -166,12 +158,13 @@ export const useChecklist = (
 
             setTituloNovoItem(grupoId, '')
 
-            // Manter foco no input do grupo após adicionar
             setTimeout(() => {
                 inputItemRefs.current[grupoId]?.focus()
             }, 0)
         } catch {
             // silente
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
@@ -182,6 +175,8 @@ export const useChecklist = (
         const item = grupo?.items.find((i) => i.id === itemId)
 
         if (!item) return
+
+        sincronizacao.pausar()
 
         try {
             const atualizado = await checklistApi.updateItem(taskId, itemId, {
@@ -202,6 +197,8 @@ export const useChecklist = (
             )
         } catch {
             // silente
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
@@ -219,6 +216,8 @@ export const useChecklist = (
         const titulo = edicaoItem.titulo.trim()
 
         if (!titulo) return
+
+        sincronizacao.pausar()
 
         try {
             const atualizado = await checklistApi.updateItem(taskId, edicaoItem.id, {
@@ -241,11 +240,15 @@ export const useChecklist = (
             setEdicaoItem(null)
         } catch {
             // silente
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
     const excluirItem = async (grupoId: string, itemId: string) => {
         if (isTaskCompleted) return
+
+        sincronizacao.pausar()
 
         try {
             await checklistApi.deleteItem(taskId, itemId)
@@ -259,6 +262,8 @@ export const useChecklist = (
             )
         } catch {
             // silente
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
@@ -279,12 +284,10 @@ export const useChecklist = (
         grupos,
         carregando,
 
-        // Novo grupo
         tituloNovoGrupo,
         setTituloNovoGrupo,
         adicionarGrupo,
 
-        // Edição de grupo
         edicaoGrupo,
         setEdicaoGrupo,
         iniciarEdicaoGrupo,
@@ -292,13 +295,11 @@ export const useChecklist = (
         salvarEdicaoGrupo,
         excluirGrupo,
 
-        // Novo item
         getTituloNovoItem,
         setTituloNovoItem,
         adicionarItem,
         inputItemRefs,
 
-        // Edição de item
         edicaoItem,
         setEdicaoItem,
         iniciarEdicaoItem,
@@ -306,10 +307,8 @@ export const useChecklist = (
         salvarEdicaoItem,
         excluirItem,
 
-        // Alternância de item
         alternarItem,
 
-        // Progresso geral
         progressoGeral,
     }
 }

@@ -6,6 +6,7 @@ import {
     buildFileNameWithOriginalExtension,
     getFileNameWithoutExtension,
 } from '../utils/file'
+import { sincronizacao } from './sincronizacao'
 
 type ShowToast = (type: ToastType, message: string) => void
 type Prompt = (options: {
@@ -33,17 +34,19 @@ export const useTaskFiles = ({
         const taskToUpdate = tasks.find((task) => task.id === taskId)
 
         if (!taskToUpdate) {
-            showToast('error', 'Tarefa nao encontrada.')
+            showToast('error', 'Tarefa não encontrada.')
             return
         }
 
         if (taskToUpdate.completed) {
             showToast(
                 'warning',
-                'Nao e possivel anexar arquivo em uma tarefa concluida.'
+                'Não é possível anexar arquivo em uma tarefa concluída.'
             )
             return
         }
+
+        sincronizacao.pausar()
 
         try {
             const uploadedFiles = await Promise.all(
@@ -75,9 +78,11 @@ export const useTaskFiles = ({
             const message =
                 error instanceof Error
                     ? error.message
-                    : 'Nao foi possivel anexar o arquivo.'
+                    : 'Não foi possível anexar o arquivo.'
 
             showToast('error', message)
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
@@ -89,17 +94,19 @@ export const useTaskFiles = ({
         const taskToUpdate = tasks.find((task) => task.id === taskId)
 
         if (!taskToUpdate) {
-            showToast('error', 'Tarefa nao encontrada.')
+            showToast('error', 'Tarefa não encontrada.')
             return
         }
 
         if (taskToUpdate.completed) {
             showToast(
                 'warning',
-                'Nao e possivel renomear arquivo de uma tarefa concluida.'
+                'Não é possível renomear arquivo de uma tarefa concluída.'
             )
             return
         }
+
+        sincronizacao.pausar()
 
         try {
             const renamedFile = await taskFilesApi.renameTaskFile(
@@ -130,9 +137,11 @@ export const useTaskFiles = ({
             const message =
                 error instanceof Error
                     ? error.message
-                    : 'Nao foi possivel renomear o arquivo.'
+                    : 'Não foi possível renomear o arquivo.'
 
             showToast('error', message)
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
@@ -140,17 +149,19 @@ export const useTaskFiles = ({
         const taskToUpdate = tasks.find((task) => task.id === taskId)
 
         if (!taskToUpdate) {
-            showToast('error', 'Tarefa nao encontrada.')
+            showToast('error', 'Tarefa não encontrada.')
             return
         }
 
         if (taskToUpdate.completed) {
             showToast(
                 'warning',
-                'Nao e possivel deletar arquivo de uma tarefa concluida.'
+                'Não é possível deletar arquivo de uma tarefa concluída.'
             )
             return
         }
+
+        sincronizacao.pausar()
 
         try {
             await taskFilesApi.deleteTaskFile(taskId, fileId)
@@ -168,16 +179,18 @@ export const useTaskFiles = ({
                 })
             )
 
-            showToast('success', 'Arquivo excluido com sucesso.')
+            showToast('success', 'Arquivo excluído com sucesso.')
         } catch (error) {
             console.error('Erro ao excluir arquivo:', error)
 
             const message =
                 error instanceof Error
                     ? error.message
-                    : 'Nao foi possivel excluir o arquivo.'
+                    : 'Não foi possível excluir o arquivo.'
 
             showToast('error', message)
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
@@ -189,7 +202,7 @@ export const useTaskFiles = ({
         const newName = await prompt({
             title: 'Renomear arquivo',
             message:
-                'Digite o novo nome do arquivo. A extensao original sera mantida automaticamente.',
+                'Digite o novo nome do arquivo. A extensão original será mantida automaticamente.',
             initialValue: currentNameWithoutExtension,
             confirmText: 'Renomear',
             cancelText: 'Cancelar',

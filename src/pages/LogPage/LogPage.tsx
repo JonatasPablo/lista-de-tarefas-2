@@ -259,6 +259,8 @@ export function LogPage() {
     const [endDate, setEndDate] = useState(todayDate)
 
     const isMountedRef = useRef(true)
+    const refreshEmAndamentoRef = useRef(false)
+    const backoffAteRef = useRef(0)
 
     useEffect(() => {
         isMountedRef.current = true
@@ -310,6 +312,11 @@ export function LogPage() {
     }, [])
 
     const refreshHistory = useCallback(async () => {
+        if (refreshEmAndamentoRef.current) return
+        if (Date.now() < backoffAteRef.current) return
+
+        refreshEmAndamentoRef.current = true
+
         try {
             const response = await fetch(`${API_URL}/tasks/history`, {
                 method: 'GET',
@@ -317,7 +324,12 @@ export function LogPage() {
                 cache: 'no-store',
             })
 
-            if (!response.ok) return
+            if (!response.ok) {
+                if (response.status === 429) {
+                    backoffAteRef.current = Date.now() + 15000
+                }
+                return
+            }
 
             const data = (await response.json()) as TaskHistory[]
 
@@ -326,6 +338,8 @@ export function LogPage() {
             }
         } catch {
             // silencioso no auto-refresh
+        } finally {
+            refreshEmAndamentoRef.current = false
         }
     }, [])
 

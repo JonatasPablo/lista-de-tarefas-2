@@ -6,45 +6,55 @@ interface TaskFormProps {
         title: string,
         description: string,
         priority: TaskPriority
-    ) => void
+    ) => Promise<boolean> | void
 }
 
 export const TaskForm = ({ onAddTask }: TaskFormProps) => {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [priority, setPriority] = useState<TaskPriority>('alta')
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const normalizedTitle = title.trim()
     const normalizedDescription = description.trim()
-    const canSubmit = normalizedTitle.length > 0
+    const canSubmit = normalizedTitle.length > 0 && !isSubmitting
 
-    const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         if (!canSubmit) return
 
-        onAddTask(normalizedTitle, normalizedDescription, priority)
+        setIsSubmitting(true)
 
-        setTitle('')
-        setDescription('')
-        setPriority('alta')
+        try {
+            const sucesso = await onAddTask(normalizedTitle, normalizedDescription, priority)
+
+            if (sucesso !== false) {
+                setTitle('')
+                setDescription('')
+                setPriority('alta')
+            }
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     return (
         <form className="task-form" onSubmit={handleSubmit}>
-            <label htmlFor="task-form-title">Titulo da tarefa</label>
+            <label htmlFor="task-form-title">Título da tarefa</label>
 
             <input
                 id="task-form-title"
                 type="text"
-                placeholder="Ex: Ajustar relatorio de vendas"
+                placeholder="Ex: Ajustar relatório de vendas"
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
                 maxLength={120}
                 autoComplete="off"
+                disabled={isSubmitting}
             />
 
-            <label htmlFor="task-form-description">Descricao</label>
+            <label htmlFor="task-form-description">Descrição</label>
 
             <textarea
                 id="task-form-description"
@@ -53,6 +63,7 @@ export const TaskForm = ({ onAddTask }: TaskFormProps) => {
                 onChange={(event) => setDescription(event.target.value)}
                 rows={3}
                 maxLength={600}
+                disabled={isSubmitting}
             />
 
             <label htmlFor="task-form-priority">Prioridade</label>
@@ -63,14 +74,15 @@ export const TaskForm = ({ onAddTask }: TaskFormProps) => {
                 onChange={(event) =>
                     setPriority(event.target.value as TaskPriority)
                 }
+                disabled={isSubmitting}
             >
                 <option value="alta">Alta prioridade</option>
-                <option value="media">Media prioridade</option>
+                <option value="media">Média prioridade</option>
                 <option value="baixa">Baixa prioridade</option>
             </select>
 
             <button type="submit" disabled={!canSubmit}>
-                Adicionar
+                {isSubmitting ? 'Adicionando...' : 'Adicionar'}
             </button>
         </form>
     )

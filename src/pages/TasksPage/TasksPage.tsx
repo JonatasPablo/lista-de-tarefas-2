@@ -22,7 +22,7 @@ interface TasksPageProps {
         title: string,
         description: string,
         priority: TaskPriority
-    ) => void
+    ) => Promise<boolean> | void
     onToggleTask: (taskId: string) => void | Promise<void>
     onDeleteTask: (taskId: string) => void | Promise<void>
     onUpdateTask: (
@@ -94,13 +94,18 @@ export const TasksPage = ({
         setIsTaskFormVisible((currentValue) => !currentValue)
     }
 
-    const handleAddTask = (
+    const handleAddTask = async (
         title: string,
         description: string,
         priority: TaskPriority
-    ) => {
-        onAddTask(title, description, priority)
-        setIsTaskFormVisible(false)
+    ): Promise<boolean> => {
+        const sucesso = await onAddTask(title, description, priority)
+
+        if (sucesso !== false) {
+            setIsTaskFormVisible(false)
+        }
+
+        return sucesso !== false
     }
 
     const handleClearFilters = () => {

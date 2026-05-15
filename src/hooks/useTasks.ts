@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ToastType } from '../components/Toast/Toast'
 import { tasksApi } from '../services/tasksApi'
+import { ApiError } from '../services/api'
 import type { AuthUser } from '../services/authApi'
 import type { Task, TaskPriority } from '../types/task'
 import { useSyncAutoRefresh } from './useSyncAutoRefresh'
+import { sincronizacao } from './sincronizacao'
 
 const INTERVALO_REFRESH_MS = 1500
-const DEBOUNCE_APOS_MUTACAO_MS = 1500
 
 type ShowToast = (type: ToastType, message: string) => void
 type Confirm = (options: {
@@ -34,8 +35,6 @@ export const useTasks = ({
     const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
     const [isLoadingTasks, setIsLoadingTasks] = useState(false)
 
-    const ultimaMutacaoRef = useRef<number>(0)
-    const refreshEmAndamentoRef = useRef(false)
     const sessaoValidaRef = useRef(true)
     const onSessaoExpiradaRef = useRef(onSessaoExpirada)
 
@@ -55,23 +54,31 @@ export const useTasks = ({
 
     const refreshTasks = useCallback(async () => {
         if (!user || !sessaoValidaRef.current) return
-        if (Date.now() - ultimaMutacaoRef.current < DEBOUNCE_APOS_MUTACAO_MS) return
-        if (refreshEmAndamentoRef.current) return
+        if (!sincronizacao.podeExecutarRefresh()) return
 
-        refreshEmAndamentoRef.current = true
+        sincronizacao.marcarInicioRefresh()
 
         try {
             const apiTasks = await tasksApi.listTasks()
             setTasks(apiTasks)
         } catch (error) {
-            if (error instanceof Error && error.message.includes('401')) {
+            if (error instanceof ApiError) {
+                if (error.status === 401) {
+                    sessaoValidaRef.current = false
+                    onSessaoExpiradaRef.current?.()
+                    return
+                }
+                if (error.status === 429) {
+                    sincronizacao.aplicarBackoff()
+                }
+            } else if (error instanceof Error && error.message.includes('401')) {
                 sessaoValidaRef.current = false
                 onSessaoExpiradaRef.current?.()
                 return
             }
             console.error('Erro ao sincronizar tarefas:', error)
         } finally {
-            refreshEmAndamentoRef.current = false
+            sincronizacao.marcarFimRefresh()
         }
     }, [user])
 
@@ -85,8 +92,8 @@ export const useTasks = ({
         title: string,
         description: string,
         priority: TaskPriority
-    ) => {
-        ultimaMutacaoRef.current = Date.now()
+    ): Promise<boolean> => {
+        sincronizacao.pausar()
 
         try {
             const newTask = await tasksApi.createTask({
@@ -97,9 +104,17 @@ export const useTasks = ({
 
             setTasks((currentTasks) => [newTask, ...currentTasks])
             showToast('success', 'Tarefa criada com sucesso.')
+            return true
         } catch (error) {
             console.error('Erro ao criar tarefa:', error)
-            showToast('error', 'Nao foi possivel criar a tarefa.')
+            const msg =
+                error instanceof Error
+                    ? error.message
+                    : 'Não foi possível criar a tarefa.'
+            showToast('error', msg)
+            return false
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
@@ -107,7 +122,7 @@ export const useTasks = ({
         const taskToToggle = tasks.find((task) => task.id === taskId)
 
         if (!taskToToggle) {
-            showToast('error', 'Tarefa nao encontrada.')
+            showToast('error', 'Tarefa não encontrada.')
             return
         }
 
@@ -115,7 +130,7 @@ export const useTasks = ({
             const confirmComplete = await confirm({
                 title: 'Concluir tarefa',
                 message:
-                    'Deseja concluir esta tarefa? Ela sera enviada para o historico de concluidas e ficara bloqueada para edicao.',
+                    'Deseja concluir esta tarefa? Ela será enviada para o histórico de concluídas e ficará bloqueada para edição.',
                 confirmText: 'Concluir',
                 cancelText: 'Cancelar',
             })
@@ -125,7 +140,7 @@ export const useTasks = ({
             }
         }
 
-        ultimaMutacaoRef.current = Date.now()
+        sincronizacao.pausar()
 
         try {
             const updatedTask = await tasksApi.toggleTask(taskId)
@@ -149,14 +164,16 @@ export const useTasks = ({
                 taskToToggle.completed ? 'info' : 'success',
                 taskToToggle.completed
                     ? 'Tarefa reaberta com sucesso.'
-                    : 'Tarefa concluida com sucesso.'
+                    : 'Tarefa concluída com sucesso.'
             )
         } catch (error) {
             console.error('Erro ao alterar status da tarefa:', error)
             showToast(
                 'error',
-                'Nao foi possivel alterar o status da tarefa.'
+                'Não foi possível alterar o status da tarefa.'
             )
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
@@ -169,16 +186,16 @@ export const useTasks = ({
         const taskToUpdate = tasks.find((task) => task.id === taskId)
 
         if (!taskToUpdate) {
-            showToast('error', 'Tarefa nao encontrada.')
+            showToast('error', 'Tarefa não encontrada.')
             return
         }
 
         if (taskToUpdate.completed) {
-            showToast('warning', 'Nao e possivel editar uma tarefa concluida.')
+            showToast('warning', 'Não é possível editar uma tarefa concluída.')
             return
         }
 
-        ultimaMutacaoRef.current = Date.now()
+        sincronizacao.pausar()
 
         try {
             const updatedTask = await tasksApi.updateTask(taskId, {
@@ -201,7 +218,9 @@ export const useTasks = ({
             showToast('success', 'Tarefa editada com sucesso.')
         } catch (error) {
             console.error('Erro ao editar tarefa:', error)
-            showToast('error', 'Nao foi possivel editar a tarefa.')
+            showToast('error', 'Não foi possível editar a tarefa.')
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
@@ -209,13 +228,13 @@ export const useTasks = ({
         const taskToDelete = tasks.find((task) => task.id === taskId)
 
         if (!taskToDelete) {
-            showToast('error', 'Tarefa nao encontrada.')
+            showToast('error', 'Tarefa não encontrada.')
             return
         }
 
         const confirmDelete = await confirm({
             title: 'Excluir tarefa',
-            message: `Tem certeza que deseja excluir a tarefa "${taskToDelete.title}"? Essa acao nao podera ser desfeita.`,
+            message: `Tem certeza que deseja excluir a tarefa "${taskToDelete.title}"? Essa ação não poderá ser desfeita.`,
             confirmText: 'Excluir',
             cancelText: 'Cancelar',
         })
@@ -224,7 +243,7 @@ export const useTasks = ({
             return
         }
 
-        ultimaMutacaoRef.current = Date.now()
+        sincronizacao.pausar()
 
         try {
             await tasksApi.deleteTask(taskId)
@@ -237,10 +256,12 @@ export const useTasks = ({
                 currentSelectedIds.filter((id) => id !== taskId)
             )
 
-            showToast('success', 'Tarefa excluida com sucesso.')
+            showToast('success', 'Tarefa excluída com sucesso.')
         } catch (error) {
             console.error('Erro ao excluir tarefa:', error)
-            showToast('error', 'Nao foi possivel excluir a tarefa.')
+            showToast('error', 'Não foi possível excluir a tarefa.')
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
@@ -257,7 +278,7 @@ export const useTasks = ({
 
         if (!confirmed) return
 
-        ultimaMutacaoRef.current = Date.now()
+        sincronizacao.pausar()
 
         try {
             await tasksApi.bulkComplete(visibleSelectedIds)
@@ -282,6 +303,8 @@ export const useTasks = ({
                 'error',
                 'Não foi possível concluir as tarefas selecionadas.'
             )
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
@@ -299,7 +322,7 @@ export const useTasks = ({
 
         if (!confirmed) return
 
-        ultimaMutacaoRef.current = Date.now()
+        sincronizacao.pausar()
 
         try {
             await tasksApi.bulkDelete(visibleSelectedIds)
@@ -318,6 +341,8 @@ export const useTasks = ({
                 'error',
                 'Não foi possível excluir as tarefas selecionadas.'
             )
+        } finally {
+            sincronizacao.liberar()
         }
     }
 
@@ -361,7 +386,7 @@ export const useTasks = ({
                 if (isMounted) {
                     showToast(
                         'error',
-                        'Nao foi possivel carregar as tarefas do backend.'
+                        'Não foi possível carregar as tarefas do backend.'
                     )
                 }
             } finally {
