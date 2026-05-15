@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { API_URL } from '../../services/api'
 import { useSyncAutoRefresh } from '../../hooks/useSyncAutoRefresh'
+import { sincronizacao } from '../../hooks/sincronizacao'
 
 import './LogPage.css'
 
@@ -314,8 +315,10 @@ export function LogPage() {
     const refreshHistory = useCallback(async () => {
         if (refreshEmAndamentoRef.current) return
         if (Date.now() < backoffAteRef.current) return
+        if (!sincronizacao.podeExecutarRefresh()) return
 
         refreshEmAndamentoRef.current = true
+        sincronizacao.marcarInicioRefresh()
 
         try {
             const response = await fetch(`${API_URL}/tasks/history`, {
@@ -327,6 +330,7 @@ export function LogPage() {
             if (!response.ok) {
                 if (response.status === 429) {
                     backoffAteRef.current = Date.now() + 15000
+                    sincronizacao.aplicarBackoff(15000)
                 }
                 return
             }
@@ -340,6 +344,7 @@ export function LogPage() {
             // silencioso no auto-refresh
         } finally {
             refreshEmAndamentoRef.current = false
+            sincronizacao.marcarFimRefresh()
         }
     }, [])
 

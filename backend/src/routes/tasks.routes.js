@@ -5,58 +5,131 @@ const taskFilesController = require('../controllers/taskFiles.controller')
 const checklistController = require('../controllers/checklist.controller')
 const asyncHandler = require('../helpers/asyncHandler')
 const uploadTaskFile = require('../middlewares/uploadTaskFile')
+const {
+    attachmentReadLimiter,
+    pollingReadLimiter,
+    taskMutationLimiter,
+    uploadLimiter,
+} = require('../middlewares/routeRateLimiters')
 
 const tasksRoutes = Router()
 
-tasksRoutes.get('/', asyncHandler(tasksController.listTasks))
-tasksRoutes.post('/', asyncHandler(tasksController.createTask))
+tasksRoutes.get('/', pollingReadLimiter, asyncHandler(tasksController.listTasks))
+tasksRoutes.post('/', taskMutationLimiter, asyncHandler(tasksController.createTask))
 
-tasksRoutes.get('/history', asyncHandler(tasksController.listUserHistory))
+tasksRoutes.get(
+    '/history',
+    pollingReadLimiter,
+    asyncHandler(tasksController.listUserHistory)
+)
 
-tasksRoutes.patch('/bulk-complete', asyncHandler(tasksController.bulkCompleteTasks))
-tasksRoutes.delete('/bulk-delete', asyncHandler(tasksController.bulkDeleteTasks))
+tasksRoutes.patch(
+    '/bulk-complete',
+    taskMutationLimiter,
+    asyncHandler(tasksController.bulkCompleteTasks)
+)
+tasksRoutes.delete(
+    '/bulk-delete',
+    taskMutationLimiter,
+    asyncHandler(tasksController.bulkDeleteTasks)
+)
 
-tasksRoutes.get('/:id/files', asyncHandler(taskFilesController.listTaskFiles))
+tasksRoutes.get(
+    '/:id/files',
+    attachmentReadLimiter,
+    asyncHandler(taskFilesController.listTaskFiles)
+)
 
 tasksRoutes.post(
     '/:id/files',
+    uploadLimiter,
     uploadTaskFile.single('file'),
     asyncHandler(taskFilesController.createTaskFile)
 )
 
 tasksRoutes.get(
+    '/:id/files/:fileId/thumbnail',
+    attachmentReadLimiter,
+    asyncHandler(taskFilesController.getTaskFileThumbnail)
+)
+
+tasksRoutes.get(
     '/:id/files/:fileId/download',
+    attachmentReadLimiter,
     asyncHandler(taskFilesController.downloadTaskFile)
 )
 
 tasksRoutes.patch(
     '/:id/files/:fileId',
+    taskMutationLimiter,
     asyncHandler(taskFilesController.renameTaskFile)
 )
 
 tasksRoutes.delete(
     '/:id/files/:fileId',
+    taskMutationLimiter,
     asyncHandler(taskFilesController.deleteTaskFile)
 )
 
-tasksRoutes.get('/:id/history', asyncHandler(tasksController.listTaskHistory))
+tasksRoutes.get(
+    '/:id/history',
+    pollingReadLimiter,
+    asyncHandler(tasksController.listTaskHistory)
+)
 
-// Checklist — grupos
-tasksRoutes.get('/:taskId/checklist/groups', asyncHandler(checklistController.listGroups))
-tasksRoutes.post('/:taskId/checklist/groups', asyncHandler(checklistController.createGroup))
-tasksRoutes.patch('/:taskId/checklist/groups/:groupId', asyncHandler(checklistController.updateGroup))
-tasksRoutes.delete('/:taskId/checklist/groups/:groupId', asyncHandler(checklistController.deleteGroup))
+tasksRoutes.get(
+    '/:taskId/checklist/groups',
+    pollingReadLimiter,
+    asyncHandler(checklistController.listGroups)
+)
+tasksRoutes.post(
+    '/:taskId/checklist/groups',
+    taskMutationLimiter,
+    asyncHandler(checklistController.createGroup)
+)
+tasksRoutes.patch(
+    '/:taskId/checklist/groups/:groupId',
+    taskMutationLimiter,
+    asyncHandler(checklistController.updateGroup)
+)
+tasksRoutes.delete(
+    '/:taskId/checklist/groups/:groupId',
+    taskMutationLimiter,
+    asyncHandler(checklistController.deleteGroup)
+)
 
-// Checklist — itens por grupo
-tasksRoutes.post('/:taskId/checklist/groups/:groupId/items', asyncHandler(checklistController.createChecklistItem))
+tasksRoutes.post(
+    '/:taskId/checklist/groups/:groupId/items',
+    taskMutationLimiter,
+    asyncHandler(checklistController.createChecklistItem)
+)
 
-// Checklist — itens individuais (update e delete mantêm rota legada)
-tasksRoutes.patch('/:taskId/checklist/:itemId', asyncHandler(checklistController.updateChecklistItem))
-tasksRoutes.delete('/:taskId/checklist/:itemId', asyncHandler(checklistController.deleteChecklistItem))
+tasksRoutes.patch(
+    '/:taskId/checklist/:itemId',
+    taskMutationLimiter,
+    asyncHandler(checklistController.updateChecklistItem)
+)
+tasksRoutes.delete(
+    '/:taskId/checklist/:itemId',
+    taskMutationLimiter,
+    asyncHandler(checklistController.deleteChecklistItem)
+)
 
-tasksRoutes.put('/:id', asyncHandler(tasksController.updateTask))
-tasksRoutes.patch('/:id/status', asyncHandler(tasksController.updateTaskStatus))
-tasksRoutes.patch('/:id/toggle', asyncHandler(tasksController.toggleTask))
-tasksRoutes.delete('/:id', asyncHandler(tasksController.deleteTask))
+tasksRoutes.put('/:id', taskMutationLimiter, asyncHandler(tasksController.updateTask))
+tasksRoutes.patch(
+    '/:id/status',
+    taskMutationLimiter,
+    asyncHandler(tasksController.updateTaskStatus)
+)
+tasksRoutes.patch(
+    '/:id/toggle',
+    taskMutationLimiter,
+    asyncHandler(tasksController.toggleTask)
+)
+tasksRoutes.delete(
+    '/:id',
+    taskMutationLimiter,
+    asyncHandler(tasksController.deleteTask)
+)
 
 module.exports = tasksRoutes

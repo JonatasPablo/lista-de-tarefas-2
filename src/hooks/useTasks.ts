@@ -384,6 +384,15 @@ export const useTasks = ({
                 console.error('Erro ao carregar tarefas:', error)
 
                 if (isMounted) {
+                    if (error instanceof ApiError && error.status === 429) {
+                        sincronizacao.aplicarBackoff()
+                        showToast(
+                            'warning',
+                            'Muitas sincronizacoes. Tentaremos novamente em instantes.'
+                        )
+                        return
+                    }
+
                     showToast(
                         'error',
                         'Não foi possível carregar as tarefas do backend.'

@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
 import type { NavigateFunction } from 'react-router-dom'
+import { ApiError } from '../services/api'
 import { authApi, type AuthUser } from '../services/authApi'
 import type { ToastType } from '../components/Toast/Toast'
 
 type ShowToast = (type: ToastType, message: string) => void
+
+const AUTH_ME_BACKOFF_MS = 30000
+let authMeBackoffUntil = 0
 
 interface UseAuthOptions {
     isGoogleLoginConfigured: boolean
@@ -286,13 +290,29 @@ export const useAuth = ({
         let isMounted = true
 
         const checkAuth = async () => {
+            if (Date.now() < authMeBackoffUntil) {
+                if (isMounted) {
+                    setUser(null)
+                    setIsCheckingAuth(false)
+                }
+                return
+            }
+
             try {
                 const authenticatedUser = await authApi.me()
 
                 if (isMounted) {
                     setUser(authenticatedUser)
                 }
-            } catch {
+            } catch (error) {
+                if (error instanceof ApiError && error.status === 429) {
+                    authMeBackoffUntil = Date.now() + AUTH_ME_BACKOFF_MS
+                    showToast(
+                        'warning',
+                        'Muitas validacoes de sessao. Aguarde alguns instantes.'
+                    )
+                }
+
                 if (isMounted) {
                     setUser(null)
                 }
@@ -308,7 +328,7 @@ export const useAuth = ({
         return () => {
             isMounted = false
         }
-    }, [])
+    }, [showToast])
 
     return {
         user,

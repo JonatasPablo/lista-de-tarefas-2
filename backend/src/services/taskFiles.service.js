@@ -1,5 +1,9 @@
 const connection = require('../database/connection')
 const AppError = require('../errors/AppError')
+const {
+    isImageMimeType,
+    optimizeAttachmentImage,
+} = require('./imageOptimizer.service')
 
 const MAX_FILES_PER_TASK = Number(process.env.TASK_FILES_MAX_PER_TASK || 20)
 const USER_STORAGE_QUOTA_BYTES =
@@ -19,6 +23,9 @@ const mapTaskFile = (file) => {
         display_name: file.display_name,
         mime_type: file.mime_type,
         size_bytes: file.size_bytes,
+        thumbnail_mime_type: file.thumbnail_mime_type,
+        thumbnail_size_bytes: file.thumbnail_size_bytes,
+        has_thumbnail: Boolean(file.thumbnail_size_bytes),
         created_at: file.created_at,
         updated_at: file.updated_at,
         deleted_at: file.deleted_at,
@@ -43,6 +50,8 @@ const listTaskFilesByTaskIds = async (taskIds, userId) => {
                 display_name,
                 mime_type,
                 size_bytes,
+                thumbnail_mime_type,
+                thumbnail_size_bytes,
                 created_at,
                 updated_at,
                 deleted_at
@@ -137,6 +146,8 @@ const getTaskFileById = async (taskId, fileId, userId) => {
                 display_name,
                 mime_type,
                 size_bytes,
+                thumbnail_mime_type,
+                thumbnail_size_bytes,
                 created_at,
                 updated_at,
                 deleted_at
@@ -170,6 +181,8 @@ const listTaskFiles = async (taskId, userId) => {
                 display_name,
                 mime_type,
                 size_bytes,
+                thumbnail_mime_type,
+                thumbnail_size_bytes,
                 created_at,
                 updated_at,
                 deleted_at
@@ -229,6 +242,30 @@ const ensureUploadQuota = async (taskId, userId, uploadedFileSize) => {
     }
 }
 
+const buildStoredTaskFile = async (uploadedFile) => {
+    if (!isImageMimeType(uploadedFile.mimetype)) {
+        return {
+            mimeType: uploadedFile.mimetype,
+            sizeBytes: uploadedFile.size,
+            buffer: uploadedFile.buffer,
+            thumbnailMimeType: null,
+            thumbnailSizeBytes: null,
+            thumbnailBuffer: null,
+        }
+    }
+
+    const optimizedImage = await optimizeAttachmentImage(uploadedFile)
+
+    return {
+        mimeType: optimizedImage.main.mimeType,
+        sizeBytes: optimizedImage.main.sizeBytes,
+        buffer: optimizedImage.main.buffer,
+        thumbnailMimeType: optimizedImage.thumbnail.mimeType,
+        thumbnailSizeBytes: optimizedImage.thumbnail.sizeBytes,
+        thumbnailBuffer: optimizedImage.thumbnail.buffer,
+    }
+}
+
 const createTaskFile = async (taskId, userId, uploadedFile) => {
     await ensureTaskExistsAndIsPending(taskId, userId)
 
@@ -240,7 +277,9 @@ const createTaskFile = async (taskId, userId, uploadedFile) => {
         throw new AppError('Conteudo do arquivo nao recebido.', 400)
     }
 
-    await ensureUploadQuota(taskId, userId, uploadedFile.size)
+    const storedFile = await buildStoredTaskFile(uploadedFile)
+
+    await ensureUploadQuota(taskId, userId, storedFile.sizeBytes)
 
     const originalName = sanitizeDisplayName(uploadedFile.originalname)
     const displayName = originalName
@@ -257,9 +296,12 @@ const createTaskFile = async (taskId, userId, uploadedFile) => {
                 display_name,
                 mime_type,
                 size_bytes,
-                file_data
+                file_data,
+                thumbnail_data,
+                thumbnail_mime_type,
+                thumbnail_size_bytes
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
         [
             taskId,
@@ -267,9 +309,12 @@ const createTaskFile = async (taskId, userId, uploadedFile) => {
             originalName,
             '',
             displayName,
-            uploadedFile.mimetype,
-            uploadedFile.size,
-            uploadedFile.buffer,
+            storedFile.mimeType,
+            storedFile.sizeBytes,
+            storedFile.buffer,
+            storedFile.thumbnailBuffer,
+            storedFile.thumbnailMimeType,
+            storedFile.thumbnailSizeBytes,
         ]
     )
 
@@ -355,6 +400,8 @@ const getTaskFileForDownload = async (taskId, fileId, userId) => {
                 display_name,
                 mime_type,
                 size_bytes,
+                thumbnail_mime_type,
+                thumbnail_size_bytes,
                 created_at,
                 updated_at,
                 deleted_at,
@@ -387,6 +434,87 @@ const getTaskFileForDownload = async (taskId, fileId, userId) => {
     }
 }
 
+const getTaskFileThumbnail = async (taskId, fileId, userId) => {
+    const task = await getTaskById(taskId, userId)
+
+    if (!task) {
+        throw new AppError('Tarefa nÃ£o encontrada.', 404)
+    }
+
+    const [rows] = await connection.query(
+        `
+            SELECT
+                id,
+                task_id,
+                user_id,
+                mime_type,
+                file_data,
+                thumbnail_data,
+                thumbnail_mime_type,
+                thumbnail_size_bytes
+            FROM task_files
+            WHERE id = ?
+                AND task_id = ?
+                AND user_id = ?
+                AND deleted_at IS NULL
+        `,
+        [fileId, taskId, userId]
+    )
+
+    const file = rows[0]
+
+    if (!file) {
+        throw new AppError('Arquivo nÃ£o encontrado.', 404)
+    }
+
+    if (file.thumbnail_data) {
+        return {
+            buffer: file.thumbnail_data,
+            mimeType: file.thumbnail_mime_type || 'image/webp',
+            sizeBytes: file.thumbnail_size_bytes || file.thumbnail_data.length,
+        }
+    }
+
+    if (!isImageMimeType(file.mime_type) || !file.file_data) {
+        throw new AppError('Miniatura nÃ£o disponÃ­vel para este arquivo.', 404)
+    }
+
+    const optimizedImage = await optimizeAttachmentImage({
+        buffer: file.file_data,
+        mimetype: file.mime_type,
+        originalname: 'thumbnail-image',
+    })
+
+    await connection.query(
+        `
+            UPDATE task_files
+            SET
+                thumbnail_data = ?,
+                thumbnail_mime_type = ?,
+                thumbnail_size_bytes = ?,
+                updated_at = NOW()
+            WHERE id = ?
+                AND task_id = ?
+                AND user_id = ?
+                AND deleted_at IS NULL
+        `,
+        [
+            optimizedImage.thumbnail.buffer,
+            optimizedImage.thumbnail.mimeType,
+            optimizedImage.thumbnail.sizeBytes,
+            fileId,
+            taskId,
+            userId,
+        ]
+    )
+
+    return {
+        buffer: optimizedImage.thumbnail.buffer,
+        mimeType: optimizedImage.thumbnail.mimeType,
+        sizeBytes: optimizedImage.thumbnail.sizeBytes,
+    }
+}
+
 module.exports = {
     listTaskFiles,
     listTaskFilesByTaskIds,
@@ -394,4 +522,5 @@ module.exports = {
     renameTaskFile,
     deleteTaskFile,
     getTaskFileForDownload,
+    getTaskFileThumbnail,
 }

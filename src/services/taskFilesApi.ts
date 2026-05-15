@@ -1,4 +1,4 @@
-import { API_URL, apiRequest } from './api'
+import { API_URL, ApiError, apiRequest } from './api'
 import type { TaskFile } from '../types/task'
 
 export type ApiTaskFile = {
@@ -10,6 +10,9 @@ export type ApiTaskFile = {
     display_name: string
     mime_type: string | null
     size_bytes: number
+    thumbnail_mime_type?: string | null
+    thumbnail_size_bytes?: number | null
+    has_thumbnail?: boolean
     created_at: string
     updated_at: string | null
     deleted_at: string | null
@@ -44,6 +47,9 @@ export const mapApiTaskFileToTaskFile = (apiFile: ApiTaskFile): TaskFile => {
         displayName: apiFile.display_name,
         mimeType: apiFile.mime_type || 'application/octet-stream',
         sizeBytes: apiFile.size_bytes,
+        hasThumbnail: Boolean(apiFile.has_thumbnail),
+        thumbnailMimeType: apiFile.thumbnail_mime_type || null,
+        thumbnailSizeBytes: apiFile.thumbnail_size_bytes || null,
         createdAt: formatDateTime(apiFile.created_at) || '',
     }
 }
@@ -69,7 +75,7 @@ export const taskFilesApi = {
         if (!response.ok) {
             const errorMessage = await getErrorMessage(response)
 
-            throw new Error(errorMessage)
+            throw new ApiError(response.status, errorMessage)
         }
 
         const uploadedFile = (await response.json()) as ApiTaskFile
@@ -109,6 +115,23 @@ export const taskFilesApi = {
 
         if (!response.ok) {
             throw new Error(`Erro ao carregar imagem: ${response.status}`)
+        }
+
+        const blob = await response.blob()
+        return URL.createObjectURL(blob)
+    },
+
+    async getImageThumbnailBlob(
+        taskId: string,
+        fileId: string
+    ): Promise<string> {
+        const response = await fetch(
+            `${API_URL}/tasks/${taskId}/files/${fileId}/thumbnail`,
+            { method: 'GET', credentials: 'include' }
+        )
+
+        if (!response.ok) {
+            throw new Error(`Erro ao carregar miniatura: ${response.status}`)
         }
 
         const blob = await response.blob()

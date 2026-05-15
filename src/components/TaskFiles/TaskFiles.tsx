@@ -57,7 +57,7 @@ const TaskFileThumbnail = ({
 
         const loadThumbnail = async () => {
             try {
-                objectUrl = await taskFilesApi.getImagePreviewBlob(
+                objectUrl = await taskFilesApi.getImageThumbnailBlob(
                     taskId,
                     file.id
                 )

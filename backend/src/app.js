@@ -1,7 +1,6 @@
 const express = require('express')
 const cors = require('cors')
 const helmet = require('helmet')
-const rateLimit = require('express-rate-limit')
 
 const authRoutes = require('./routes/auth.routes')
 const tasksRoutes = require('./routes/tasks.routes')
@@ -91,17 +90,6 @@ const csrfOriginProtection = (req, res, next) => {
     return next()
 }
 
-const apiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 300,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: {
-        message:
-            'Muitas requisições foram realizadas. Aguarde alguns minutos e tente novamente.',
-    },
-})
-
 app.disable('x-powered-by')
 
 app.use(
@@ -113,7 +101,6 @@ app.use(
 app.use(cors(corsOptions))
 app.use(csrfOriginProtection)
 app.use(express.json({ limit: '1mb' }))
-app.use(apiLimiter)
 
 app.get('/', (req, res) => {
     return res.json({

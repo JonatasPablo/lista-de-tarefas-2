@@ -17,6 +17,10 @@ const getIpKey = (req) => {
     return ipKeyGenerator(req.ip || req.socket?.remoteAddress || 'unknown')
 }
 
+const getUserKey = (req) => {
+    return req.user?.id ? `user:${req.user.id}` : 'user:anonymous'
+}
+
 const createAuthLimiter = ({ max, windowMs, message }) => {
     return rateLimit({
         windowMs,
@@ -30,25 +34,59 @@ const createAuthLimiter = ({ max, windowMs, message }) => {
     })
 }
 
-const createAuthenticatedUserLimiter = ({ max, windowMs, message }) => {
+const createIpLimiter = ({ max, windowMs, message, scope }) => {
     return rateLimit({
         windowMs,
         max,
         standardHeaders: true,
         legacyHeaders: false,
-        keyGenerator: (req) =>
-            `${getIpKey(req)}:${req.user?.id || 'sem-usuario'}`,
+        keyGenerator: (req) => `${scope}:${getIpKey(req)}`,
         message: {
             message,
         },
     })
 }
 
+const createAuthenticatedUserLimiter = ({ max, windowMs, message }) => {
+    return rateLimit({
+        windowMs,
+        max,
+        standardHeaders: true,
+        legacyHeaders: false,
+        keyGenerator: (req) => `${getUserKey(req)}:${getIpKey(req)}`,
+        message: {
+            message,
+        },
+    })
+}
+
+const registerLimiter = createAuthLimiter({
+    windowMs: 60 * 60 * 1000,
+    max: 12,
+    message:
+        'Muitos cadastros foram solicitados. Aguarde antes de tentar novamente.',
+})
+
 const loginLimiter = createAuthLimiter({
     windowMs: 15 * 60 * 1000,
     max: 8,
     message:
         'Muitas tentativas de login. Aguarde alguns minutos e tente novamente.',
+})
+
+const googleLoginLimiter = createIpLimiter({
+    windowMs: 15 * 60 * 1000,
+    max: 30,
+    scope: 'auth:google',
+    message:
+        'Muitas tentativas de login com Google. Aguarde alguns minutos e tente novamente.',
+})
+
+const authMeLimiter = createAuthenticatedUserLimiter({
+    windowMs: 15 * 60 * 1000,
+    max: 900,
+    message:
+        'Muitas validacoes de sessao foram realizadas. Aguarde alguns instantes e tente novamente.',
 })
 
 const emailConfirmationLimiter = createAuthLimiter({
@@ -87,7 +125,10 @@ const accountPasswordChangeLimiter = createAuthenticatedUserLimiter({
 })
 
 module.exports = {
+    registerLimiter,
     loginLimiter,
+    googleLoginLimiter,
+    authMeLimiter,
     emailConfirmationLimiter,
     resendConfirmationLimiter,
     passwordResetRequestLimiter,

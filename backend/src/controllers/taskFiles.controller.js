@@ -90,10 +90,30 @@ const downloadTaskFile = async (req, res) => {
     return res.end(file.buffer)
 }
 
+const getTaskFileThumbnail = async (req, res) => {
+    const { id, fileId } = req.params
+
+    const taskId = validateTaskId(id)
+    const validFileId = validateFileId(fileId)
+
+    const thumbnail = await taskFilesService.getTaskFileThumbnail(
+        taskId,
+        validFileId,
+        req.user.id
+    )
+
+    res.setHeader('Content-Type', thumbnail.mimeType)
+    res.setHeader('Content-Length', thumbnail.sizeBytes)
+    res.setHeader('Cache-Control', 'private, max-age=3600')
+
+    return res.end(thumbnail.buffer)
+}
+
 module.exports = {
     listTaskFiles,
     createTaskFile,
     renameTaskFile,
     deleteTaskFile,
     downloadTaskFile,
+    getTaskFileThumbnail,
 }

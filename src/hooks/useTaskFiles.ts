@@ -1,5 +1,6 @@
-import type { Dispatch, SetStateAction } from 'react'
+import { useRef, type Dispatch, type SetStateAction } from 'react'
 import type { ToastType } from '../components/Toast/Toast'
+import { ApiError } from '../services/api'
 import { taskFilesApi } from '../services/taskFilesApi'
 import type { Task, TaskFile } from '../types/task'
 import {
@@ -30,28 +31,64 @@ export const useTaskFiles = ({
     showToast,
     prompt,
 }: UseTaskFilesOptions) => {
+    const uploadEmAndamentoRef = useRef(false)
+
     const addFilesToTask = async (taskId: string, files: File[]) => {
+        if (uploadEmAndamentoRef.current) {
+            showToast('warning', 'Aguarde o envio atual terminar.')
+            return
+        }
+
         const taskToUpdate = tasks.find((task) => task.id === taskId)
 
         if (!taskToUpdate) {
-            showToast('error', 'Tarefa não encontrada.')
+            showToast('error', 'Tarefa nao encontrada.')
             return
         }
 
         if (taskToUpdate.completed) {
             showToast(
                 'warning',
-                'Não é possível anexar arquivo em uma tarefa concluída.'
+                'Nao e possivel anexar arquivo em uma tarefa concluida.'
             )
             return
         }
 
+        uploadEmAndamentoRef.current = true
         sincronizacao.pausar()
 
         try {
-            const uploadedFiles = await Promise.all(
-                files.map((file) => taskFilesApi.uploadTaskFile(taskId, file))
-            )
+            const uploadedFiles: TaskFile[] = []
+            const failedFiles: string[] = []
+
+            for (const file of files) {
+                try {
+                    const uploadedFile = await taskFilesApi.uploadTaskFile(
+                        taskId,
+                        file
+                    )
+
+                    uploadedFiles.push(uploadedFile)
+                } catch (error) {
+                    console.error('Erro ao anexar arquivo:', error)
+
+                    if (error instanceof ApiError && error.status === 429) {
+                        sincronizacao.aplicarBackoff()
+                    }
+
+                    failedFiles.push(file.name)
+                }
+            }
+
+            if (uploadedFiles.length === 0) {
+                showToast(
+                    'error',
+                    failedFiles.length === 1
+                        ? `Nao foi possivel anexar ${failedFiles[0]}.`
+                        : 'Nao foi possivel anexar os arquivos selecionados.'
+                )
+                return
+            }
 
             setTasks((currentTasks) =>
                 currentTasks.map((task) => {
@@ -67,22 +104,15 @@ export const useTaskFiles = ({
             )
 
             showToast(
-                'success',
-                uploadedFiles.length === 1
+                failedFiles.length > 0 ? 'warning' : 'success',
+                uploadedFiles.length === 1 && failedFiles.length === 0
                     ? 'Arquivo anexado com sucesso.'
-                    : 'Arquivos anexados com sucesso.'
+                    : failedFiles.length > 0
+                      ? `${uploadedFiles.length} arquivo(s) anexado(s). ${failedFiles.length} falharam.`
+                      : 'Arquivos anexados com sucesso.'
             )
-        } catch (error) {
-            console.error('Erro ao anexar arquivo:', error)
-
-            const message =
-                error instanceof Error
-                    ? error.message
-                    : 'Não foi possível anexar o arquivo.'
-
-            showToast('error', message)
         } finally {
-            // Cooldown de 3s pós-upload para evitar burst de requisições de thumbnail
+            uploadEmAndamentoRef.current = false
             sincronizacao.liberarComCooldown(3000)
         }
     }
@@ -95,14 +125,14 @@ export const useTaskFiles = ({
         const taskToUpdate = tasks.find((task) => task.id === taskId)
 
         if (!taskToUpdate) {
-            showToast('error', 'Tarefa não encontrada.')
+            showToast('error', 'Tarefa nao encontrada.')
             return
         }
 
         if (taskToUpdate.completed) {
             showToast(
                 'warning',
-                'Não é possível renomear arquivo de uma tarefa concluída.'
+                'Nao e possivel renomear arquivo de uma tarefa concluida.'
             )
             return
         }
@@ -138,7 +168,7 @@ export const useTaskFiles = ({
             const message =
                 error instanceof Error
                     ? error.message
-                    : 'Não foi possível renomear o arquivo.'
+                    : 'Nao foi possivel renomear o arquivo.'
 
             showToast('error', message)
         } finally {
@@ -150,14 +180,14 @@ export const useTaskFiles = ({
         const taskToUpdate = tasks.find((task) => task.id === taskId)
 
         if (!taskToUpdate) {
-            showToast('error', 'Tarefa não encontrada.')
+            showToast('error', 'Tarefa nao encontrada.')
             return
         }
 
         if (taskToUpdate.completed) {
             showToast(
                 'warning',
-                'Não é possível deletar arquivo de uma tarefa concluída.'
+                'Nao e possivel deletar arquivo de uma tarefa concluida.'
             )
             return
         }
@@ -180,14 +210,14 @@ export const useTaskFiles = ({
                 })
             )
 
-            showToast('success', 'Arquivo excluído com sucesso.')
+            showToast('success', 'Arquivo excluido com sucesso.')
         } catch (error) {
             console.error('Erro ao excluir arquivo:', error)
 
             const message =
                 error instanceof Error
                     ? error.message
-                    : 'Não foi possível excluir o arquivo.'
+                    : 'Nao foi possivel excluir o arquivo.'
 
             showToast('error', message)
         } finally {
@@ -203,7 +233,7 @@ export const useTaskFiles = ({
         const newName = await prompt({
             title: 'Renomear arquivo',
             message:
-                'Digite o novo nome do arquivo. A extensão original será mantida automaticamente.',
+                'Digite o novo nome do arquivo. A extensao original sera mantida automaticamente.',
             initialValue: currentNameWithoutExtension,
             confirmText: 'Renomear',
             cancelText: 'Cancelar',

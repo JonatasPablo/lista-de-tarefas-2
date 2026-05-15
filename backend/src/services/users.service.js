@@ -4,6 +4,7 @@ const connection = require('../database/connection')
 const AppError = require('../errors/AppError')
 const mailService = require('./mail.service')
 const authService = require('./auth.service')
+const { optimizeAvatarImage } = require('./imageOptimizer.service')
 
 const PROVEDOR_GOOGLE = 'google'
 
@@ -224,6 +225,7 @@ const atualizarAvatar = async ({ userId, uploadedFile }) => {
     }
 
     const originalName = sanitizeOriginalName(uploadedFile.originalname)
+    const optimizedAvatar = await optimizeAvatarImage(uploadedFile)
 
     // Salva avatar como BLOB diretamente no banco para persistência entre deploys.
     // avatar_path é mantido como NULL para indicar que não há arquivo físico.
@@ -242,9 +244,9 @@ const atualizarAvatar = async ({ userId, uploadedFile }) => {
         `,
         [
             originalName,
-            uploadedFile.mimetype,
-            uploadedFile.size,
-            uploadedFile.buffer,
+            optimizedAvatar.mimeType,
+            optimizedAvatar.sizeBytes,
+            optimizedAvatar.buffer,
             userId,
         ]
     )

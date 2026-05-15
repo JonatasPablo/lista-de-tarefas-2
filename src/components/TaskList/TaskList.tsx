@@ -22,7 +22,7 @@ interface TaskListProps {
         description: string,
         priority: TaskPriority
     ) => void
-    onAddFiles: (taskId: string, files: File[]) => void
+    onAddFiles: (taskId: string, files: File[]) => void | Promise<void>
     onRenameFile: (
         taskId: string,
         fileId: string,

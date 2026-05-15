@@ -6,6 +6,9 @@ export interface TaskFile {
     displayName: string
     mimeType: string
     sizeBytes: number
+    hasThumbnail?: boolean
+    thumbnailMimeType?: string | null
+    thumbnailSizeBytes?: number | null
     createdAt: string
 }
 

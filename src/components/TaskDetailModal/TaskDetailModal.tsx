@@ -29,7 +29,7 @@ interface TaskDetailModalProps {
         description: string,
         priority: TaskPriority
     ) => void | Promise<void>
-    onAddFiles: (taskId: string, files: File[]) => void
+    onAddFiles: (taskId: string, files: File[]) => void | Promise<void>
     onDeleteFile: (taskId: string, fileId: string) => void
     onRequestRenameFile: (taskId: string, file: TaskFile) => void
     onChecklistProgressChange: (
@@ -66,6 +66,7 @@ export const TaskDetailModal = ({
     const [editedPriority, setEditedPriority] =
         useState<TaskPriority>(task.priority)
     const [fileMessage, setFileMessage] = useState<string | null>(null)
+    const [isUploadingFiles, setIsUploadingFiles] = useState(false)
     const shouldSkipBlurSaveRef = useRef(false)
 
     const isTaskCompleted = task.completed
@@ -243,11 +244,11 @@ export const TaskDetailModal = ({
         onClose()
     }
 
-    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = Array.from(event.target.files || [])
         setFileMessage(null)
 
-        if (isTaskCompleted || selectedFiles.length === 0) {
+        if (isTaskCompleted || isUploadingFiles || selectedFiles.length === 0) {
             event.target.value = ''
             return
         }
@@ -266,7 +267,13 @@ export const TaskDetailModal = ({
         }
 
         if (validFiles.length > 0) {
-            onAddFiles(task.id, validFiles)
+            setIsUploadingFiles(true)
+
+            try {
+                await onAddFiles(task.id, validFiles)
+            } finally {
+                setIsUploadingFiles(false)
+            }
         }
 
         event.target.value = ''
@@ -451,10 +458,13 @@ export const TaskDetailModal = ({
                                         </button>
 
                                         <label className="file-upload-button task-action task-action--attach">
-                                            Anexar
+                                            {isUploadingFiles
+                                                ? 'Enviando...'
+                                                : 'Anexar'}
                                             <input
                                                 type="file"
                                                 multiple
+                                                disabled={isUploadingFiles}
                                                 onChange={handleFileChange}
                                                 hidden
                                             />

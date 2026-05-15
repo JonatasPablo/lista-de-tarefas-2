@@ -4,16 +4,19 @@ const authController = require('../controllers/auth.controller')
 const asyncHandler = require('../helpers/asyncHandler')
 const authMiddleware = require('../middlewares/authMiddleware')
 const {
+    authMeLimiter,
     emailConfirmationLimiter,
+    googleLoginLimiter,
     loginLimiter,
     passwordResetAttemptLimiter,
     passwordResetRequestLimiter,
+    registerLimiter,
     resendConfirmationLimiter,
 } = require('../middlewares/authRateLimiters')
 
 const authRoutes = Router()
 
-authRoutes.post('/register', asyncHandler(authController.register))
+authRoutes.post('/register', registerLimiter, asyncHandler(authController.register))
 authRoutes.post(
     '/confirm-email',
     emailConfirmationLimiter,
@@ -45,9 +48,9 @@ authRoutes.post(
     asyncHandler(authController.redefinirSenha)
 )
 authRoutes.post('/login', loginLimiter, asyncHandler(authController.login))
-authRoutes.post('/google', asyncHandler(authController.loginGoogle))
+authRoutes.post('/google', googleLoginLimiter, asyncHandler(authController.loginGoogle))
 authRoutes.get('/config', asyncHandler(authController.config))
 authRoutes.post('/logout', authMiddleware, asyncHandler(authController.logout))
-authRoutes.get('/me', authMiddleware, asyncHandler(authController.me))
+authRoutes.get('/me', authMiddleware, authMeLimiter, asyncHandler(authController.me))
 
 module.exports = authRoutes

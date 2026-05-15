@@ -199,7 +199,6 @@ export const RegisterPage = ({
                                     }
                                 >
                                     <GoogleLogin
-                                        key={buttonWidth}
                                         onSuccess={handleLoginGoogleSuccess}
                                         onError={() => {
                                             setIsSubmittingGoogle(false)

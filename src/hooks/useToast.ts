@@ -22,7 +22,15 @@ export const useToast = () => {
                 message,
             }
 
-            setToasts((currentToasts) => [...currentToasts, newToast])
+            setToasts((currentToasts) => {
+                const hasSameVisibleToast = currentToasts.some(
+                    (toast) => toast.type === type && toast.message === message
+                )
+
+                return hasSameVisibleToast
+                    ? currentToasts
+                    : [...currentToasts, newToast]
+            })
 
             window.setTimeout(() => {
                 removeToast(toastId)

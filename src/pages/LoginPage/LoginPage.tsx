@@ -113,7 +113,6 @@ export const LoginPage = ({ onLogin, onLoginGoogle, isDark, onToggleTheme }: Log
                                     className="login-google-button-wrapper"
                                 >
                                     <GoogleLogin
-                                        key={buttonWidth}
                                         onSuccess={handleLoginGoogleSuccess}
                                         onError={() => {
                                             setIsSubmittingGoogle(false)
