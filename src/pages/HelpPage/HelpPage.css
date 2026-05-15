@@ -1,24 +1,33 @@
-.container:has(.help-page) {
+/* =========================================================
+   HelpPage — v2.0.41
+   Corrige seletor para layout público e garante scroll
+   interno funcional dos cards em qualquer altura.
+========================================================= */
+
+/* Âncora no layout público (não no .container privado) */
+.public-layout:has(.help-page) {
     height: 100dvh;
     max-height: 100dvh;
-    min-height: 0;
     overflow: hidden;
 }
 
-.container:has(.help-page) .help-page {
+.public-layout:has(.help-page) .public-main {
+    flex: 1;
     min-height: 0;
+    overflow: hidden;
+    padding: 0 12px 12px;
+    display: flex;
+    flex-direction: column;
 }
 
 .help-page {
     width: 100%;
-    height: 100%;
-    max-height: 100%;
+    flex: 1;
     min-height: 0;
     display: grid;
     justify-items: center;
     align-items: stretch;
     overflow: hidden;
-    padding: 0 12px;
 }
 
 .help-card {
@@ -234,11 +243,8 @@
 ========================= */
 
 @media only screen and (min-width: 1025px) and (max-width: 1366px) {
-    .container:has(.help-page) {
-        height: calc(100dvh - 16px);
-        max-height: calc(100dvh - 16px);
-        min-height: 0;
-        overflow: hidden;
+    .public-layout:has(.help-page) .public-main {
+        padding: 0 10px 10px;
     }
 
     .help-card {
@@ -286,118 +292,118 @@
 ========================= */
 
 @media only screen and (min-width: 1025px) and (max-height: 650px) {
-    .container:has(.help-page) {
-        height: calc(100dvh - 12px);
-        max-height: calc(100dvh - 12px);
-        min-height: 0;
-        overflow: hidden;
-    }
-
-    .help-page {
-        padding: 0 10px;
+    .public-layout:has(.help-page) .public-main {
+        padding: 0 10px 8px;
     }
 
     .help-card {
         width: min(880px, 100%);
         height: 100%;
         max-height: 100%;
-        min-height: 380px;
+        min-height: 340px;
     }
 
     .help-hero {
         gap: 18px;
-        padding: 26px 28px 30px;
+        padding: 22px 24px 26px;
     }
 
     .help-hero-description {
-        font-size: 19px;
-        padding-top: 22px;
+        font-size: 18px;
+        padding-top: 18px;
     }
 
     .help-hero-title {
-        font-size: 38px;
-        padding-bottom: 22px;
+        font-size: 36px;
+        padding-bottom: 18px;
     }
 
     .help-content {
         gap: 7px;
-        padding: 14px 28px 14px;
+        padding: 12px 24px 12px;
     }
 
     .help-header {
-        gap: 5px;
+        gap: 4px;
     }
 
     .help-header h2 {
-        font-size: 34px;
+        font-size: 30px;
     }
 
     .help-header span,
     .help-header p {
         font-size: 11px;
-        line-height: 1.35;
+        line-height: 1.3;
     }
 
     .help-about-card,
     .help-version-card,
     .help-item-card {
-        gap: 5px;
-        padding: 8px;
-        border-radius: 16px;
+        gap: 4px;
+        padding: 7px;
+        border-radius: 14px;
     }
 
     .help-about-card h3,
     .help-version-card h3,
     .help-item-card h3 {
-        font-size: 12px;
+        font-size: 11px;
     }
 
     .help-about-card p,
     .help-version-card p,
     .help-item-card p {
-        font-size: 11px;
-        line-height: 1.35;
+        font-size: 10px;
+        line-height: 1.32;
     }
 
     .help-items-grid {
-        gap: 8px;
+        gap: 6px;
     }
 }
 
 /* =========================
    Tablet e mobile
-   Mesmo visual: hero em cima, conteúdo embaixo
+   Layout em coluna: hero em cima, conteúdo com scroll
 ========================= */
 
 @media only screen and (max-width: 1024px) {
-    .container:has(.help-page) {
-        height: calc(100dvh - 16px);
-        max-height: calc(100dvh - 16px);
+    /* Em tablet/mobile, o layout público vira scroll natural da página */
+    .public-layout:has(.help-page) {
+        height: auto;
+        max-height: none;
+        overflow: visible;
+    }
+
+    .public-layout:has(.help-page) .public-main {
+        flex: 1;
         min-height: 0;
-        overflow: hidden;
+        overflow: visible;
+        padding: 0 10px 16px;
+        display: flex;
+        flex-direction: column;
     }
 
     .help-page {
         width: 100%;
-        height: 100%;
-        max-height: 100%;
+        flex: unset;
         min-height: 0;
         display: grid;
         place-items: center;
-        overflow: hidden;
-        padding: 0 10px 10px;
+        overflow: visible;
     }
 
     .help-card {
         width: min(480px, 100%);
-        height: 100%;
-        max-height: 100%;
+        height: auto;
+        max-height: none;
         min-height: 0;
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: auto minmax(0, 1fr);
+        grid-template-rows: auto auto;
         border-radius: 24px;
-        overflow: hidden;
+        overflow: visible;
     }
 
     .help-hero {
@@ -426,14 +432,14 @@
     }
 
     .help-content {
-        height: 100%;
-        max-height: 100%;
+        height: auto;
+        max-height: none;
         min-height: 0;
         display: grid;
-        grid-template-rows: auto auto minmax(0, 1fr) auto;
+        grid-template-rows: auto auto auto auto;
         gap: 12px;
         padding: 22px 22px 22px;
-        overflow: hidden;
+        overflow: visible;
     }
 
     .help-header {
@@ -452,13 +458,11 @@
 
     .help-items-grid {
         min-height: 0;
-        max-height: 100%;
+        max-height: none;
         grid-template-columns: 1fr;
         gap: 10px;
-        overflow-x: hidden;
-        overflow-y: auto;
-        padding-right: 4px;
-        scrollbar-width: thin;
+        overflow: visible;
+        padding-right: 0;
     }
 
     .help-about-card,
@@ -483,10 +487,13 @@
 
 /* =========================
    Tablet específico
-   Mesmo desenho do celular, só maior
 ========================= */
 
 @media only screen and (min-width: 769px) and (max-width: 1024px) {
+    .public-layout:has(.help-page) .public-main {
+        padding: 0 14px 18px;
+    }
+
     .help-card {
         width: min(560px, 100%);
         border-radius: 26px;
@@ -555,22 +562,12 @@
 ========================= */
 
 @media only screen and (max-width: 480px) {
-    .container:has(.help-page) {
-        height: calc(100dvh - 16px);
-        max-height: calc(100dvh - 16px);
-        min-height: 0;
-        overflow: hidden;
-        gap: 6px;
-    }
-
-    .help-page {
-        padding: 0 6px 6px;
+    .public-layout:has(.help-page) .public-main {
+        padding: 0 6px 12px;
     }
 
     .help-card {
         width: 100%;
-        height: 100%;
-        max-height: 100%;
         border-radius: 22px;
     }
 
@@ -631,7 +628,7 @@
 
     .help-items-grid {
         gap: 8px;
-        padding-right: 4px;
+        padding-right: 0;
     }
 }
 
@@ -640,12 +637,8 @@
 ========================= */
 
 @media only screen and (max-width: 360px) {
-    .container:has(.help-page) {
-        gap: 5px;
-    }
-
-    .help-page {
-        padding: 0 5px 5px;
+    .public-layout:has(.help-page) .public-main {
+        padding: 0 5px 10px;
     }
 
     .help-card {
@@ -710,7 +703,7 @@
 ========================= */
 
 @media print {
-    .container:has(.help-page),
+    .public-layout:has(.help-page),
     .help-page,
     .help-card,
     .help-content {

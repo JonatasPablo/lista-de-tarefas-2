@@ -185,8 +185,7 @@
    Painéis compartilhados (padrão glassmorphism escuro)
 ========================= */
 
-[data-theme="dark"] .tasks-form-panel,
-[data-theme="dark"] .tasks-stats-panel,
+[data-theme="dark"] .tasks-top-panel,
 [data-theme="dark"] .tasks-controls-panel,
 [data-theme="dark"] .tasks-list-panel,
 [data-theme="dark"] .completed-tasks-stats-panel,
@@ -1070,11 +1069,8 @@
     border-color: rgba(253, 164, 175, 0.55) !important;
 }
 
-[data-theme="dark"] .minha-conta-legal-links a,
-[data-theme="dark"] .minha-conta-privacy-actions button {
-    border-color: rgba(255, 255, 255, 0.08);
-    background-color: rgba(255, 255, 255, 0.06);
-    color: #c8c8c8;
+[data-theme="dark"] .mc-privacy-action-btn--danger {
+    border-color: rgba(240, 85, 85, 0.22);
 }
 
 /* =========================

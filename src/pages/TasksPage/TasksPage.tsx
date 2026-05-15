@@ -145,34 +145,37 @@ export const TasksPage = ({
                 </div>
             </header>
 
+            {/* Painel superior: botão + resumo (fechado) ou botão + formulário (aberto) */}
             <section
-                className={`tasks-form-panel ${
-                    isTaskFormVisible ? 'is-open' : 'is-closed'
+                className={`tasks-top-panel ${
+                    isTaskFormVisible ? 'formulario-aberto' : 'resumo-visivel'
                 }`}
             >
-                <button
-                    type="button"
-                    className="tasks-new-task-toggle"
-                    onClick={handleToggleTaskForm}
-                    aria-expanded={isTaskFormVisible}
-                >
-                    {isTaskFormVisible ? 'Fechar formulário' : '+ Nova tarefa'}
-                </button>
+                <div className="tasks-top-bar">
+                    <button
+                        type="button"
+                        className="tasks-new-task-toggle"
+                        onClick={handleToggleTaskForm}
+                        aria-expanded={isTaskFormVisible}
+                    >
+                        {isTaskFormVisible ? 'Fechar formulário' : '+ Nova tarefa'}
+                    </button>
+
+                    {!isTaskFormVisible && (
+                        <TaskStats
+                            tasks={statsTasks}
+                            title="Resumo das tarefas pendentes"
+                            activeFilter={priorityFilter}
+                            onFilterChange={handleStatsFilterChange}
+                        />
+                    )}
+                </div>
 
                 {isTaskFormVisible && (
                     <div className="tasks-form-content">
                         <TaskForm onAddTask={handleAddTask} />
                     </div>
                 )}
-            </section>
-
-            <section className="tasks-stats-panel">
-                <TaskStats
-                    tasks={statsTasks}
-                    title="Resumo das tarefas pendentes"
-                    activeFilter={priorityFilter}
-                    onFilterChange={handleStatsFilterChange}
-                />
             </section>
 
             <section className="tasks-controls-panel">

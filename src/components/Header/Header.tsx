@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import type { AuthUser } from '../../services/authApi'
 import { usuariosApi } from '../../services/usuariosApi'
 
@@ -10,6 +10,24 @@ interface HeaderProps {
 }
 
 const appLogoUrl = `${import.meta.env.BASE_URL}favicon.svg`
+
+const CHAVE_ROTA_ANTERIOR = 'mc-rota-anterior'
+
+const ROTAS_PUBLICAS = [
+    '/login',
+    '/cadastro',
+    '/termos',
+    '/privacidade',
+    '/cookies',
+    '/contato-lgpd',
+    '/esqueci-senha',
+    '/confirmar-email',
+]
+
+const ehRotaPublica = (pathname: string) =>
+    ROTAS_PUBLICAS.some(
+        (rota) => pathname === rota || pathname.startsWith(rota + '/')
+    )
 
 const getInitials = (name: string) => {
     const nameParts = name.trim().split(' ').filter(Boolean)
@@ -27,11 +45,39 @@ const getInitials = (name: string) => {
 
 export const Header = ({ user, onLogout, isDark, onToggleTheme }: HeaderProps) => {
     const navigate = useNavigate()
+    const location = useLocation()
     const avatarUrl = user ? usuariosApi.getAvatarUrl(user) : null
 
     const getNavLinkClass = ({ isActive }: { isActive: boolean }) => {
         return isActive ? 'nav-link active' : 'nav-link'
     }
+
+    const handleAvatarClick = () => {
+        if (location.pathname === '/minha-conta') {
+            const rotaAnterior = sessionStorage.getItem(CHAVE_ROTA_ANTERIOR) ?? ''
+            sessionStorage.removeItem(CHAVE_ROTA_ANTERIOR)
+            if (
+                rotaAnterior &&
+                rotaAnterior !== '/minha-conta' &&
+                !ehRotaPublica(rotaAnterior)
+            ) {
+                navigate(rotaAnterior)
+            } else {
+                navigate('/')
+            }
+        } else {
+            if (!ehRotaPublica(location.pathname)) {
+                sessionStorage.setItem(
+                    CHAVE_ROTA_ANTERIOR,
+                    location.pathname + location.search
+                )
+            }
+            navigate('/minha-conta')
+        }
+    }
+
+    const estaEmMinhaConta = location.pathname === '/minha-conta'
+    const labelAvatar = estaEmMinhaConta ? 'Fechar minha conta' : 'Abrir minha conta'
 
     return (
         <header className="header">
@@ -135,9 +181,9 @@ export const Header = ({ user, onLogout, isDark, onToggleTheme }: HeaderProps) =
                             <button
                                 type="button"
                                 className="header-user-avatar-button"
-                                onClick={() => navigate('/minha-conta')}
-                                aria-label="Abrir minha conta"
-                                title="Abrir minha conta"
+                                onClick={handleAvatarClick}
+                                aria-label={labelAvatar}
+                                title={labelAvatar}
                             >
                                 <span className="header-user-avatar">
                                     {getInitials(user.name)}
