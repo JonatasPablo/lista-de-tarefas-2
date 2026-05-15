@@ -208,16 +208,13 @@
 
 .task-detail-section textarea {
     width: 100%;
+    min-height: 150px;
+    padding: var(--space-3) var(--input-padding-x);
     border: 1px solid var(--color-border-input);
     border-radius: var(--radius-lg);
     background: var(--color-bg-input);
     color: var(--color-text);
     font-size: var(--font-size-md);
-}
-
-.task-detail-section textarea {
-    min-height: 150px;
-    padding: var(--space-3) var(--input-padding-x);
     resize: vertical;
     line-height: var(--line-height-base);
 }

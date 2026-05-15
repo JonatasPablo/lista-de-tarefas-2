@@ -1,6 +1,8 @@
 import { useMemo, useState, type FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import type { ToastType } from '../../components/Toast/Toast'
 import { ValidacaoSenha } from '../../components/ValidacaoSenha/ValidacaoSenha'
+import { LGPD_CONTACT_EMAIL } from '../../config/app'
 import type { AuthUser } from '../../services/authApi'
 import { usuariosApi } from '../../services/usuariosApi'
 import './MinhaContaPage.css'
@@ -433,6 +435,93 @@ export const MinhaContaPage = ({
                                 <dd>{formatarData(user.created_at)}</dd>
                             </div>
                         </dl>
+                    </section>
+
+                    <section className="minha-conta-card minha-conta-privacidade-card">
+                        <header className="minha-conta-card-header">
+                            <h3>Privacidade e dados</h3>
+                            <span className="badge badge--accent">LGPD</span>
+                        </header>
+
+                        <div className="mc-privacy-grid">
+                            <div className="mc-privacy-group">
+                                <p className="mc-privacy-group-label">Documentos legais</p>
+                                <nav
+                                    className="mc-privacy-doc-links"
+                                    aria-label="Documentos legais"
+                                >
+                                    <Link to="/privacidade" className="mc-privacy-doc-item">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                            <polyline points="14 2 14 8 20 8" />
+                                        </svg>
+                                        Política de Privacidade
+                                    </Link>
+                                    <Link to="/termos" className="mc-privacy-doc-item">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                            <polyline points="14 2 14 8 20 8" />
+                                        </svg>
+                                        Termos de Uso
+                                    </Link>
+                                    <Link to="/cookies" className="mc-privacy-doc-item">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                            <polyline points="14 2 14 8 20 8" />
+                                        </svg>
+                                        Política de Cookies
+                                    </Link>
+                                </nav>
+                            </div>
+
+                            <div className="mc-privacy-group">
+                                <p className="mc-privacy-group-label">Seus direitos</p>
+                                <p className="mc-privacy-rights-text">
+                                    Acesso, correção e exclusão de dados via canal LGPD.
+                                </p>
+                                <a
+                                    href={`mailto:${LGPD_CONTACT_EMAIL}`}
+                                    className="mc-privacy-contact-link"
+                                >
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                        <polyline points="22,6 12,13 2,6" />
+                                    </svg>
+                                    <Link to="/contato-lgpd">Enviar solicitação</Link>
+                                </a>
+                            </div>
+
+                            <div className="mc-privacy-group mc-privacy-actions-group">
+                                <p className="mc-privacy-group-label">Ações disponíveis em breve</p>
+                                <div className="mc-privacy-actions">
+                                    <button
+                                        type="button"
+                                        className="mc-privacy-action-btn"
+                                        disabled
+                                        title="Em desenvolvimento"
+                                    >
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                            <polyline points="7 10 12 15 17 10" />
+                                            <line x1="12" y1="15" x2="12" y2="3" />
+                                        </svg>
+                                        Exportar meus dados
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="mc-privacy-action-btn mc-privacy-action-btn--danger"
+                                        disabled
+                                        title="Em desenvolvimento"
+                                    >
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                            <polyline points="3 6 5 6 21 6" />
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                                        </svg>
+                                        Solicitar exclusão da conta
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </section>
 
                     <section className="minha-conta-grid">

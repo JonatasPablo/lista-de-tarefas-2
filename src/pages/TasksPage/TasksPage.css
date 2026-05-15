@@ -1164,7 +1164,7 @@
 
     .tasks-page .task-form label {
         display: block;
-        color: #303030;
+        color: var(--color-text);
         font-size: 13px;
         font-weight: 900;
     }

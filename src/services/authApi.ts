@@ -12,6 +12,8 @@ export type AuthUser = {
     email_verified_at?: string | null
     terms_accepted_at?: string | null
     terms_version?: string | null
+    privacy_policy_accepted_at?: string | null
+    privacy_policy_version?: string | null
     created_at: string
     updated_at: string | null
 }

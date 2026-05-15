@@ -69,7 +69,7 @@
 .minha-conta-main {
     min-height: 0;
     display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
     gap: 12px;
     overflow: hidden;
 }
@@ -231,10 +231,6 @@
     opacity: 0.55;
 }
 
-.minha-conta-upload-button span:hover {
-    background: linear-gradient(135deg, #1f1f1f 0%, #000000 100%);
-}
-
 .minha-conta-card-header {
     min-width: 0;
     display: flex;
@@ -373,6 +369,150 @@
 .minha-conta-submit {
     width: 100%;
     margin-top: 2px;
+}
+
+.minha-conta-privacidade-card {
+    overflow: visible;
+}
+
+/* ---- Seção LGPD redesenhada ---- */
+
+.mc-privacy-grid {
+    display: grid;
+    gap: 14px;
+}
+
+.mc-privacy-group {
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-bg-surface-2);
+}
+
+.mc-privacy-group-label {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.mc-privacy-doc-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mc-privacy-doc-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 34px;
+    padding: 6px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-surface);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    transition:
+        background var(--transition-fast),
+        color var(--transition-fast),
+        border-color var(--transition-fast);
+}
+
+.mc-privacy-doc-item svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+}
+
+.mc-privacy-doc-item:hover {
+    background: var(--color-bg-hover);
+    color: var(--color-text);
+    border-color: var(--color-border-strong);
+}
+
+.mc-privacy-rights-text {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-snug);
+}
+
+.mc-privacy-contact-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    text-decoration: none;
+}
+
+.mc-privacy-contact-link svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+}
+
+.mc-privacy-contact-link a {
+    color: var(--color-text);
+    text-decoration: underline;
+    font-weight: var(--font-weight-extrabold);
+}
+
+.mc-privacy-contact-link a:hover {
+    opacity: 0.8;
+}
+
+.mc-privacy-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mc-privacy-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 7px 12px;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    cursor: not-allowed;
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+}
+
+.mc-privacy-action-btn svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.mc-privacy-action-btn--danger {
+    color: var(--color-danger);
+    border-color: rgba(159, 18, 57, 0.22);
+}
+
+.mc-privacy-actions-group {
+    border-style: dashed;
+}
+
+/* badge reutilizado do design system */
+.minha-conta-privacidade-card .badge--accent {
+    font-size: 10px;
 }
 
 @media only screen and (min-width: 1025px) and (max-width: 1366px) {

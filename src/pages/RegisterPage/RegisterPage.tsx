@@ -2,6 +2,10 @@ import { useState, type SyntheticEvent, type UIEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { GoogleLogin, type CredentialResponse } from '@react-oauth/google'
 import { useGoogleButtonWidth } from '../../hooks/useGoogleButtonWidth'
+import {
+    PRIVACY_POLICY_VERSION,
+    TERMS_VERSION,
+} from '../../config/app'
 
 import './RegisterPage.css'
 
@@ -19,8 +23,6 @@ interface RegisterPageProps {
     isDark: boolean
     onToggleTheme: () => void
 }
-
-const TERMS_VERSION = '1.0'
 
 const obterRequisitosSenha = (senha: string) => {
     return [
@@ -176,8 +178,12 @@ export const RegisterPage = ({
                         </div>
                         <p>
                             Cadastre-se para acessar suas próprias tarefas.
-                            Antes de concluir, leia e aceite os Termos de Uso e
-                            a Política de Privacidade.
+                            Antes de concluir, leia e aceite os{' '}
+                            <Link to="/termos">Termos de Uso</Link> e a{' '}
+                            <Link to="/privacidade">
+                                Política de Privacidade
+                            </Link>
+                            .
                         </p>
                     </header>
 
@@ -342,7 +348,10 @@ export const RegisterPage = ({
                                     <strong>
                                         Termos de Uso e Política de Privacidade
                                     </strong>
-                                    <span>Versão {TERMS_VERSION}</span>
+                                    <span>
+                                        Termos v{TERMS_VERSION} · Privacidade v
+                                        {PRIVACY_POLICY_VERSION}
+                                    </span>
                                 </div>
 
                                 {hasScrolledTermsToEnd ? (
@@ -367,8 +376,20 @@ export const RegisterPage = ({
                                     organização de tarefas, histórico, logs e
                                     anexos. Ao criar uma conta, o usuário
                                     declara estar ciente das regras descritas
-                                    nestes Termos de Uso e nesta Política de
+                                    nos Termos de Uso e na Política de
                                     Privacidade.
+                                </p>
+                                <p>
+                                    Você pode consultar os documentos completos
+                                    em <Link to="/termos">Termos de Uso</Link>,{' '}
+                                    <Link to="/privacidade">
+                                        Política de Privacidade
+                                    </Link>{' '}
+                                    e{' '}
+                                    <Link to="/cookies">
+                                        Política de Cookies
+                                    </Link>
+                                    .
                                 </p>
 
                                 <h3>2. Aceite dos termos</h3>
@@ -421,9 +442,9 @@ export const RegisterPage = ({
                                     poderá tratar dados como nome, e-mail, senha
                                     criptografada, tarefas, histórico de ações,
                                     anexos, data e hora de cadastro, data e hora
-                                    de aceite dos termos, versão dos termos
-                                    aceita, endereço IP e informações do
-                                    navegador ou dispositivo.
+                                    de aceite, versão dos termos e da política
+                                    de privacidade aceitas, endereço IP e
+                                    informações do navegador ou dispositivo.
                                 </p>
 
                                 <h3>8. Cookies e sessão</h3>
@@ -523,8 +544,12 @@ export const RegisterPage = ({
                                 />
 
                                 <span>
-                                    Li e aceito os Termos de Uso e a Política de
-                                    Privacidade.
+                                    Li e aceito os{' '}
+                                    <Link to="/termos">Termos de Uso</Link> e a{' '}
+                                    <Link to="/privacidade">
+                                        Política de Privacidade
+                                    </Link>
+                                    .
                                 </span>
                             </label>
                         </section>

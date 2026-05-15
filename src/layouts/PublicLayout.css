@@ -1,0 +1,262 @@
+/* =========================
+   Layout público — Lista de Tarefas
+   Header no topo, conteúdo, footer público
+========================= */
+
+.public-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    background:
+        radial-gradient(circle at 12% 18%, rgba(255,255,255,0.95) 0, transparent 24%),
+        radial-gradient(circle at 82% 12%, rgba(255,255,255,0.55) 0, transparent 28%),
+        linear-gradient(135deg, #e8e8e8 0%, #d5d5d5 45%, #c4c4c4 100%);
+    background-attachment: fixed;
+}
+
+[data-theme='dark'] .public-layout {
+    background:
+        radial-gradient(circle at 12% 18%, rgba(50,50,50,0.6) 0, transparent 30%),
+        linear-gradient(135deg, #1a1a1a 0%, #121212 100%);
+}
+
+/* =========================
+   Header público (nav no topo)
+========================= */
+
+.public-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+}
+
+[data-theme='dark'] .public-header {
+    background: rgba(22, 22, 22, 0.94);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
+}
+
+.public-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex-shrink: 0;
+}
+
+.public-header-logo {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+    flex-shrink: 0;
+}
+
+.public-header-appname {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+    white-space: nowrap;
+}
+
+.public-header-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.public-header-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    transition:
+        background var(--transition-fast),
+        color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        transform var(--transition-fast);
+    box-shadow: var(--shadow-xs);
+}
+
+[data-theme='dark'] .public-header-link {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-secondary);
+}
+
+.public-header-link svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.public-header-link:hover,
+.public-header-link.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.public-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+/* =========================
+   Conteúdo principal público
+========================= */
+
+.public-main {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* =========================
+   Footer público (pequeno e discreto)
+========================= */
+
+.public-footer {
+    width: 100%;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(6px);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    line-height: 1.3;
+}
+
+[data-theme='dark'] .public-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.public-footer-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+}
+
+.public-footer a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-weight: 700;
+    transition: color var(--transition-fast);
+}
+
+.public-footer a:hover {
+    color: var(--color-text);
+    text-decoration: underline;
+}
+
+.public-footer-sep {
+    color: var(--color-text-muted);
+    opacity: 0.35;
+    user-select: none;
+}
+
+/* =========================
+   Mobile
+========================= */
+
+@media only screen and (max-width: 768px) {
+    .public-header {
+        padding: 8px 12px;
+        gap: 8px;
+    }
+
+    .public-header-appname {
+        font-size: 13px;
+    }
+
+    .public-header-link {
+        min-height: 32px;
+        padding: 6px 11px;
+        font-size: 12px;
+    }
+
+    .public-header-link svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .public-footer {
+        padding: 8px 14px;
+        font-size: 10px;
+        gap: 6px 10px;
+    }
+}
+
+/* O PublicLayout já tem o toggle de tema no header; esconde o botão interno das páginas de auth */
+.public-layout .auth-header-row .theme-toggle-btn {
+    display: none;
+}
+
+@media only screen and (max-width: 480px) {
+    .public-header-appname {
+        display: none;
+    }
+
+    .public-header-link span {
+        display: none;
+    }
+
+    .public-header-link {
+        min-height: 36px;
+        min-width: 36px;
+        padding: 0;
+        justify-content: center;
+        width: 36px;
+    }
+
+    .public-header-link svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .public-footer {
+        flex-direction: column;
+        gap: 4px;
+        text-align: center;
+    }
+
+    .public-footer-links {
+        justify-content: center;
+    }
+}

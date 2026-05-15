@@ -14,6 +14,7 @@ const EMAIL_VERIFICATION_MINUTES = Number(
 )
 const PASSWORD_RESET_MINUTES = Number(process.env.PASSWORD_RESET_MINUTES || 15)
 const TERMS_VERSION = process.env.TERMS_VERSION || '1.0'
+const PRIVACY_POLICY_VERSION = process.env.PRIVACY_POLICY_VERSION || '1.0'
 
 const PROVEDOR_LOCAL = 'local'
 const PROVEDOR_GOOGLE = 'google'
@@ -379,6 +380,8 @@ const mapUser = (user) => {
         email_verified_at: user.email_verified_at,
         terms_accepted_at: user.terms_accepted_at,
         terms_version: user.terms_version,
+        privacy_policy_accepted_at: user.privacy_policy_accepted_at,
+        privacy_policy_version: user.privacy_policy_version,
         created_at: user.created_at,
         updated_at: user.updated_at,
     }
@@ -489,6 +492,10 @@ const findUserByEmail = async (email) => {
                 terms_version,
                 terms_accepted_ip,
                 terms_accepted_user_agent,
+                privacy_policy_accepted_at,
+                privacy_policy_version,
+                privacy_policy_accepted_ip,
+                privacy_policy_accepted_user_agent,
                 email_verification_token,
                 email_verification_expires_at,
                 password_reset_token,
@@ -525,6 +532,10 @@ const findUserByGoogleId = async (googleId) => {
                 terms_version,
                 terms_accepted_ip,
                 terms_accepted_user_agent,
+                privacy_policy_accepted_at,
+                privacy_policy_version,
+                privacy_policy_accepted_ip,
+                privacy_policy_accepted_user_agent,
                 email_verification_token,
                 email_verification_expires_at,
                 password_reset_token,
@@ -561,6 +572,10 @@ const findUserById = async (id, db = connection) => {
                 terms_version,
                 terms_accepted_ip,
                 terms_accepted_user_agent,
+                privacy_policy_accepted_at,
+                privacy_policy_version,
+                privacy_policy_accepted_ip,
+                privacy_policy_accepted_user_agent,
                 updated_at
             FROM users
             WHERE id = ?
@@ -598,6 +613,8 @@ const findUserBySessionToken = async (token) => {
                 u.email_verified_at,
                 u.terms_accepted_at,
                 u.terms_version,
+                u.privacy_policy_accepted_at,
+                u.privacy_policy_version,
                 u.updated_at
             FROM user_sessions us
             INNER JOIN users u ON u.id = us.user_id
@@ -816,15 +833,22 @@ const register = async ({
                     terms_accepted_at,
                     terms_version,
                     terms_accepted_ip,
-                    terms_accepted_user_agent
+                    terms_accepted_user_agent,
+                    privacy_policy_accepted_at,
+                    privacy_policy_version,
+                    privacy_policy_accepted_ip,
+                    privacy_policy_accepted_user_agent
                 )
-                VALUES (?, ?, ?, 'local', 'user', NOW(), ?, ?, ?)
+                VALUES (?, ?, ?, 'local', 'user', NOW(), ?, ?, ?, NOW(), ?, ?, ?)
             `,
             [
                 validName,
                 validEmail,
                 passwordHash,
                 TERMS_VERSION,
+                acceptedIp,
+                acceptedUserAgent,
+                PRIVACY_POLICY_VERSION,
                 acceptedIp,
                 acceptedUserAgent,
             ]
@@ -1255,11 +1279,18 @@ const registrarAceiteTermosUsuarioSocial = async ({
                 terms_version = ?,
                 terms_accepted_ip = ?,
                 terms_accepted_user_agent = ?,
+                privacy_policy_accepted_at = NOW(),
+                privacy_policy_version = ?,
+                privacy_policy_accepted_ip = ?,
+                privacy_policy_accepted_user_agent = ?,
                 updated_at = NOW()
             WHERE id = ?
         `,
         [
             TERMS_VERSION,
+            acceptedIp,
+            acceptedUserAgent,
+            PRIVACY_POLICY_VERSION,
             acceptedIp,
             acceptedUserAgent,
             userId,
@@ -1297,15 +1328,22 @@ const criarUsuarioGoogle = async ({
                 terms_accepted_at,
                 terms_version,
                 terms_accepted_ip,
-                terms_accepted_user_agent
+                terms_accepted_user_agent,
+                privacy_policy_accepted_at,
+                privacy_policy_version,
+                privacy_policy_accepted_ip,
+                privacy_policy_accepted_user_agent
             )
-            VALUES (?, ?, NULL, 'google', 'user', ?, NOW(), NOW(), ?, ?, ?)
+            VALUES (?, ?, NULL, 'google', 'user', ?, NOW(), NOW(), ?, ?, ?, NOW(), ?, ?, ?)
         `,
         [
             name,
             email,
             googleId,
             TERMS_VERSION,
+            acceptedIp,
+            acceptedUserAgent,
+            PRIVACY_POLICY_VERSION,
             acceptedIp,
             acceptedUserAgent,
         ]

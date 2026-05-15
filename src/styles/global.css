@@ -195,33 +195,7 @@ a {
     display: none;
 }
 
-/* Header centralizado na página de login */
-
-.container:has(.login-page) .header {
-    grid-template-columns: 1fr;
-}
-
-.container:has(.login-page) .header-content {
-    display: none;
-}
-
-.container:has(.login-page) .header-brand {
-    padding-left: 0;
-}
-
-.container:has(.login-page) .header h1 {
-    text-align: center;
-    white-space: normal;
-}
-
-/* Header oculto nas páginas de autenticação sem título próprio */
-
-.container:has(.register-page) .header,
-.container:has(.confirm-email-page) .header,
-.container:has(.esqueci-senha-page) .header,
-.container:has(.help-page) .header:not(:has(.header-user)) {
-    display: none;
-}
+/* Páginas públicas agora usam PublicLayout — sem regras especiais de header aqui */
 
 .nav-link {
     display: inline-flex;
@@ -237,11 +211,12 @@ a {
     font-weight: 700;
     letter-spacing: -0.01em;
     white-space: nowrap;
+    box-shadow: var(--shadow-xs);
     transition:
-        background-color 0.2s ease,
-        color 0.2s ease,
-        transform 0.15s ease,
-        box-shadow 0.2s ease;
+        background-color var(--transition-base),
+        color var(--transition-base),
+        transform var(--transition-fast),
+        box-shadow var(--transition-base);
 }
 
 .nav-link:hover,
@@ -457,56 +432,15 @@ a {
     color: var(--color-text-secondary);
 }
 
-/* =========================
-   Footer global
-========================= */
+/* Footer: substituído pelo .public-footer no PublicLayout */
 
-.app-footer {
-    display: none;
-    position: relative;
-    z-index: 3;
-    width: calc(100% - 20px);
-    max-width: 100%;
-    margin: 0 auto 10px;
-    padding: 1px 14px;
-    place-items: center;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 15px;
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255, 255, 255, 0.45),
-            rgba(255, 255, 255, 0.22)
-        );
-    color: var(--color-text);
-    text-align: center;
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 1.25;
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.65),
-        0 8px 18px rgba(0, 0, 0, 0.05);
-    backdrop-filter: blur(4px);
-}
-
-.app-footer p,
-.app-footer span {
+/* Estado de verificação de auth / carregando */
+.app-checking-auth {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
     width: 100%;
-    margin: 0;
-}
-
-.app-footer strong {
-    font-weight: 800;
-}
-
-.app-footer a {
-    color: var(--color-text);
-    font-weight: 800;
-    text-decoration: none;
-}
-
-.app-footer a:hover {
-    text-decoration: underline;
 }
 
 /* =========================
@@ -514,6 +448,10 @@ a {
 ========================= */
 
 .empty-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
     margin: 0;
     color: var(--color-text-muted);
     text-align: center;
@@ -544,6 +482,7 @@ a {
     gap: 12px;
     padding: 12px 14px;
     border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: #ffffff;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
     animation: toast-slide-in 0.2s ease-out;
@@ -627,6 +566,7 @@ a {
     color: var(--color-text);
     box-shadow: var(--shadow-lg);
     border: 1px solid var(--color-border);
+    transition: box-shadow var(--transition-base);
 }
 
 .confirm-modal h2,
@@ -656,6 +596,12 @@ a {
     color: var(--color-text);
     font-size: var(--font-size-md);
     transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.confirm-modal input:focus {
+    outline: none;
+    border-color: var(--color-focus-border);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
 .confirm-modal-actions {
@@ -757,12 +703,6 @@ a {
         font-size: 12px;
     }
 
-    .app-footer {
-        margin-bottom: 8px;
-        padding: 2px 12px;
-        font-size: 11px;
-    }
-
     .toast-container {
         top: 78px;
         right: 18px;
@@ -851,13 +791,6 @@ a {
         min-height: 30px;
         padding: 6px 10px;
         font-size: 12px;
-    }
-
-    .app-footer {
-        margin-bottom: 6px;
-        padding: 1px 10px;
-        font-size: 10px;
-        line-height: 1.2;
     }
 
     .toast-container {
@@ -1033,30 +966,6 @@ a {
         font-size: 12px;
     }
 
-    .app-footer {
-        width: calc(100% - 20px);
-        margin: 0 auto calc(12px + env(safe-area-inset-bottom, 0px));
-        padding: 8px 10px;
-        gap: 3px;
-        border-radius: 14px;
-        text-align: center;
-        font-size: 11px;
-        line-height: 1.25;
-        background-color: rgba(255, 255, 255, 0.42);
-        backdrop-filter: blur(4px);
-    }
-
-    .app-footer p,
-    .app-footer span {
-        width: 100%;
-        margin: 0;
-    }
-
-    .app-footer a,
-    .app-footer strong {
-        font-weight: 700;
-    }
-
     .toast-container {
         top: 50%;
         right: 50%;
@@ -1083,10 +992,6 @@ a {
         min-height: 36px;
         padding: 8px 16px;
         font-size: 14px;
-    }
-
-    .app-footer {
-        font-size: 12px;
     }
 
     .toast-container {
@@ -1132,10 +1037,6 @@ a {
         transform: translate(50%, -50%);
     }
 
-    .app-footer {
-        display: none;
-    }
-
     /* font-size ≥16px em inputs: previne zoom automático no iOS ao focar */
     input:not([type='checkbox']):not([type='radio']),
     select,
@@ -1162,12 +1063,6 @@ a {
         min-height: 0;
         overflow: hidden;
         gap: 6px;
-    }
-
-    .container:has(.tasks-page) .app-footer,
-    .container:has(.completed-tasks-page) .app-footer,
-    .container:has(.log-page) .app-footer {
-        display: none;
     }
 
     .container:has(.tasks-page) .header,
@@ -1534,8 +1429,7 @@ a {
         box-shadow: none;
     }
 
-    .header,
-    .app-footer {
+    .header {
         display: none;
     }
 }
@@ -1585,75 +1479,6 @@ select:focus {
 
 *::-webkit-scrollbar-thumb:hover {
     background-color: rgba(0, 0, 0, 0.26);
-}
-
-/* ---- Estados vazios (melhorado) ---- */
-
-.empty-message {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-2);
-    color: var(--color-text-muted);
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
-}
-
-/* ---- Modal global (melhorado) ---- */
-
-.confirm-modal {
-    border: 1px solid var(--color-border);
-    transition: box-shadow var(--transition-base);
-}
-
-.confirm-modal input:focus {
-    outline: none;
-    border-color: var(--color-focus-border);
-    box-shadow: 0 0 0 3px var(--color-focus-ring);
-}
-
-.confirm-modal-actions button {
-    transition:
-        background-color var(--transition-fast),
-        color var(--transition-fast),
-        transform var(--transition-fast),
-        box-shadow var(--transition-fast);
-}
-
-.confirm-modal-actions button:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
-}
-
-/* ---- Toast (melhorado) ---- */
-
-.toast-message {
-    border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-/* ---- Nav link — melhorado ---- */
-
-.nav-link {
-    box-shadow: var(--shadow-xs);
-    transition:
-        background-color var(--transition-base),
-        color var(--transition-base),
-        transform var(--transition-fast),
-        box-shadow var(--transition-base);
-}
-
-/* ---- Scrollbars dark mode ---- */
-
-[data-theme='dark'] * {
-    scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
-}
-
-[data-theme='dark'] *::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.12);
-}
-
-[data-theme='dark'] *::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.22);
 }
 
 /* ---- Seleção de texto ---- */

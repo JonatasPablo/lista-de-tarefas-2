@@ -130,6 +130,20 @@
     line-height: var(--line-height-base);
 }
 
+.register-header a,
+.register-terms-scroll a,
+.register-terms-checkbox a {
+    color: var(--color-text);
+    font-weight: var(--font-weight-extrabold);
+    text-decoration: none;
+}
+
+.register-header a:hover,
+.register-terms-scroll a:hover,
+.register-terms-checkbox a:hover {
+    text-decoration: underline;
+}
+
 .register-form {
     display: grid;
     gap: 8px;
@@ -314,11 +328,11 @@
 }
 
 .register-password-requirement-error {
-    color: #b91c1c;
+    color: var(--color-danger);
 }
 
 .register-password-requirement-ok {
-    color: #15803d;
+    color: var(--color-success);
 }
 
 .register-terms-box {

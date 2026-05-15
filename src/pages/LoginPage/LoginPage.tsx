@@ -235,6 +235,15 @@ export const LoginPage = ({ onLogin, onLoginGoogle, isDark, onToggleTheme }: Log
                             Ainda não tem conta?{' '}
                             <Link to="/cadastro">Criar conta</Link>
                         </p>
+                        <p className="login-legal-links">
+                            <Link to="/termos">Termos de Uso</Link>
+                            <span aria-hidden="true">·</span>
+                            <Link to="/privacidade">
+                                Política de Privacidade
+                            </Link>
+                            <span aria-hidden="true">·</span>
+                            <Link to="/cookies">Cookies</Link>
+                        </p>
                     </footer>
                 </section>
             </section>

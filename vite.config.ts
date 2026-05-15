@@ -45,6 +45,13 @@ export default defineConfig({
             },
             workbox: {
                 globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+                // Nunca cachear chamadas de API — garante que 401/redirect passam direto ao network
+                runtimeCaching: [
+                    {
+                        urlPattern: /^https:\/\/lista-de-tarefas-2-production\.up\.railway\.app\//,
+                        handler: 'NetworkOnly',
+                    },
+                ],
             },
             devOptions: {
                 enabled: false,
