@@ -110,7 +110,7 @@ export const useChecklist = (
 
         const titulo = edicaoGrupo.titulo.trim()
 
-        if (!titulo || titulo.length < 2) return
+        if (!titulo) return
 
         try {
             const atualizado = await checklistApi.updateGroup(taskId, edicaoGrupo.id, titulo)
@@ -218,7 +218,7 @@ export const useChecklist = (
 
         const titulo = edicaoItem.titulo.trim()
 
-        if (!titulo || titulo.length < 2) return
+        if (!titulo) return
 
         try {
             const atualizado = await checklistApi.updateItem(taskId, edicaoItem.id, {

@@ -1,5 +1,6 @@
 import {
     useEffect,
+    useRef,
     useState,
     type ChangeEvent,
     type KeyboardEvent as ReactKeyboardEvent,
@@ -27,7 +28,7 @@ interface TaskDetailModalProps {
         title: string,
         description: string,
         priority: TaskPriority
-    ) => void
+    ) => void | Promise<void>
     onAddFiles: (taskId: string, files: File[]) => void
     onDeleteFile: (taskId: string, fileId: string) => void
     onRequestRenameFile: (taskId: string, file: TaskFile) => void
@@ -37,9 +38,11 @@ interface TaskDetailModalProps {
     ) => void
 }
 
+type CampoEdicaoTask = 'titulo' | 'descricao' | null
+
 const priorityLabelMap: Record<TaskPriority, string> = {
     alta: 'Alta',
-    media: 'Media',
+    media: 'Média',
     baixa: 'Baixa',
 }
 
@@ -54,7 +57,8 @@ export const TaskDetailModal = ({
     onRequestRenameFile,
     onChecklistProgressChange,
 }: TaskDetailModalProps) => {
-    const [isEditing, setIsEditing] = useState(false)
+    const [campoEmEdicao, setCampoEmEdicao] =
+        useState<CampoEdicaoTask>(null)
     const [editedTitle, setEditedTitle] = useState(task.title)
     const [editedDescription, setEditedDescription] = useState(
         task.description || ''
@@ -62,19 +66,20 @@ export const TaskDetailModal = ({
     const [editedPriority, setEditedPriority] =
         useState<TaskPriority>(task.priority)
     const [fileMessage, setFileMessage] = useState<string | null>(null)
+    const shouldSkipBlurSaveRef = useRef(false)
 
     const isTaskCompleted = task.completed
     const priorityLabel = priorityLabelMap[task.priority]
 
     useEffect(() => {
         const handleKeyDown = (event: globalThis.KeyboardEvent) => {
-            if (event.key === 'Escape' && !isEditing) onClose()
+            if (event.key === 'Escape' && !campoEmEdicao) onClose()
         }
 
         document.addEventListener('keydown', handleKeyDown)
 
         return () => document.removeEventListener('keydown', handleKeyDown)
-    }, [isEditing, onClose])
+    }, [campoEmEdicao, onClose])
 
     useEffect(() => {
         const originalBodyOverflow = document.body.style.overflow
@@ -98,44 +103,144 @@ export const TaskDetailModal = ({
     }, [])
 
     const handleOverlayClick = (event: MouseEvent<HTMLDivElement>) => {
-        if (event.target === event.currentTarget && !isEditing) onClose()
+        if (event.target === event.currentTarget && !campoEmEdicao) onClose()
     }
 
-    const handleStartEdit = () => {
+    const iniciarEdicaoTitulo = () => {
+        if (isTaskCompleted) return
+
         setFileMessage(null)
+        shouldSkipBlurSaveRef.current = false
+        setEditedTitle(task.title)
+        setCampoEmEdicao('titulo')
+    }
+
+    const iniciarEdicaoDescricao = () => {
+        if (isTaskCompleted) return
+
+        setFileMessage(null)
+        shouldSkipBlurSaveRef.current = false
+        setEditedDescription(task.description || '')
+        setCampoEmEdicao('descricao')
+    }
+
+    const cancelarEdicaoInline = () => {
+        shouldSkipBlurSaveRef.current = true
         setEditedTitle(task.title)
         setEditedDescription(task.description || '')
         setEditedPriority(task.priority)
-        setIsEditing(true)
+        setCampoEmEdicao(null)
     }
 
-    const handleCancelEdit = () => {
-        setEditedTitle(task.title)
-        setEditedDescription(task.description || '')
-        setEditedPriority(task.priority)
-        setIsEditing(false)
-    }
+    const salvarTaskAtualizada = async (
+        title: string,
+        description: string,
+        priority: TaskPriority
+    ) => {
+        const tituloNormalizado = title.trim()
+        const descricaoNormalizada = description.trim()
 
-    const handleSave = () => {
-        const normalizedTitle = editedTitle.trim()
-
-        if (!normalizedTitle || isTaskCompleted) {
+        if (!tituloNormalizado || isTaskCompleted) {
             return
         }
 
-        onUpdateTask(
-            task.id,
-            normalizedTitle,
-            editedDescription.trim(),
+        await Promise.resolve(
+            onUpdateTask(
+                task.id,
+                tituloNormalizado,
+                descricaoNormalizada,
+                priority
+            )
+        )
+    }
+
+    const salvarTituloInline = async () => {
+        if (shouldSkipBlurSaveRef.current) {
+            shouldSkipBlurSaveRef.current = false
+            return
+        }
+
+        const tituloNormalizado = editedTitle.trim()
+
+        if (!tituloNormalizado) {
+            setEditedTitle(task.title)
+            setCampoEmEdicao(null)
+            return
+        }
+
+        setEditedTitle(tituloNormalizado)
+
+        await salvarTaskAtualizada(
+            tituloNormalizado,
+            editedDescription,
             editedPriority
         )
 
-        setIsEditing(false)
+        setCampoEmEdicao(null)
     }
 
-    const handleEditKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') handleSave()
-        if (event.key === 'Escape') handleCancelEdit()
+    const salvarDescricaoInline = async () => {
+        if (shouldSkipBlurSaveRef.current) {
+            shouldSkipBlurSaveRef.current = false
+            return
+        }
+
+        const descricaoNormalizada = editedDescription.trim()
+
+        setEditedDescription(descricaoNormalizada)
+
+        await salvarTaskAtualizada(
+            editedTitle,
+            descricaoNormalizada,
+            editedPriority
+        )
+
+        setCampoEmEdicao(null)
+    }
+
+    const handlePriorityChange = async (priority: TaskPriority) => {
+        if (isTaskCompleted) return
+
+        setEditedPriority(priority)
+
+        await salvarTaskAtualizada(
+            editedTitle || task.title,
+            editedDescription,
+            priority
+        )
+    }
+
+    const handleTitleKeyDown = (
+        event: ReactKeyboardEvent<HTMLInputElement>
+    ) => {
+        if (event.key === 'Enter') {
+            event.preventDefault()
+            event.currentTarget.blur()
+        }
+
+        if (event.key === 'Escape') {
+            event.preventDefault()
+            cancelarEdicaoInline()
+        }
+    }
+
+    const handleDescriptionKeyDown = (
+        event: ReactKeyboardEvent<HTMLTextAreaElement>
+    ) => {
+        if (event.key === 'Enter' && event.ctrlKey) {
+            event.preventDefault()
+            event.currentTarget.blur()
+        }
+
+        if (event.key === 'Escape') {
+            event.preventDefault()
+            cancelarEdicaoInline()
+        }
+    }
+
+    const handleDeleteTask = async () => {
+        await onDeleteTask(task.id)
+        onClose()
     }
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -167,11 +272,6 @@ export const TaskDetailModal = ({
         event.target.value = ''
     }
 
-    const handleDeleteTask = async () => {
-        await onDeleteTask(task.id)
-        onClose()
-    }
-
     const modal = (
         <div
             className="task-detail-overlay"
@@ -183,50 +283,67 @@ export const TaskDetailModal = ({
             <article className="task-detail-modal">
                 <header className="task-detail-header">
                     <div className="task-detail-title-area">
-                        <span
-                            className={`task-priority-badge task-priority-badge--${task.priority}`}
-                        >
-                            {priorityLabel}
-                        </span>
+                        <div className="task-detail-priority-row">
+                            <span
+                                className={`task-priority-badge task-priority-badge--${task.priority}`}
+                            >
+                                {priorityLabel}
+                            </span>
 
-                        {isEditing ? (
-                            <div className="task-detail-edit-title">
-                                <input
-                                    type="text"
-                                    value={editedTitle}
-                                    onChange={(event) =>
-                                        setEditedTitle(event.target.value)
-                                    }
-                                    onKeyDown={handleEditKeyDown}
-                                    disabled={isTaskCompleted}
-                                    aria-label="Titulo da tarefa"
-                                    autoFocus
-                                />
-
+                            {!isTaskCompleted && (
                                 <select
+                                    className="task-detail-priority-select"
                                     value={editedPriority}
-                                    disabled={isTaskCompleted}
                                     onChange={(event) =>
-                                        setEditedPriority(
+                                        handlePriorityChange(
                                             event.target.value as TaskPriority
                                         )
                                     }
                                     aria-label="Prioridade da tarefa"
                                 >
                                     <option value="alta">Alta</option>
-                                    <option value="media">Media</option>
+                                    <option value="media">Média</option>
                                     <option value="baixa">Baixa</option>
                                 </select>
-                            </div>
+                            )}
+                        </div>
+
+                        {campoEmEdicao === 'titulo' ? (
+                            <input
+                                className="task-detail-title-input"
+                                type="text"
+                                value={editedTitle}
+                                onChange={(event) =>
+                                    setEditedTitle(event.target.value)
+                                }
+                                onKeyDown={handleTitleKeyDown}
+                                onBlur={salvarTituloInline}
+                                aria-label="Título da tarefa"
+                                autoFocus
+                            />
                         ) : (
-                            <h2>{task.title}</h2>
+                            <h2
+                                className={
+                                    isTaskCompleted
+                                        ? undefined
+                                        : 'task-detail-inline-field'
+                                }
+                                onClick={iniciarEdicaoTitulo}
+                                title={
+                                    isTaskCompleted
+                                        ? undefined
+                                        : 'Clique para editar'
+                                }
+                            >
+                                {editedTitle}
+                            </h2>
                         )}
 
                         <p className="task-detail-meta">
                             Criada em {task.createdAt}
                             {task.updatedAt ? ` | Editada em ${task.updatedAt}` : ''}
                             {task.completedAt
-                                ? ` | Concluida em ${task.completedAt}`
+                                ? ` | Concluída em ${task.completedAt}`
                                 : ''}
                         </p>
                     </div>
@@ -245,29 +362,41 @@ export const TaskDetailModal = ({
                     <section className="task-detail-main">
                         <section className="task-detail-section">
                             <div className="task-detail-section-header">
-                                <h3>Descricao</h3>
+                                <h3>Descrição</h3>
                             </div>
 
-                            {isEditing ? (
+                            {campoEmEdicao === 'descricao' ? (
                                 <textarea
                                     value={editedDescription}
                                     onChange={(event) =>
                                         setEditedDescription(event.target.value)
                                     }
+                                    onKeyDown={handleDescriptionKeyDown}
+                                    onBlur={salvarDescricaoInline}
                                     rows={5}
-                                    disabled={isTaskCompleted}
                                     placeholder="Detalhes da tarefa..."
-                                    aria-label="Descricao da tarefa"
+                                    aria-label="Descrição da tarefa"
+                                    autoFocus
                                 />
                             ) : (
                                 <p
-                                    className={
-                                        task.description
+                                    className={`${
+                                        editedDescription
                                             ? 'task-detail-description'
                                             : 'task-detail-description task-detail-description--empty'
+                                    } ${
+                                        isTaskCompleted
+                                            ? ''
+                                            : 'task-detail-inline-field'
+                                    }`}
+                                    onClick={iniciarEdicaoDescricao}
+                                    title={
+                                        isTaskCompleted
+                                            ? undefined
+                                            : 'Clique para editar'
                                     }
                                 >
-                                    {task.description || 'Sem descricao.'}
+                                    {editedDescription || 'Sem descrição.'}
                                 </p>
                             )}
                         </section>
@@ -291,10 +420,16 @@ export const TaskDetailModal = ({
                     <aside className="task-detail-side">
                         <section className="task-detail-section task-detail-actions-panel">
                             <div className="task-detail-section-header">
-                                <h3>Acoes</h3>
+                                <h3>Ações</h3>
                             </div>
 
-                            <div className="task-detail-actions">
+                            <div
+                                className={`task-detail-actions ${
+                                    isTaskCompleted
+                                        ? 'task-detail-actions--locked'
+                                        : ''
+                                }`}
+                            >
                                 {isTaskCompleted ? (
                                     <button
                                         type="button"
@@ -314,37 +449,6 @@ export const TaskDetailModal = ({
                                         >
                                             Concluir
                                         </button>
-
-                                        {isEditing ? (
-                                            <>
-                                                <button
-                                                    type="button"
-                                                    className="task-action task-action--complete"
-                                                    disabled={
-                                                        !editedTitle.trim()
-                                                    }
-                                                    onClick={handleSave}
-                                                >
-                                                    Salvar
-                                                </button>
-
-                                                <button
-                                                    type="button"
-                                                    className="task-action task-action--edit"
-                                                    onClick={handleCancelEdit}
-                                                >
-                                                    Cancelar
-                                                </button>
-                                            </>
-                                        ) : (
-                                            <button
-                                                type="button"
-                                                className="task-action task-action--edit"
-                                                onClick={handleStartEdit}
-                                            >
-                                                Editar
-                                            </button>
-                                        )}
 
                                         <label className="file-upload-button task-action task-action--attach">
                                             Anexar
@@ -369,8 +473,8 @@ export const TaskDetailModal = ({
 
                             {isTaskCompleted && (
                                 <p className="task-locked-message">
-                                    Tarefa concluida. Edicao e novos anexos
-                                    estao bloqueados.
+                                    Tarefa concluída. Edição e novos anexos
+                                    estão bloqueados.
                                 </p>
                             )}
 

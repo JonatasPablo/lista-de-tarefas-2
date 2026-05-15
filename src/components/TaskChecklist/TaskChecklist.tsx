@@ -1,4 +1,4 @@
-import { type KeyboardEvent, useEffect } from 'react'
+import { type KeyboardEvent, useEffect, useRef } from 'react'
 import { useChecklist } from '../../hooks/useChecklist'
 import type { ChecklistItem } from '../../services/checklistApi'
 import './TaskChecklist.css'
@@ -46,8 +46,8 @@ export const TaskChecklist = ({
         alternarItem,
         progressoGeral,
     } = useChecklist(taskId, isTaskCompleted, expanded)
+    const shouldSkipBlurSaveRef = useRef(false)
 
-    // Notifica o pai sempre que o progresso mudar
     useEffect(() => {
         if (!onProgressChange) return
         if (progressoGeral.total === 0) {
@@ -60,17 +60,35 @@ export const TaskChecklist = ({
         }
     }, [progressoGeral.total, progressoGeral.concluidos, onProgressChange])
 
-    // ---------------------------------------------------------------
-    // Handlers de teclado
-    // ---------------------------------------------------------------
-
     const handleNovoGrupoKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') adicionarGrupo()
     }
 
+    const finalizarEdicaoGrupo = () => {
+        if (!edicaoGrupo) return
+        if (shouldSkipBlurSaveRef.current) {
+            shouldSkipBlurSaveRef.current = false
+            return
+        }
+
+        if (edicaoGrupo.titulo.trim()) {
+            salvarEdicaoGrupo()
+        } else {
+            cancelarEdicaoGrupo()
+        }
+    }
+
     const handleEdicaoGrupoKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') salvarEdicaoGrupo()
-        if (e.key === 'Escape') cancelarEdicaoGrupo()
+        if (e.key === 'Enter') {
+            e.preventDefault()
+            e.currentTarget.blur()
+        }
+
+        if (e.key === 'Escape') {
+            e.preventDefault()
+            shouldSkipBlurSaveRef.current = true
+            cancelarEdicaoGrupo()
+        }
     }
 
     const handleNovoItemKeyDown = (
@@ -80,21 +98,44 @@ export const TaskChecklist = ({
         if (e.key === 'Enter') adicionarItem(grupoId)
     }
 
-    const handleEdicaoItemKeyDown = (
-        e: KeyboardEvent<HTMLInputElement>,
-        grupoId: string
-    ) => {
-        if (e.key === 'Enter') salvarEdicaoItem(grupoId)
-        if (e.key === 'Escape') cancelarEdicaoItem()
+    const finalizarEdicaoItem = (grupoId: string) => {
+        if (!edicaoItem) return
+        if (shouldSkipBlurSaveRef.current) {
+            shouldSkipBlurSaveRef.current = false
+            return
+        }
+
+        if (edicaoItem.titulo.trim()) {
+            salvarEdicaoItem(grupoId)
+        } else {
+            cancelarEdicaoItem()
+        }
     }
 
-    // ---------------------------------------------------------------
-    // Confirmações antes de excluir
-    // ---------------------------------------------------------------
+    const handleEdicaoItemKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault()
+            e.currentTarget.blur()
+        }
 
-    // ---------------------------------------------------------------
-    // Render de item individual
-    // ---------------------------------------------------------------
+        if (e.key === 'Escape') {
+            e.preventDefault()
+            shouldSkipBlurSaveRef.current = true
+            cancelarEdicaoItem()
+        }
+    }
+
+    const handleIniciarEdicaoGrupo = (
+        grupo: Parameters<typeof iniciarEdicaoGrupo>[0]
+    ) => {
+        shouldSkipBlurSaveRef.current = false
+        iniciarEdicaoGrupo(grupo)
+    }
+
+    const handleIniciarEdicaoItem = (item: ChecklistItem) => {
+        shouldSkipBlurSaveRef.current = false
+        iniciarEdicaoItem(item)
+    }
 
     const renderItem = (item: ChecklistItem, grupoId: string) => {
         const estaEditando = edicaoItem?.id === item.id
@@ -109,26 +150,11 @@ export const TaskChecklist = ({
                             onChange={(e) =>
                                 setEdicaoItem({ ...edicaoItem, titulo: e.target.value })
                             }
-                            onKeyDown={(e) => handleEdicaoItemKeyDown(e, grupoId)}
+                            onKeyDown={handleEdicaoItemKeyDown}
+                            onBlur={() => finalizarEdicaoItem(grupoId)}
                             autoFocus
                             aria-label="Editar item"
                         />
-                        <div className="cl-item-edit-actions">
-                            <button
-                                type="button"
-                                className="cl-btn cl-btn--save"
-                                onClick={() => salvarEdicaoItem(grupoId)}
-                            >
-                                Salvar
-                            </button>
-                            <button
-                                type="button"
-                                className="cl-btn cl-btn--cancel"
-                                onClick={cancelarEdicaoItem}
-                            >
-                                Cancelar
-                            </button>
-                        </div>
                     </div>
                 </li>
             )
@@ -139,7 +165,7 @@ export const TaskChecklist = ({
                 key={item.id}
                 className={`cl-item ${item.isCompleted ? 'cl-item--done' : ''}`}
             >
-                <label className="cl-item-label">
+                <div className="cl-item-label">
                     <input
                         type="checkbox"
                         checked={item.isCompleted}
@@ -147,11 +173,26 @@ export const TaskChecklist = ({
                         onChange={() => alternarItem(grupoId, item.id)}
                         aria-label={`Marcar "${item.title}"`}
                     />
-                    <span className="cl-item-text">{item.title}</span>
-                </label>
+
+                    {isTaskCompleted ? (
+                        <span className="cl-item-text">{item.title}</span>
+                    ) : (
+                        <button
+                            type="button"
+                            className="cl-item-text cl-inline-editable"
+                            onClick={() => handleIniciarEdicaoItem(item)}
+                            title="Clique para editar"
+                        >
+                            {item.title}
+                        </button>
+                    )}
+                </div>
 
                 {item.isCompleted && item.completedAt && (
-                    <span className="cl-item-completed-at" title={`Concluído em ${item.completedAt}`}>
+                    <span
+                        className="cl-item-completed-at"
+                        title={`Concluído em ${item.completedAt}`}
+                    >
                         {item.completedAt}
                     </span>
                 )}
@@ -160,21 +201,12 @@ export const TaskChecklist = ({
                     <div className="cl-item-actions">
                         <button
                             type="button"
-                            onClick={() => iniciarEdicaoItem(item)}
-                            title="Editar item"
-                            aria-label="Editar item"
-                            className="cl-icon-btn"
-                        >
-                            ✎
-                        </button>
-                        <button
-                            type="button"
                             onClick={() => excluirItem(grupoId, item.id)}
                             title="Excluir item"
                             aria-label="Excluir item"
                             className="cl-icon-btn cl-icon-btn--danger"
                         >
-                            ✕
+                            x
                         </button>
                     </div>
                 )}
@@ -182,12 +214,8 @@ export const TaskChecklist = ({
         )
     }
 
-    // ---------------------------------------------------------------
-    // Render principal
-    // ---------------------------------------------------------------
-
     if (carregando) {
-        return <div className="cl-loading">Carregando checklist…</div>
+        return <div className="cl-loading">Carregando checklist...</div>
     }
 
     const temGrupos = grupos.length > 0
@@ -196,14 +224,12 @@ export const TaskChecklist = ({
 
     return (
         <div className="task-checklist">
-            {/* Progresso geral — só exibe quando há 2+ grupos com itens */}
             {temProgressoGeral && (
                 <p className="cl-progresso-geral">
                     {progressoGeral.concluidos}/{progressoGeral.total} concluídos no total
                 </p>
             )}
 
-            {/* Grupos */}
             {temGrupos && (
                 <div className="cl-grupos">
                     {grupos.map((grupo) => {
@@ -213,7 +239,6 @@ export const TaskChecklist = ({
 
                         return (
                             <section key={grupo.id} className="cl-grupo">
-                                {/* Cabeçalho do grupo */}
                                 <div className="cl-grupo-header">
                                     {estaEditandoGrupo ? (
                                         <div className="cl-grupo-edit">
@@ -227,29 +252,29 @@ export const TaskChecklist = ({
                                                     })
                                                 }
                                                 onKeyDown={handleEdicaoGrupoKeyDown}
+                                                onBlur={finalizarEdicaoGrupo}
                                                 autoFocus
                                                 aria-label="Editar nome da lista"
                                             />
-                                            <button
-                                                type="button"
-                                                className="cl-btn cl-btn--save"
-                                                onClick={salvarEdicaoGrupo}
-                                            >
-                                                Salvar
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="cl-btn cl-btn--cancel"
-                                                onClick={cancelarEdicaoGrupo}
-                                            >
-                                                Cancelar
-                                            </button>
                                         </div>
                                     ) : (
                                         <>
-                                            <h4 className="cl-grupo-titulo">
-                                                {grupo.title}
-                                            </h4>
+                                            {isTaskCompleted ? (
+                                                <h4 className="cl-grupo-titulo">
+                                                    {grupo.title}
+                                                </h4>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    className="cl-grupo-titulo cl-inline-editable"
+                                                    onClick={() =>
+                                                        handleIniciarEdicaoGrupo(grupo)
+                                                    }
+                                                    title="Clique para editar"
+                                                >
+                                                    {grupo.title}
+                                                </button>
+                                            )}
 
                                             {total > 0 && (
                                                 <span className="cl-grupo-progresso">
@@ -262,24 +287,13 @@ export const TaskChecklist = ({
                                                     <button
                                                         type="button"
                                                         onClick={() =>
-                                                            iniciarEdicaoGrupo(grupo)
-                                                        }
-                                                        title="Renomear lista"
-                                                        aria-label="Renomear lista"
-                                                        className="cl-icon-btn"
-                                                    >
-                                                        ✎
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
                                                             excluirGrupo(grupo.id)
                                                         }
                                                         title="Excluir lista"
                                                         aria-label="Excluir lista"
                                                         className="cl-icon-btn cl-icon-btn--danger"
                                                     >
-                                                        ✕
+                                                        x
                                                     </button>
                                                 </div>
                                             )}
@@ -298,7 +312,6 @@ export const TaskChecklist = ({
                                     </div>
                                 )}
 
-                                {/* Itens do grupo */}
                                 {grupo.items.length > 0 && (
                                     <ul className="cl-lista">
                                         {grupo.items.map((item) =>
@@ -307,7 +320,6 @@ export const TaskChecklist = ({
                                     </ul>
                                 )}
 
-                                {/* Adicionar item */}
                                 {!isTaskCompleted && (
                                     <div className="cl-add-item">
                                         <input
@@ -341,12 +353,11 @@ export const TaskChecklist = ({
                 </div>
             )}
 
-            {/* Adicionar nova lista */}
             {!isTaskCompleted && (
                 <div className="cl-add-grupo">
                     <input
                         type="text"
-                        placeholder="Nome da nova lista (ex: Testes, Suporte…)"
+                        placeholder="Nome da nova lista (ex: Testes, Suporte...)"
                         value={tituloNovoGrupo}
                         onChange={(e) => setTituloNovoGrupo(e.target.value)}
                         onKeyDown={handleNovoGrupoKeyDown}

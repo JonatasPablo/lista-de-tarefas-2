@@ -79,14 +79,34 @@
 .cl-grupo-titulo {
     flex: 1;
     margin: 0;
+    padding: 2px 4px;
+    border: 0;
+    background: transparent;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-extrabold);
     color: var(--color-text);
-    letter-spacing: -0.01em;
+    letter-spacing: 0;
     line-height: var(--line-height-tight);
+    text-align: left;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.cl-inline-editable {
+    border-radius: var(--radius-sm);
+    cursor: text;
+    transition:
+        background-color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        color var(--transition-fast);
+}
+
+.cl-inline-editable:hover,
+.cl-inline-editable:focus-visible {
+    outline: none;
+    background-color: var(--color-bg-hover);
+    box-shadow: 0 0 0 3px var(--color-bg-hover);
 }
 
 .cl-grupo-progresso {
@@ -205,9 +225,9 @@
     align-items: flex-start;
     gap: var(--space-2);
     flex: 1;
-    cursor: pointer;
     user-select: none;
     padding-top: 3px;
+    min-width: 0;
 }
 
 /* Checkbox com visual melhorado */
@@ -259,9 +279,15 @@
 }
 
 .cl-item-text {
+    min-width: 0;
+    padding: 1px 4px;
+    border: 0;
+    background: transparent;
     line-height: var(--line-height-snug);
     color: var(--color-text);
     font-size: var(--font-size-sm);
+    text-align: left;
+    overflow-wrap: anywhere;
 }
 
 /* Item concluído */
@@ -276,7 +302,7 @@
 
 .cl-item-completed-at {
     font-size: var(--font-size-2xs);
-    color: var(--color-text-subtle);
+    color: var(--color-text-muted);
     white-space: nowrap;
     flex-shrink: 0;
     align-self: center;
@@ -540,8 +566,13 @@
         min-width: 0;
     }
 
+    .cl-item {
+        flex-wrap: wrap;
+    }
+
     .cl-item-completed-at {
-        display: none;
+        margin-left: 26px;
+        white-space: normal;
     }
 
     .cl-grupo {
