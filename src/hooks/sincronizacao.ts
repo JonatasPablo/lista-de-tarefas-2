@@ -14,6 +14,7 @@ const _estado = {
     refreshEmAndamento: false,
     ultimoRefresh: 0,
     backoffAte: 0,
+    pausadoAte: 0,
 }
 
 export const sincronizacao = {
@@ -25,10 +26,22 @@ export const sincronizacao = {
         _estado.contadorOperacoes = Math.max(0, _estado.contadorOperacoes - 1)
     },
 
+    /**
+     * Libera o contador e impõe um cooldown adicional antes do próximo refresh.
+     * Usar após operações que geram burst de requisições (ex: upload de arquivo).
+     */
+    liberarComCooldown(cooldownMs: number): void {
+        _estado.contadorOperacoes = Math.max(0, _estado.contadorOperacoes - 1)
+        if (_estado.contadorOperacoes === 0) {
+            _estado.pausadoAte = Date.now() + cooldownMs
+        }
+    },
+
     podeExecutarRefresh(): boolean {
         if (_estado.contadorOperacoes > 0) return false
         if (_estado.refreshEmAndamento) return false
         if (Date.now() < _estado.backoffAte) return false
+        if (Date.now() < _estado.pausadoAte) return false
         if (Date.now() - _estado.ultimoRefresh < COOLDOWN_ENTRE_REFRESHES_MS) return false
         return true
     },

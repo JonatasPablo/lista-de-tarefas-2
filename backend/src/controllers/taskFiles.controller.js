@@ -1,16 +1,6 @@
-const fs = require('fs/promises')
-
 const taskFilesService = require('../services/taskFiles.service')
 const AppError = require('../errors/AppError')
 const { validateTaskId } = require('../helpers/validateTask')
-
-const removeUploadedFileIfNeeded = async (file) => {
-    if (!file?.path) {
-        return
-    }
-
-    await fs.unlink(file.path).catch(() => null)
-}
 
 const validateFileId = (id) => {
     const fileId = Number(id)
@@ -37,19 +27,13 @@ const createTaskFile = async (req, res) => {
 
     const taskId = validateTaskId(id)
 
-    try {
-        const file = await taskFilesService.createTaskFile(
-            taskId,
-            req.user.id,
-            req.file
-        )
+    const file = await taskFilesService.createTaskFile(
+        taskId,
+        req.user.id,
+        req.file
+    )
 
-        return res.status(201).json(file)
-    } catch (error) {
-        await removeUploadedFileIfNeeded(req.file)
-
-        throw error
-    }
+    return res.status(201).json(file)
 }
 
 const renameTaskFile = async (req, res) => {
@@ -92,7 +76,18 @@ const downloadTaskFile = async (req, res) => {
         req.user.id
     )
 
-    return res.download(file.filePath, file.display_name)
+    const mimeType = file.mime_type || 'application/octet-stream'
+    const fileName = encodeURIComponent(file.display_name || file.original_name)
+
+    res.setHeader('Content-Type', mimeType)
+    res.setHeader(
+        'Content-Disposition',
+        `inline; filename*=UTF-8''${fileName}`
+    )
+    res.setHeader('Content-Length', file.size_bytes)
+    res.setHeader('Cache-Control', 'private, max-age=300')
+
+    return res.end(file.buffer)
 }
 
 module.exports = {

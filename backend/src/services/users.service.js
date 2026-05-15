@@ -1,5 +1,3 @@
-const fs = require('fs/promises')
-const path = require('path')
 const bcrypt = require('bcryptjs')
 
 const connection = require('../database/connection')
@@ -8,7 +6,6 @@ const mailService = require('./mail.service')
 const authService = require('./auth.service')
 
 const PROVEDOR_GOOGLE = 'google'
-const avatarsDirectory = path.resolve(__dirname, '../../uploads/avatars')
 
 const buildPasswordResetUrl = (email) => {
     const frontendUrl =
@@ -207,6 +204,10 @@ const atualizarAvatar = async ({ userId, uploadedFile }) => {
         throw new AppError('Nenhuma imagem enviada.', 400)
     }
 
+    if (!uploadedFile.buffer) {
+        throw new AppError('Conteudo da imagem nao recebido.', 400)
+    }
+
     const hasProfileFields = await authService.hasUserProfileFields()
 
     if (!hasProfileFields) {
@@ -223,46 +224,34 @@ const atualizarAvatar = async ({ userId, uploadedFile }) => {
     }
 
     const originalName = sanitizeOriginalName(uploadedFile.originalname)
-    const avatarAnterior = usuario.avatar_path
 
-    try {
-        await connection.query(
-            `
-                UPDATE users
-                SET
-                    avatar_path = ?,
-                    avatar_original_name = ?,
-                    avatar_mime_type = ?,
-                    avatar_size_bytes = ?,
-                    profile_updated_at = NOW(),
-                    updated_at = NOW()
-                WHERE id = ?
-            `,
-            [
-                uploadedFile.filename,
-                originalName,
-                uploadedFile.mimetype,
-                uploadedFile.size,
-                userId,
-            ]
-        )
+    // Salva avatar como BLOB diretamente no banco para persistência entre deploys.
+    // avatar_path é mantido como NULL para indicar que não há arquivo físico.
+    await connection.query(
+        `
+            UPDATE users
+            SET
+                avatar_path = NULL,
+                avatar_original_name = ?,
+                avatar_mime_type = ?,
+                avatar_size_bytes = ?,
+                avatar_data = ?,
+                profile_updated_at = NOW(),
+                updated_at = NOW()
+            WHERE id = ?
+        `,
+        [
+            originalName,
+            uploadedFile.mimetype,
+            uploadedFile.size,
+            uploadedFile.buffer,
+            userId,
+        ]
+    )
 
-        if (avatarAnterior) {
-            const caminhoAnterior = path.resolve(avatarsDirectory, avatarAnterior)
+    const usuarioAtualizado = await buscarUsuarioComSenhaPorId(userId)
 
-            if (caminhoAnterior.startsWith(avatarsDirectory)) {
-                await fs.unlink(caminhoAnterior).catch(() => null)
-            }
-        }
-
-        const usuarioAtualizado = await buscarUsuarioComSenhaPorId(userId)
-
-        return authService.mapUser(usuarioAtualizado)
-    } catch (error) {
-        await fs.unlink(uploadedFile.path).catch(() => null)
-
-        throw error
-    }
+    return authService.mapUser(usuarioAtualizado)
 }
 
 const removerAvatar = async (userId) => {
@@ -281,11 +270,9 @@ const removerAvatar = async (userId) => {
         throw new AppError('Usuario nao encontrado.', 404)
     }
 
-    if (!usuario.avatar_path) {
+    if (!usuario.avatar_path && !usuario.has_avatar_db) {
         throw new AppError('Nenhuma foto de perfil para remover.', 400)
     }
-
-    const caminhoArquivo = path.resolve(avatarsDirectory, usuario.avatar_path)
 
     await connection.query(
         `
@@ -295,6 +282,7 @@ const removerAvatar = async (userId) => {
                 avatar_original_name = NULL,
                 avatar_mime_type = NULL,
                 avatar_size_bytes = NULL,
+                avatar_data = NULL,
                 profile_updated_at = NOW(),
                 updated_at = NOW()
             WHERE id = ?
@@ -302,41 +290,33 @@ const removerAvatar = async (userId) => {
         [userId]
     )
 
-    if (caminhoArquivo.startsWith(avatarsDirectory)) {
-        await fs.unlink(caminhoArquivo).catch(() => null)
-    }
-
     const usuarioAtualizado = await buscarUsuarioComSenhaPorId(userId)
 
     return authService.mapUser(usuarioAtualizado)
 }
 
 const obterAvatar = async (userId) => {
-    const usuario = await buscarUsuarioComSenhaPorId(userId)
+    const hasBlobColumn = await authService.hasAvatarBlobColumn()
 
-    if (!usuario) {
-        throw new AppError('Usuario nao encontrado.', 404)
+    if (!hasBlobColumn) {
+        throw new AppError(
+            'Coluna avatar_data nao encontrada. Aplique a migration 006_blob_storage.sql.',
+            500
+        )
     }
 
-    if (!usuario.avatar_path) {
+    const [rows] = await connection.query(
+        `SELECT avatar_data, avatar_mime_type FROM users WHERE id = ? AND avatar_data IS NOT NULL`,
+        [userId]
+    )
+
+    if (!rows[0] || !rows[0].avatar_data) {
         throw new AppError('Foto de perfil nao encontrada.', 404)
     }
 
-    const filePath = path.resolve(avatarsDirectory, usuario.avatar_path)
-
-    if (!filePath.startsWith(avatarsDirectory)) {
-        throw new AppError('Caminho de imagem invalido.', 400)
-    }
-
-    try {
-        await fs.access(filePath)
-    } catch {
-        throw new AppError('Arquivo de foto nao encontrado.', 404)
-    }
-
     return {
-        filePath,
-        mimeType: usuario.avatar_mime_type || 'application/octet-stream',
+        buffer: rows[0].avatar_data,
+        mimeType: rows[0].avatar_mime_type || 'application/octet-stream',
     }
 }
 

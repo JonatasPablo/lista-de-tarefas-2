@@ -1,10 +1,6 @@
-const fs = require('fs/promises')
-const path = require('path')
-
 const connection = require('../database/connection')
 const AppError = require('../errors/AppError')
 
-const uploadsDirectory = path.resolve(__dirname, '../../uploads/tasks')
 const MAX_FILES_PER_TASK = Number(process.env.TASK_FILES_MAX_PER_TASK || 20)
 const USER_STORAGE_QUOTA_BYTES =
     Number(process.env.TASK_FILES_USER_QUOTA_MB || 500) * 1024 * 1024
@@ -240,46 +236,46 @@ const createTaskFile = async (taskId, userId, uploadedFile) => {
         throw new AppError('Nenhum arquivo enviado.', 400)
     }
 
+    if (!uploadedFile.buffer) {
+        throw new AppError('Conteudo do arquivo nao recebido.', 400)
+    }
+
     await ensureUploadQuota(taskId, userId, uploadedFile.size)
 
     const originalName = sanitizeDisplayName(uploadedFile.originalname)
     const displayName = originalName
 
-    try {
-        const [result] = await connection.query(
-            `
-                INSERT INTO task_files (
-                    task_id,
-                    user_id,
-                    original_name,
-                    stored_name,
-                    display_name,
-                    mime_type,
-                    size_bytes
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            `,
-            [
-                taskId,
-                userId,
-                originalName,
-                uploadedFile.filename,
-                displayName,
-                uploadedFile.mimetype,
-                uploadedFile.size,
-            ]
-        )
+    // stored_name não é mais usado para armazenamento em disco; mantido como vazio
+    // para compatibilidade de schema com registros antigos.
+    const [result] = await connection.query(
+        `
+            INSERT INTO task_files (
+                task_id,
+                user_id,
+                original_name,
+                stored_name,
+                display_name,
+                mime_type,
+                size_bytes,
+                file_data
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `,
+        [
+            taskId,
+            userId,
+            originalName,
+            '',
+            displayName,
+            uploadedFile.mimetype,
+            uploadedFile.size,
+            uploadedFile.buffer,
+        ]
+    )
 
-        const file = await getTaskFileById(taskId, result.insertId, userId)
+    const file = await getTaskFileById(taskId, result.insertId, userId)
 
-        return mapTaskFile(file)
-    } catch (error) {
-        const filePath = path.resolve(uploadsDirectory, uploadedFile.filename)
-
-        await fs.unlink(filePath).catch(() => null)
-
-        throw error
-    }
+    return mapTaskFile(file)
 }
 
 const renameTaskFile = async (taskId, fileId, userId, displayName) => {
@@ -337,10 +333,6 @@ const deleteTaskFile = async (taskId, fileId, userId) => {
         throw new AppError('Arquivo não encontrado.', 404)
     }
 
-    const filePath = path.resolve(uploadsDirectory, file.stored_name)
-
-    await fs.unlink(filePath).catch(() => null)
-
     return true
 }
 
@@ -351,27 +343,47 @@ const getTaskFileForDownload = async (taskId, fileId, userId) => {
         throw new AppError('Tarefa não encontrada.', 404)
     }
 
-    const file = await getTaskFileById(taskId, fileId, userId)
+    // Busca o conteúdo binário do arquivo diretamente do banco de dados.
+    const [rows] = await connection.query(
+        `
+            SELECT
+                id,
+                task_id,
+                user_id,
+                original_name,
+                stored_name,
+                display_name,
+                mime_type,
+                size_bytes,
+                created_at,
+                updated_at,
+                deleted_at,
+                file_data
+            FROM task_files
+            WHERE id = ?
+                AND task_id = ?
+                AND user_id = ?
+                AND deleted_at IS NULL
+        `,
+        [fileId, taskId, userId]
+    )
+
+    const file = rows[0]
 
     if (!file) {
         throw new AppError('Arquivo não encontrado.', 404)
     }
 
-    const filePath = path.resolve(uploadsDirectory, file.stored_name)
-
-    if (!filePath.startsWith(uploadsDirectory)) {
-        throw new AppError('Caminho de arquivo inválido.', 400)
-    }
-
-    try {
-        await fs.access(filePath)
-    } catch {
-        throw new AppError('Arquivo físico não encontrado.', 404)
+    if (!file.file_data) {
+        throw new AppError(
+            'Conteúdo do arquivo não disponível. O arquivo pode ter sido enviado antes da migração para armazenamento no banco.',
+            404
+        )
     }
 
     return {
         ...mapTaskFile(file),
-        filePath,
+        buffer: file.file_data,
     }
 }
 

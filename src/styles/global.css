@@ -468,7 +468,7 @@ a {
     top: 92px;
     right: 18px;
     bottom: auto;
-    z-index: 9999;
+    z-index: var(--z-toast);
     display: grid;
     gap: 10px;
     width: min(380px, calc(100% - 36px));

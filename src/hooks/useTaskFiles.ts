@@ -82,7 +82,8 @@ export const useTaskFiles = ({
 
             showToast('error', message)
         } finally {
-            sincronizacao.liberar()
+            // Cooldown de 3s pós-upload para evitar burst de requisições de thumbnail
+            sincronizacao.liberarComCooldown(3000)
         }
     }
 

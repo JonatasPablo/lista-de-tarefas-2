@@ -328,6 +328,8 @@ const limitText = (value, maxLength) => {
     return value.trim().slice(0, maxLength)
 }
 
+let avatarBlobColumnAvailableCache = null
+
 const hasUserProfileFields = async (db = connection) => {
     if (userProfileFieldsAvailableCache !== null) {
         return userProfileFieldsAvailableCache
@@ -342,8 +344,23 @@ const hasUserProfileFields = async (db = connection) => {
     return userProfileFieldsAvailableCache
 }
 
+const hasAvatarBlobColumn = async (db = connection) => {
+    if (avatarBlobColumnAvailableCache !== null) {
+        return avatarBlobColumnAvailableCache
+    }
+
+    const [columns] = await db.query(`
+        SHOW COLUMNS FROM users LIKE 'avatar_data'
+    `)
+
+    avatarBlobColumnAvailableCache = columns.length > 0
+
+    return avatarBlobColumnAvailableCache
+}
+
 const getUserProfileSelectFields = async (db = connection, tablePrefix = '') => {
     const hasProfileFields = await hasUserProfileFields(db)
+    const hasBlobColumn = await hasAvatarBlobColumn(db)
     const prefix = tablePrefix ? `${tablePrefix}.` : ''
 
     if (!hasProfileFields) {
@@ -352,15 +369,21 @@ const getUserProfileSelectFields = async (db = connection, tablePrefix = '') => 
                 NULL AS avatar_original_name,
                 NULL AS avatar_mime_type,
                 NULL AS avatar_size_bytes,
-                NULL AS profile_updated_at,`
+                NULL AS profile_updated_at,
+                0 AS has_avatar_db,`
     }
+
+    const blobFlag = hasBlobColumn
+        ? `(${prefix}avatar_data IS NOT NULL) AS has_avatar_db,`
+        : `0 AS has_avatar_db,`
 
     return `
                 ${prefix}avatar_path,
                 ${prefix}avatar_original_name,
                 ${prefix}avatar_mime_type,
                 ${prefix}avatar_size_bytes,
-                ${prefix}profile_updated_at,`
+                ${prefix}profile_updated_at,
+                ${blobFlag}`
 }
 
 const mapUser = (user) => {
@@ -375,7 +398,7 @@ const mapUser = (user) => {
         provider: user.provider,
         role: user.role || 'user',
         has_password: Boolean(user.password_hash),
-        has_avatar: Boolean(user.avatar_path),
+        has_avatar: Boolean(user.avatar_path || user.has_avatar_db),
         avatar_updated_at: user.profile_updated_at,
         email_verified_at: user.email_verified_at,
         terms_accepted_at: user.terms_accepted_at,
@@ -1496,6 +1519,7 @@ module.exports = {
     mapUser,
     getUserProfileSelectFields,
     hasUserProfileFields,
+    hasAvatarBlobColumn,
     register,
     login,
     loginGoogle,

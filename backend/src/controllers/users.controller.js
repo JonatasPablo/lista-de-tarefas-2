@@ -1,14 +1,4 @@
-const fs = require('fs/promises')
-
 const usersService = require('../services/users.service')
-
-const removeUploadedFileIfNeeded = async (file) => {
-    if (!file?.path) {
-        return
-    }
-
-    await fs.unlink(file.path).catch(() => null)
-}
 
 const atualizarDadosBasicos = async (req, res) => {
     const { name } = req.body
@@ -38,21 +28,15 @@ const alterarSenha = async (req, res) => {
 }
 
 const atualizarAvatar = async (req, res) => {
-    try {
-        const user = await usersService.atualizarAvatar({
-            userId: req.user.id,
-            uploadedFile: req.file,
-        })
+    const user = await usersService.atualizarAvatar({
+        userId: req.user.id,
+        uploadedFile: req.file,
+    })
 
-        return res.json({
-            user,
-            message: 'Foto de perfil atualizada com sucesso.',
-        })
-    } catch (error) {
-        await removeUploadedFileIfNeeded(req.file)
-
-        throw error
-    }
+    return res.json({
+        user,
+        message: 'Foto de perfil atualizada com sucesso.',
+    })
 }
 
 const removerAvatar = async (req, res) => {
@@ -69,8 +53,9 @@ const obterAvatar = async (req, res) => {
 
     res.setHeader('Content-Type', avatar.mimeType)
     res.setHeader('Cache-Control', 'private, max-age=300')
+    res.setHeader('Content-Length', avatar.buffer.length)
 
-    return res.sendFile(avatar.filePath)
+    return res.end(avatar.buffer)
 }
 
 module.exports = {
