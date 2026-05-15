@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import {
     HashRouter,
     Navigate,
@@ -92,6 +92,11 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
         showToast,
     })
 
+    const logoutCallbackRef = useRef<(() => Promise<void>) | null>(null)
+    const onSessaoExpirada = useCallback(() => {
+        logoutCallbackRef.current?.()
+    }, [])
+
     const {
         tasks,
         setTasks,
@@ -113,6 +118,7 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
         user,
         showToast,
         confirm,
+        onSessaoExpirada,
     })
 
     const {
@@ -161,6 +167,10 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
         await handleLogout()
         resetTasks()
     }
+
+    useEffect(() => {
+        logoutCallbackRef.current = handleLogoutAndReset
+    })
 
     if (isCheckingAuth) {
         return (

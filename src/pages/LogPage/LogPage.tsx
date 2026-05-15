@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { API_URL } from '../../services/api'
+import { useSyncAutoRefresh } from '../../hooks/useSyncAutoRefresh'
 
 import './LogPage.css'
 
@@ -257,14 +258,24 @@ export function LogPage() {
     const [startDate, setStartDate] = useState(todayDate)
     const [endDate, setEndDate] = useState(todayDate)
 
+    const isMountedRef = useRef(true)
+
+    useEffect(() => {
+        isMountedRef.current = true
+        return () => {
+            isMountedRef.current = false
+        }
+    }, [])
+
     useEffect(() => {
         let isMounted = true
 
-        const loadHistory = async () => {
+        const carregarHistorico = async () => {
             try {
                 const response = await fetch(`${API_URL}/tasks/history`, {
                     method: 'GET',
                     credentials: 'include',
+                    cache: 'no-store',
                 })
 
                 if (!response.ok) {
@@ -291,12 +302,38 @@ export function LogPage() {
             }
         }
 
-        loadHistory()
+        carregarHistorico()
 
         return () => {
             isMounted = false
         }
     }, [])
+
+    const refreshHistory = useCallback(async () => {
+        try {
+            const response = await fetch(`${API_URL}/tasks/history`, {
+                method: 'GET',
+                credentials: 'include',
+                cache: 'no-store',
+            })
+
+            if (!response.ok) return
+
+            const data = (await response.json()) as TaskHistory[]
+
+            if (isMountedRef.current) {
+                setHistory(data)
+            }
+        } catch {
+            // silencioso no auto-refresh
+        }
+    }, [])
+
+    useSyncAutoRefresh({
+        callback: refreshHistory,
+        intervaloMs: 10000,
+        ativo: true,
+    })
 
     const summaryHistory = useMemo(() => {
         return history.filter((item) => {

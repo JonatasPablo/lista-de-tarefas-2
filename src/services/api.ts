@@ -29,6 +29,7 @@ export const apiRequest = async <ResponseData>(
         method: options.method || 'GET',
         headers,
         credentials: 'include',
+        cache: 'no-store',
         body: options.body ? JSON.stringify(options.body) : undefined,
     })
 

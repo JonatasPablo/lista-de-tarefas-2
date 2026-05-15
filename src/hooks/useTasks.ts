@@ -1,8 +1,12 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ToastType } from '../components/Toast/Toast'
 import { tasksApi } from '../services/tasksApi'
 import type { AuthUser } from '../services/authApi'
 import type { Task, TaskPriority } from '../types/task'
+import { useSyncAutoRefresh } from './useSyncAutoRefresh'
+
+const INTERVALO_REFRESH_MS = 1500
+const DEBOUNCE_APOS_MUTACAO_MS = 1500
 
 type ShowToast = (type: ToastType, message: string) => void
 type Confirm = (options: {
@@ -17,12 +21,27 @@ interface UseTasksOptions {
     user: AuthUser | null
     showToast: ShowToast
     confirm: Confirm
+    onSessaoExpirada?: () => void
 }
 
-export const useTasks = ({ user, showToast, confirm }: UseTasksOptions) => {
+export const useTasks = ({
+    user,
+    showToast,
+    confirm,
+    onSessaoExpirada,
+}: UseTasksOptions) => {
     const [tasks, setTasks] = useState<Task[]>([])
     const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([])
     const [isLoadingTasks, setIsLoadingTasks] = useState(false)
+
+    const ultimaMutacaoRef = useRef<number>(0)
+    const refreshEmAndamentoRef = useRef(false)
+    const sessaoValidaRef = useRef(true)
+    const onSessaoExpiradaRef = useRef(onSessaoExpirada)
+
+    useEffect(() => {
+        onSessaoExpiradaRef.current = onSessaoExpirada
+    })
 
     const pendingTasks = tasks.filter((task) => !task.completed)
     const completedTasks = tasks.filter((task) => task.completed)
@@ -31,13 +50,44 @@ export const useTasks = ({ user, showToast, confirm }: UseTasksOptions) => {
         setTasks([])
         setSelectedTaskIds([])
         setIsLoadingTasks(false)
+        sessaoValidaRef.current = true
     }, [])
+
+    const refreshTasks = useCallback(async () => {
+        if (!user || !sessaoValidaRef.current) return
+        if (Date.now() - ultimaMutacaoRef.current < DEBOUNCE_APOS_MUTACAO_MS) return
+        if (refreshEmAndamentoRef.current) return
+
+        refreshEmAndamentoRef.current = true
+
+        try {
+            const apiTasks = await tasksApi.listTasks()
+            setTasks(apiTasks)
+        } catch (error) {
+            if (error instanceof Error && error.message.includes('401')) {
+                sessaoValidaRef.current = false
+                onSessaoExpiradaRef.current?.()
+                return
+            }
+            console.error('Erro ao sincronizar tarefas:', error)
+        } finally {
+            refreshEmAndamentoRef.current = false
+        }
+    }, [user])
+
+    useSyncAutoRefresh({
+        callback: refreshTasks,
+        intervaloMs: INTERVALO_REFRESH_MS,
+        ativo: !!user,
+    })
 
     const addTask = async (
         title: string,
         description: string,
         priority: TaskPriority
     ) => {
+        ultimaMutacaoRef.current = Date.now()
+
         try {
             const newTask = await tasksApi.createTask({
                 title,
@@ -74,6 +124,8 @@ export const useTasks = ({ user, showToast, confirm }: UseTasksOptions) => {
                 return
             }
         }
+
+        ultimaMutacaoRef.current = Date.now()
 
         try {
             const updatedTask = await tasksApi.toggleTask(taskId)
@@ -126,6 +178,8 @@ export const useTasks = ({ user, showToast, confirm }: UseTasksOptions) => {
             return
         }
 
+        ultimaMutacaoRef.current = Date.now()
+
         try {
             const updatedTask = await tasksApi.updateTask(taskId, {
                 title,
@@ -170,6 +224,8 @@ export const useTasks = ({ user, showToast, confirm }: UseTasksOptions) => {
             return
         }
 
+        ultimaMutacaoRef.current = Date.now()
+
         try {
             await tasksApi.deleteTask(taskId)
 
@@ -200,6 +256,8 @@ export const useTasks = ({ user, showToast, confirm }: UseTasksOptions) => {
         })
 
         if (!confirmed) return
+
+        ultimaMutacaoRef.current = Date.now()
 
         try {
             await tasksApi.bulkComplete(visibleSelectedIds)
@@ -240,6 +298,8 @@ export const useTasks = ({ user, showToast, confirm }: UseTasksOptions) => {
         })
 
         if (!confirmed) return
+
+        ultimaMutacaoRef.current = Date.now()
 
         try {
             await tasksApi.bulkDelete(visibleSelectedIds)
