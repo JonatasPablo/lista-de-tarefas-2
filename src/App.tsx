@@ -53,13 +53,18 @@ const clearPwaCacheForNewVersion = async () => {
 
 interface AppContentProps {
     isGoogleLoginConfigured: boolean
+    googleClientId: string
 }
 
 interface AppProps {
     isGoogleLoginConfigured?: boolean
+    googleClientId?: string
 }
 
-function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
+function AppContent({
+    googleClientId,
+    isGoogleLoginConfigured,
+}: AppContentProps) {
     const navigate = useNavigate()
     const { isDark, toggleTheme } = useTheme()
     const { toasts, showToast, removeToast } = useToast()
@@ -86,6 +91,7 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
         handleRedefinirSenha,
         handleLogout,
         atualizarUsuarioLogado,
+        isLoginTemporarilyBlocked,
     } = useAuth({
         isGoogleLoginConfigured,
         navigate,
@@ -201,6 +207,10 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
                                             ? handleLoginGoogle
                                             : undefined
                                     }
+                                    googleClientId={googleClientId}
+                                    isLoginTemporarilyBlocked={
+                                        isLoginTemporarilyBlocked
+                                    }
                                     isDark={isDark}
                                     onToggleTheme={toggleTheme}
                                 />
@@ -226,6 +236,7 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
                                             ? handleLoginGoogle
                                             : undefined
                                     }
+                                    googleClientId={googleClientId}
                                     isDark={isDark}
                                     onToggleTheme={toggleTheme}
                                 />
@@ -461,7 +472,7 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
                                 isDark={isDark}
                                 onToggleTheme={toggleTheme}
                             >
-                                <LogPage />
+                                <LogPage onSessaoExpirada={onSessaoExpirada} />
                             </PrivateLayout>
                         ) : (
                             <Navigate to="/login" replace />
@@ -524,10 +535,16 @@ function AppContent({ isGoogleLoginConfigured }: AppContentProps) {
     )
 }
 
-function App({ isGoogleLoginConfigured = false }: AppProps) {
+function App({
+    googleClientId = '',
+    isGoogleLoginConfigured = false,
+}: AppProps) {
     return (
         <HashRouter>
-            <AppContent isGoogleLoginConfigured={isGoogleLoginConfigured} />
+            <AppContent
+                googleClientId={googleClientId}
+                isGoogleLoginConfigured={isGoogleLoginConfigured}
+            />
         </HashRouter>
     )
 }

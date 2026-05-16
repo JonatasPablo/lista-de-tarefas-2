@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { NavigateFunction } from 'react-router-dom'
 import { ApiError } from '../services/api'
 import { authApi, type AuthUser } from '../services/authApi'
@@ -7,7 +7,9 @@ import type { ToastType } from '../components/Toast/Toast'
 type ShowToast = (type: ToastType, message: string) => void
 
 const AUTH_ME_BACKOFF_MS = 30000
+const LOGIN_BACKOFF_MS = 10000
 let authMeBackoffUntil = 0
+let loginBackoffUntil = 0
 
 interface UseAuthOptions {
     isGoogleLoginConfigured: boolean
@@ -21,11 +23,29 @@ export const useAuth = ({
     showToast,
 }: UseAuthOptions) => {
     const [user, setUser] = useState<AuthUser | null>(null)
-    const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+    const [carregandoSessao, setCarregandoSessao] = useState(true)
+    const [sessaoVerificada, setSessaoVerificada] = useState(false)
+    const [isLoginTemporarilyBlocked, setIsLoginTemporarilyBlocked] =
+        useState(false)
+    const verificacaoInicialExecutadaRef = useRef(false)
+    const showToastRef = useRef(showToast)
 
     const isGoogleLoginAvailable = isGoogleLoginConfigured
+    const autenticado = Boolean(user)
+
+    useEffect(() => {
+        showToastRef.current = showToast
+    }, [showToast])
 
     const handleLogin = async (email: string, password: string) => {
+        if (Date.now() < loginBackoffUntil) {
+            showToast(
+                'warning',
+                'Aguarde alguns segundos antes de tentar entrar novamente.'
+            )
+            return
+        }
+
         try {
             const response = await authApi.login({
                 email,
@@ -33,6 +53,8 @@ export const useAuth = ({
             })
 
             setUser(response.user)
+            setSessaoVerificada(true)
+            setCarregandoSessao(false)
             showToast('success', 'Login realizado com sucesso.')
             navigate('/')
         } catch (error) {
@@ -44,6 +66,14 @@ export const useAuth = ({
                     : 'Nao foi possivel fazer login.'
 
             showToast('error', message)
+
+            if (error instanceof ApiError && error.status === 429) {
+                loginBackoffUntil = Date.now() + LOGIN_BACKOFF_MS
+                setIsLoginTemporarilyBlocked(true)
+                window.setTimeout(() => {
+                    setIsLoginTemporarilyBlocked(false)
+                }, LOGIN_BACKOFF_MS)
+            }
 
             if (message.toLowerCase().includes('confirme seu e-mail')) {
                 navigate('/confirmar-email', {
@@ -66,6 +96,8 @@ export const useAuth = ({
             })
 
             setUser(response.user)
+            setSessaoVerificada(true)
+            setCarregandoSessao(false)
             showToast('success', 'Login com Google realizado com sucesso.')
             navigate('/')
         } catch (error) {
@@ -277,6 +309,8 @@ export const useAuth = ({
             console.error('Erro ao encerrar sessao:', error)
         } finally {
             setUser(null)
+            setSessaoVerificada(true)
+            setCarregandoSessao(false)
             showToast('info', 'Voce saiu do sistema.')
             navigate('/login')
         }
@@ -290,10 +324,17 @@ export const useAuth = ({
         let isMounted = true
 
         const checkAuth = async () => {
+            if (verificacaoInicialExecutadaRef.current) {
+                return
+            }
+
+            verificacaoInicialExecutadaRef.current = true
+
             if (Date.now() < authMeBackoffUntil) {
                 if (isMounted) {
                     setUser(null)
-                    setIsCheckingAuth(false)
+                    setSessaoVerificada(true)
+                    setCarregandoSessao(false)
                 }
                 return
             }
@@ -303,22 +344,30 @@ export const useAuth = ({
 
                 if (isMounted) {
                     setUser(authenticatedUser)
+                    setSessaoVerificada(true)
                 }
             } catch (error) {
                 if (error instanceof ApiError && error.status === 429) {
                     authMeBackoffUntil = Date.now() + AUTH_ME_BACKOFF_MS
-                    showToast(
+                    showToastRef.current(
                         'warning',
                         'Muitas validacoes de sessao. Aguarde alguns instantes.'
                     )
+                } else if (error instanceof ApiError && error.status === 401) {
+                    if (import.meta.env.DEV) {
+                        console.info('/auth/me retornou 401: usuario deslogado.')
+                    }
+                } else if (import.meta.env.DEV) {
+                    console.error('Erro ao validar sessao:', error)
                 }
 
                 if (isMounted) {
                     setUser(null)
+                    setSessaoVerificada(true)
                 }
             } finally {
                 if (isMounted) {
-                    setIsCheckingAuth(false)
+                    setCarregandoSessao(false)
                 }
             }
         }
@@ -328,11 +377,15 @@ export const useAuth = ({
         return () => {
             isMounted = false
         }
-    }, [showToast])
+    }, [])
 
     return {
         user,
-        isCheckingAuth,
+        isCheckingAuth: carregandoSessao,
+        carregandoSessao,
+        autenticado,
+        sessaoVerificada,
+        isLoginTemporarilyBlocked,
         isGoogleLoginAvailable,
         handleLogin,
         handleLoginGoogle,

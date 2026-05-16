@@ -1,6 +1,6 @@
-import { useState, type SyntheticEvent, type UIEvent } from 'react'
+import { useCallback, useState, type SyntheticEvent, type UIEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { GoogleLogin, type CredentialResponse } from '@react-oauth/google'
+import { GoogleSignInButton } from '../../components/GoogleSignInButton/GoogleSignInButton'
 import { useGoogleButtonWidth } from '../../hooks/useGoogleButtonWidth'
 import {
     PRIVACY_POLICY_VERSION,
@@ -20,6 +20,7 @@ interface RegisterPageProps {
         credential: string,
         termsAccepted?: boolean
     ) => Promise<void>
+    googleClientId: string
     isDark: boolean
     onToggleTheme: () => void
 }
@@ -57,6 +58,7 @@ const obterRequisitosSenha = (senha: string) => {
 export const RegisterPage = ({
     onRegister,
     onLoginGoogle,
+    googleClientId,
     isDark,
     onToggleTheme,
 }: RegisterPageProps) => {
@@ -103,10 +105,8 @@ export const RegisterPage = ({
         }
     }
 
-    const handleLoginGoogleSuccess = async (
-        credentialResponse: CredentialResponse
-    ) => {
-        if (!onLoginGoogle || !credentialResponse.credential) {
+    const handleLoginGoogleSuccess = useCallback(async (credential: string) => {
+        if (!onLoginGoogle) {
             return
         }
 
@@ -117,11 +117,15 @@ export const RegisterPage = ({
         try {
             setIsSubmittingGoogle(true)
 
-            await onLoginGoogle(credentialResponse.credential, termsAccepted)
+            await onLoginGoogle(credential, termsAccepted)
         } finally {
             setIsSubmittingGoogle(false)
         }
-    }
+    }, [hasScrolledTermsToEnd, onLoginGoogle, termsAccepted])
+
+    const handleLoginGoogleError = useCallback(() => {
+        setIsSubmittingGoogle(false)
+    }, [])
 
     return (
         <main className="register-page">
@@ -198,15 +202,12 @@ export const RegisterPage = ({
                                             : 'register-google-button-wrapper register-google-button-wrapper-disabled'
                                     }
                                 >
-                                    <GoogleLogin
+                                    <GoogleSignInButton
+                                        clientId={googleClientId}
                                         onSuccess={handleLoginGoogleSuccess}
-                                        onError={() => {
-                                            setIsSubmittingGoogle(false)
-                                        }}
+                                        onError={handleLoginGoogleError}
                                         text="signin"
-                                        shape="pill"
-                                        size="large"
-                                        width={String(buttonWidth)}
+                                        width={buttonWidth}
                                     />
                                 </div>
 

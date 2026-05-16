@@ -249,7 +249,11 @@ const downloadTextFile = (content: string, fileName: string, type: string) => {
     URL.revokeObjectURL(url)
 }
 
-export function LogPage() {
+interface LogPageProps {
+    onSessaoExpirada: () => void
+}
+
+export function LogPage({ onSessaoExpirada }: LogPageProps) {
     const todayDate = getTodayDate()
 
     const [history, setHistory] = useState<TaskHistory[]>([])
@@ -258,10 +262,12 @@ export function LogPage() {
     const [actionFilter, setActionFilter] = useState<ActionFilter>('todas')
     const [startDate, setStartDate] = useState(todayDate)
     const [endDate, setEndDate] = useState(todayDate)
+    const [sessaoValida, setSessaoValida] = useState(true)
 
     const isMountedRef = useRef(true)
     const refreshEmAndamentoRef = useRef(false)
     const backoffAteRef = useRef(0)
+    const sessaoValidaRef = useRef(true)
 
     useEffect(() => {
         isMountedRef.current = true
@@ -282,6 +288,13 @@ export function LogPage() {
                 })
 
                 if (!response.ok) {
+                    if (response.status === 401) {
+                        sessaoValidaRef.current = false
+                        setSessaoValida(false)
+                        onSessaoExpirada()
+                        return
+                    }
+
                     const errorMessage = await getErrorMessage(response)
 
                     throw new Error(errorMessage)
@@ -310,9 +323,10 @@ export function LogPage() {
         return () => {
             isMounted = false
         }
-    }, [])
+    }, [onSessaoExpirada])
 
     const refreshHistory = useCallback(async () => {
+        if (!sessaoValidaRef.current) return
         if (refreshEmAndamentoRef.current) return
         if (Date.now() < backoffAteRef.current) return
         if (!sincronizacao.podeExecutarRefresh()) return
@@ -328,6 +342,13 @@ export function LogPage() {
             })
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    sessaoValidaRef.current = false
+                    setSessaoValida(false)
+                    onSessaoExpirada()
+                    return
+                }
+
                 if (response.status === 429) {
                     backoffAteRef.current = Date.now() + 15000
                     sincronizacao.aplicarBackoff(15000)
@@ -346,12 +367,12 @@ export function LogPage() {
             refreshEmAndamentoRef.current = false
             sincronizacao.marcarFimRefresh()
         }
-    }, [])
+    }, [onSessaoExpirada])
 
     useSyncAutoRefresh({
         callback: refreshHistory,
         intervaloMs: 10000,
-        ativo: true,
+        ativo: sessaoValida,
     })
 
     const summaryHistory = useMemo(() => {

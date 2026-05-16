@@ -1,4 +1,4 @@
-import { type KeyboardEvent, useEffect, useRef } from 'react'
+import { type KeyboardEvent, useEffect, useMemo, useRef } from 'react'
 import { useChecklist } from '../../hooks/useChecklist'
 import type { ChecklistItem } from '../../services/checklistApi'
 import './TaskChecklist.css'
@@ -47,18 +47,34 @@ export const TaskChecklist = ({
         progressoGeral,
     } = useChecklist(taskId, isTaskCompleted, expanded)
     const shouldSkipBlurSaveRef = useRef(false)
+    const lastProgressEmissionRef = useRef<string | null>(null)
+
+    const progressSummary = useMemo(() => {
+        if (progressoGeral.total === 0) {
+            return null
+        }
+
+        return {
+            total: progressoGeral.total,
+            concluidos: progressoGeral.concluidos,
+        }
+    }, [progressoGeral.concluidos, progressoGeral.total])
 
     useEffect(() => {
         if (!onProgressChange) return
-        if (progressoGeral.total === 0) {
-            onProgressChange(null)
-        } else {
-            onProgressChange({
-                total: progressoGeral.total,
-                concluidos: progressoGeral.concluidos,
-            })
+        if (carregando) return
+
+        const progressKey = progressSummary
+            ? `${taskId}:${progressSummary.total}:${progressSummary.concluidos}`
+            : `${taskId}:0:0`
+
+        if (lastProgressEmissionRef.current === progressKey) {
+            return
         }
-    }, [progressoGeral.total, progressoGeral.concluidos, onProgressChange])
+
+        lastProgressEmissionRef.current = progressKey
+        onProgressChange(progressSummary)
+    }, [carregando, onProgressChange, progressSummary, taskId])
 
     const handleNovoGrupoKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') adicionarGrupo()

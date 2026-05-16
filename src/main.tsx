@@ -1,5 +1,4 @@
 import { createRoot } from 'react-dom/client'
-import { GoogleOAuthProvider } from '@react-oauth/google'
 import App from './App.tsx'
 import { ErrorBoundary } from './components/ErrorBoundary/ErrorBoundary.tsx'
 import { initServiceWorker } from './pwa/updateServiceWorker.ts'
@@ -11,16 +10,11 @@ const isGoogleLoginConfigured = GOOGLE_CLIENT_ID !== ''
 
 const appTree = (
     <ErrorBoundary>
-        <App isGoogleLoginConfigured={isGoogleLoginConfigured} />
+        <App
+            googleClientId={GOOGLE_CLIENT_ID}
+            isGoogleLoginConfigured={isGoogleLoginConfigured}
+        />
     </ErrorBoundary>
 )
 
-createRoot(document.getElementById('root')!).render(
-    isGoogleLoginConfigured ? (
-        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-            {appTree}
-        </GoogleOAuthProvider>
-    ) : (
-        appTree
-    )
-)
+createRoot(document.getElementById('root')!).render(appTree)

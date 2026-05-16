@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { checklistApi, type ChecklistGroup, type ChecklistItem } from '../services/checklistApi'
 import { sincronizacao } from './sincronizacao'
 
@@ -271,14 +271,14 @@ export const useChecklist = (
     // Progresso
     // ---------------------------------------------------------------
 
-    const progressoGeral = (() => {
+    const progressoGeral = useMemo(() => {
         const total = grupos.reduce((acc, g) => acc + g.items.length, 0)
         const concluidos = grupos.reduce(
             (acc, g) => acc + g.items.filter((i) => i.isCompleted).length,
             0
         )
         return { concluidos, total }
-    })()
+    }, [grupos])
 
     return {
         grupos,

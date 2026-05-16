@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import type {
     ChecklistSummary,
     Task,
@@ -71,15 +71,30 @@ export const TaskList = ({
         tasksWithChecklistSummary.find((task) => task.id === activeTaskId) ||
         null
 
-    const handleChecklistProgressChange = (
+    const handleChecklistProgressChange = useCallback((
         taskId: string,
         summary: ChecklistSummary | null
     ) => {
-        setChecklistSummaries((current) => ({
-            ...current,
-            [taskId]: summary,
-        }))
-    }
+        setChecklistSummaries((current) => {
+            const currentSummary = current[taskId] || null
+
+            if (
+                currentSummary?.total === summary?.total &&
+                currentSummary?.concluidos === summary?.concluidos
+            ) {
+                return current
+            }
+
+            return {
+                ...current,
+                [taskId]: summary,
+            }
+        })
+    }, [])
+
+    const handleCloseModal = useCallback(() => {
+        setActiveTaskId(null)
+    }, [])
 
     if (tasks.length === 0) {
         return (
@@ -107,7 +122,7 @@ export const TaskList = ({
             {activeTask && (
                 <TaskDetailModal
                     task={activeTask}
-                    onClose={() => setActiveTaskId(null)}
+                    onClose={handleCloseModal}
                     onToggleTask={onToggleTask}
                     onDeleteTask={onDeleteTask}
                     onUpdateTask={onUpdateTask}

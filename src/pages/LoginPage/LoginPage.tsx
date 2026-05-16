@@ -1,6 +1,6 @@
-import { useState, type SyntheticEvent } from 'react'
+import { useCallback, useState, type SyntheticEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { GoogleLogin, type CredentialResponse } from '@react-oauth/google'
+import { GoogleSignInButton } from '../../components/GoogleSignInButton/GoogleSignInButton'
 import { useGoogleButtonWidth } from '../../hooks/useGoogleButtonWidth'
 
 import './LoginPage.css'
@@ -8,11 +8,20 @@ import './LoginPage.css'
 interface LoginPageProps {
     onLogin: (email: string, password: string) => Promise<void>
     onLoginGoogle?: (credential: string) => Promise<void>
+    googleClientId: string
+    isLoginTemporarilyBlocked?: boolean
     isDark: boolean
     onToggleTheme: () => void
 }
 
-export const LoginPage = ({ onLogin, onLoginGoogle, isDark, onToggleTheme }: LoginPageProps) => {
+export const LoginPage = ({
+    onLogin,
+    onLoginGoogle,
+    googleClientId,
+    isLoginTemporarilyBlocked = false,
+    isDark,
+    onToggleTheme,
+}: LoginPageProps) => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
@@ -32,21 +41,23 @@ export const LoginPage = ({ onLogin, onLoginGoogle, isDark, onToggleTheme }: Log
         }
     }
 
-    const handleLoginGoogleSuccess = async (
-        credentialResponse: CredentialResponse
-    ) => {
-        if (!onLoginGoogle || !credentialResponse.credential) {
+    const handleLoginGoogleSuccess = useCallback(async (credential: string) => {
+        if (!onLoginGoogle) {
             return
         }
 
         try {
             setIsSubmittingGoogle(true)
 
-            await onLoginGoogle(credentialResponse.credential)
+            await onLoginGoogle(credential)
         } finally {
             setIsSubmittingGoogle(false)
         }
-    }
+    }, [onLoginGoogle])
+
+    const handleLoginGoogleError = useCallback(() => {
+        setIsSubmittingGoogle(false)
+    }, [])
 
     return (
         <main className="login-page">
@@ -112,15 +123,12 @@ export const LoginPage = ({ onLogin, onLoginGoogle, isDark, onToggleTheme }: Log
                                     ref={buttonContainerRef}
                                     className="login-google-button-wrapper"
                                 >
-                                    <GoogleLogin
+                                    <GoogleSignInButton
+                                        clientId={googleClientId}
                                         onSuccess={handleLoginGoogleSuccess}
-                                        onError={() => {
-                                            setIsSubmittingGoogle(false)
-                                        }}
+                                        onError={handleLoginGoogleError}
                                         text="signin"
-                                        shape="pill"
-                                        size="large"
-                                        width={String(buttonWidth)}
+                                        width={buttonWidth}
                                     />
                                 </div>
 
@@ -223,9 +231,17 @@ export const LoginPage = ({ onLogin, onLoginGoogle, isDark, onToggleTheme }: Log
                         <button
                             type="submit"
                             className="login-submit-button"
-                            disabled={isSubmitting || isSubmittingGoogle}
+                            disabled={
+                                isSubmitting ||
+                                isSubmittingGoogle ||
+                                isLoginTemporarilyBlocked
+                            }
                         >
-                            {isSubmitting ? 'Entrando...' : 'Entrar'}
+                            {isSubmitting
+                                ? 'Entrando...'
+                                : isLoginTemporarilyBlocked
+                                  ? 'Aguarde...'
+                                  : 'Entrar'}
                         </button>
                     </form>
 

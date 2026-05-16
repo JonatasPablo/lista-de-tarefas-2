@@ -1,4 +1,5 @@
 import {
+    useCallback,
     useEffect,
     useRef,
     useState,
@@ -71,6 +72,27 @@ export const TaskDetailModal = ({
 
     const isTaskCompleted = task.completed
     const priorityLabel = priorityLabelMap[task.priority]
+
+    const handleChecklistProgressChange = useCallback(
+        (summary: ChecklistSummary | null) => {
+            onChecklistProgressChange(task.id, summary)
+        },
+        [onChecklistProgressChange, task.id]
+    )
+
+    const handleRequestRenameFile = useCallback(
+        (file: TaskFile) => {
+            onRequestRenameFile(task.id, file)
+        },
+        [onRequestRenameFile, task.id]
+    )
+
+    const handleDeleteFile = useCallback(
+        (fileId: string) => {
+            onDeleteFile(task.id, fileId)
+        },
+        [onDeleteFile, task.id]
+    )
 
     useEffect(() => {
         const handleKeyDown = (event: globalThis.KeyboardEvent) => {
@@ -417,9 +439,7 @@ export const TaskDetailModal = ({
                                 taskId={task.id}
                                 isTaskCompleted={isTaskCompleted}
                                 expanded
-                                onProgressChange={(summary) =>
-                                    onChecklistProgressChange(task.id, summary)
-                                }
+                                onProgressChange={handleChecklistProgressChange}
                             />
                         </section>
                     </section>
@@ -500,12 +520,8 @@ export const TaskDetailModal = ({
                                 taskId={task.id}
                                 files={task.files}
                                 isTaskCompleted={isTaskCompleted}
-                                onRequestRenameFile={(file) =>
-                                    onRequestRenameFile(task.id, file)
-                                }
-                                onDeleteFile={(fileId) =>
-                                    onDeleteFile(task.id, fileId)
-                                }
+                                onRequestRenameFile={handleRequestRenameFile}
+                                onDeleteFile={handleDeleteFile}
                             />
                         </section>
                     </aside>
