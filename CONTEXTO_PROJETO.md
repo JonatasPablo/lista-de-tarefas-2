@@ -13,7 +13,7 @@
 - Frontend usa HashRouter.
 - Frontend local roda em http://localhost:5173.
 - Deploy frontend é GitHub Pages.
-- Backend produção é Railway.
+- Backend produção está em migração do Railway para servidor local Windows.
 
 ## Projeto
 

@@ -5,6 +5,7 @@ const helmet = require('helmet')
 const authRoutes = require('./routes/auth.routes')
 const tasksRoutes = require('./routes/tasks.routes')
 const usersRoutes = require('./routes/users.routes')
+const connection = require('./database/connection')
 const authMiddleware = require('./middlewares/authMiddleware')
 const errorHandler = require('./middlewares/errorHandler')
 
@@ -47,7 +48,7 @@ const corsOptions = {
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Accept'],
+    allowedHeaders: ['Content-Type', 'Accept', 'ngrok-skip-browser-warning'],
 }
 
 const getOriginFromReferer = (referer) => {
@@ -106,6 +107,21 @@ app.get('/', (req, res) => {
     return res.json({
         message: 'Backend da Lista de Tarefas v2.0.0 está rodando!',
     })
+})
+
+app.get('/health', async (req, res, next) => {
+    try {
+        await connection.query('SELECT 1')
+
+        return res.json({
+            status: 'ok',
+            database: 'ok',
+            uptime: process.uptime(),
+            timestamp: new Date().toISOString(),
+        })
+    } catch (error) {
+        return next(error)
+    }
 })
 
 app.use('/auth', authRoutes)

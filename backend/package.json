@@ -6,7 +6,9 @@
     "private": true,
     "scripts": {
         "dev": "nodemon src/server.js",
-        "start": "node src/server.js"
+        "start": "node src/server.js",
+        "db:test": "node src/scripts/testDbConnection.js",
+        "db:migrate": "node src/scripts/runMigrations.js"
     },
     "keywords": [],
     "author": "Jonatas Pablo",

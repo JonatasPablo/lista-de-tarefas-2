@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { API_URL } from '../../services/api'
+import { API_HEADERS, API_URL } from '../../services/api'
 import { useSyncAutoRefresh } from '../../hooks/useSyncAutoRefresh'
 import { sincronizacao } from '../../hooks/sincronizacao'
 
@@ -283,6 +283,7 @@ export function LogPage({ onSessaoExpirada }: LogPageProps) {
             try {
                 const response = await fetch(`${API_URL}/tasks/history`, {
                     method: 'GET',
+                    headers: API_HEADERS,
                     credentials: 'include',
                     cache: 'no-store',
                 })
@@ -337,6 +338,7 @@ export function LogPage({ onSessaoExpirada }: LogPageProps) {
         try {
             const response = await fetch(`${API_URL}/tasks/history`, {
                 method: 'GET',
+                headers: API_HEADERS,
                 credentials: 'include',
                 cache: 'no-store',
             })

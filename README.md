@@ -124,6 +124,8 @@ npm audit --omit=dev
 
 ## Seguranca e deploy
 
+- Para migrar backend e MySQL do Railway para um servidor local Windows, siga
+  `docs/migracao-servidor-local.md`.
 - Em producao, configure `NODE_ENV=production`.
 - Em producao, `CLIENT_URL` e `CLIENT_URLS` devem conter apenas as origens reais do frontend.
 - Cookies usam `secure` e `sameSite=none` em producao, entao use HTTPS.

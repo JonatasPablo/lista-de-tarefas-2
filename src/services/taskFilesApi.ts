@@ -1,4 +1,4 @@
-import { API_URL, ApiError, apiRequest } from './api'
+import { API_HEADERS, API_URL, ApiError, apiRequest } from './api'
 import type { TaskFile } from '../types/task'
 
 export type ApiTaskFile = {
@@ -68,6 +68,7 @@ export const taskFilesApi = {
 
         const response = await fetch(`${API_URL}/tasks/${taskId}/files`, {
             method: 'POST',
+            headers: API_HEADERS,
             credentials: 'include',
             body: formData,
         })
@@ -110,7 +111,11 @@ export const taskFilesApi = {
     async getImagePreviewBlob(taskId: string, fileId: string): Promise<string> {
         const response = await fetch(
             `${API_URL}/tasks/${taskId}/files/${fileId}/download`,
-            { method: 'GET', credentials: 'include' }
+            {
+                method: 'GET',
+                headers: API_HEADERS,
+                credentials: 'include',
+            }
         )
 
         if (!response.ok) {
@@ -127,7 +132,11 @@ export const taskFilesApi = {
     ): Promise<string> {
         const response = await fetch(
             `${API_URL}/tasks/${taskId}/files/${fileId}/thumbnail`,
-            { method: 'GET', credentials: 'include' }
+            {
+                method: 'GET',
+                headers: API_HEADERS,
+                credentials: 'include',
+            }
         )
 
         if (!response.ok) {
@@ -143,6 +152,7 @@ export const taskFilesApi = {
             `${API_URL}/tasks/${taskId}/files/${file.id}/download`,
             {
                 method: 'GET',
+                headers: API_HEADERS,
                 credentials: 'include',
             }
         )

@@ -1,9 +1,20 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import { APP_NAME, APP_VERSION } from './src/config/app'
 
-export default defineConfig({
+const escapeRegExp = (value: string) => {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+export default defineConfig(({ mode }) => {
+    const env = loadEnv(mode, process.cwd(), '')
+    const apiUrl = env.VITE_API_URL
+    const apiUrlPattern = apiUrl
+        ? new RegExp(`^${escapeRegExp(apiUrl.replace(/\/$/, ''))}/`)
+        : /^$/
+
+    return {
     plugins: [
         react(),
         VitePWA({
@@ -48,7 +59,7 @@ export default defineConfig({
                 // Nunca cachear chamadas de API — garante que 401/redirect passam direto ao network
                 runtimeCaching: [
                     {
-                        urlPattern: /^https:\/\/lista-de-tarefas-2-production\.up\.railway\.app\//,
+                        urlPattern: apiUrlPattern,
                         handler: 'NetworkOnly',
                     },
                 ],
@@ -59,4 +70,5 @@ export default defineConfig({
         }),
     ],
     base: '/lista-de-tarefas-2/',
+    }
 })

@@ -5,9 +5,9 @@
 
 -- 1. Criar tabela de grupos
 CREATE TABLE IF NOT EXISTS task_checklist_groups (
-    id           INT AUTO_INCREMENT PRIMARY KEY,
-    task_id      INT          NOT NULL,
-    user_id      INT          NOT NULL,
+    id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    task_id      BIGINT UNSIGNED NOT NULL,
+    user_id      BIGINT UNSIGNED NOT NULL,
     title        VARCHAR(255) NOT NULL,
     position     INT          NOT NULL DEFAULT 0,
     created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS task_checklist_groups (
 
 -- 2. Adicionar coluna group_id em task_checklist_items (nullable para não quebrar itens antigos)
 ALTER TABLE task_checklist_items
-    ADD COLUMN group_id INT NULL AFTER task_id,
+    ADD COLUMN group_id BIGINT UNSIGNED NULL AFTER task_id,
     ADD CONSTRAINT fk_chk_item_group FOREIGN KEY (group_id) REFERENCES task_checklist_groups(id),
     ADD INDEX idx_chk_item_group_id (group_id);
 

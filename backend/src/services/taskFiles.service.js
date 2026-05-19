@@ -1,4 +1,5 @@
 const connection = require('../database/connection')
+const crypto = require('crypto')
 const AppError = require('../errors/AppError')
 const {
     isImageMimeType,
@@ -266,6 +267,10 @@ const buildStoredTaskFile = async (uploadedFile) => {
     }
 }
 
+const buildDatabaseStoredName = () => {
+    return `db-${Date.now()}-${crypto.randomBytes(12).toString('hex')}`
+}
+
 const createTaskFile = async (taskId, userId, uploadedFile) => {
     await ensureTaskExistsAndIsPending(taskId, userId)
 
@@ -283,9 +288,10 @@ const createTaskFile = async (taskId, userId, uploadedFile) => {
 
     const originalName = sanitizeDisplayName(uploadedFile.originalname)
     const displayName = originalName
+    const storedName = buildDatabaseStoredName()
 
-    // stored_name não é mais usado para armazenamento em disco; mantido como vazio
-    // para compatibilidade de schema com registros antigos.
+    // stored_name nao e mais usado para armazenamento em disco, mas segue unico
+    // para compatibilidade com o schema existente.
     const [result] = await connection.query(
         `
             INSERT INTO task_files (
@@ -307,7 +313,7 @@ const createTaskFile = async (taskId, userId, uploadedFile) => {
             taskId,
             userId,
             originalName,
-            '',
+            storedName,
             displayName,
             storedFile.mimeType,
             storedFile.sizeBytes,

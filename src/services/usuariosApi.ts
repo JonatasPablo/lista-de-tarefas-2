@@ -1,4 +1,4 @@
-import { API_URL, apiRequest } from './api'
+import { API_HEADERS, API_URL, apiRequest } from './api'
 import type { AuthUser } from './authApi'
 
 type AtualizarNomePayload = {
@@ -60,6 +60,7 @@ export const usuariosApi = {
 
         const response = await fetch(`${API_URL}/users/me/avatar`, {
             method: 'POST',
+            headers: API_HEADERS,
             credentials: 'include',
             body: formData,
         })

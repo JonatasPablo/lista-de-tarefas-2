@@ -12,6 +12,10 @@ const getApiUrl = () => {
 
 export const API_URL = getApiUrl()
 
+export const API_HEADERS = {
+    'ngrok-skip-browser-warning': 'true',
+}
+
 export class ApiError extends Error {
     readonly status: number
 
@@ -33,6 +37,7 @@ export const apiRequest = async <ResponseData>(
 ): Promise<ResponseData> => {
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
+        ...API_HEADERS,
     }
 
     const response = await fetch(`${API_URL}${endpoint}`, {
