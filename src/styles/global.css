@@ -3,7 +3,7 @@
 
 /* =========================
    Global base — Lista de Tarefas
-   Versão 2.0.11
+   Versão 2.1.0
 ========================= */
 
 * {
@@ -25,19 +25,7 @@ body {
     min-height: 100dvh;
     overflow-x: hidden;
     overflow-y: auto;
-    background:
-        radial-gradient(
-            circle at 12% 18%,
-            rgba(255, 255, 255, 0.95) 0,
-            transparent 24%
-        ),
-        radial-gradient(
-            circle at 82% 12%,
-            rgba(255, 255, 255, 0.55) 0,
-            transparent 28%
-        ),
-        linear-gradient(135deg, #e8e8e8 0%, #d5d5d5 45%, #c4c4c4 100%);
-    background-attachment: fixed;
+    background: transparent;
     color: var(--color-text);
     font-family:
         'Manrope',
@@ -50,6 +38,25 @@ body {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+        radial-gradient(
+            circle at 12% 18%,
+            rgba(255, 255, 255, 0.95) 0,
+            transparent 24%
+        ),
+        radial-gradient(
+            circle at 82% 12%,
+            rgba(255, 255, 255, 0.55) 0,
+            transparent 28%
+        ),
+        linear-gradient(135deg, #e8e8e8 0%, #d5d5d5 45%, #c4c4c4 100%);
 }
 
 button,
@@ -1435,7 +1442,7 @@ a {
 }
 
 /* =============================================================
-   Design System Global — v2.0.36
+   Design System Global — v2.1.0
    Usa os tokens de design-tokens.css
 ============================================================= */
 

@@ -6,6 +6,10 @@
 /* ---- Body ---- */
 
 [data-theme="dark"] body {
+    color: #d8d8d8;
+}
+
+[data-theme="dark"] body::before {
     background:
         radial-gradient(
             circle at 12% 18%,
@@ -18,7 +22,6 @@
             transparent 28%
         ),
         linear-gradient(135deg, #272730 0%, #21212a 45%, #1c1c24 100%);
-    color: #d8d8d8;
 }
 
 /* ---- Container ---- */

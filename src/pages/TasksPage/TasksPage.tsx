@@ -64,7 +64,7 @@ export const TasksPage = ({
     const [priorityFilter, setPriorityFilter] =
         useState<PriorityFilter>('todas')
     const [sortOption, setSortOption] =
-        useState<TaskSortOption>('Filtros')
+        useState<TaskSortOption>('mais-recentes')
     const [isTaskFormVisible, setIsTaskFormVisible] = useState(false)
 
     const statsTasks = useMemo(() => {

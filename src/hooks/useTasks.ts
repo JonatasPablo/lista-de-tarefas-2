@@ -7,7 +7,7 @@ import type { Task, TaskPriority } from '../types/task'
 import { useSyncAutoRefresh } from './useSyncAutoRefresh'
 import { sincronizacao } from './sincronizacao'
 
-const INTERVALO_REFRESH_MS = 1500
+const INTERVALO_REFRESH_MS = 15000
 
 type ShowToast = (type: ToastType, message: string) => void
 type Confirm = (options: {
