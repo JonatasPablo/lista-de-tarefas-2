@@ -1,0 +1,163 @@
+/* =========================
+   ConfirmModal / PromptModal — Lista de Tarefas
+========================= */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--z-modal) + 40);
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+.confirm-modal {
+    width: min(440px, 100%);
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    background-color: var(--color-bg-input);
+    color: var(--color-text);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-border);
+    transition: box-shadow var(--transition-base);
+}
+
+.confirm-modal h2,
+.confirm-modal p {
+    margin: 0;
+}
+
+.confirm-modal h2 {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-extrabold);
+    letter-spacing: -0.03em;
+    color: var(--color-text);
+}
+
+.confirm-modal p {
+    line-height: var(--line-height-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+}
+
+.confirm-modal input {
+    width: 100%;
+    padding: var(--input-padding-y) var(--input-padding-x);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-input);
+    color: var(--color-text);
+    font-size: var(--font-size-md);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.confirm-modal input:focus {
+    outline: none;
+    border-color: var(--color-focus-border);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.confirm-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.confirm-modal-actions button {
+    min-width: 110px;
+    min-height: var(--btn-height-md);
+    padding: var(--space-2) var(--btn-padding-x-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-bold);
+    transition:
+        background-color var(--transition-fast),
+        color var(--transition-fast),
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.confirm-modal-actions button:hover {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.confirm-button {
+    background-color: var(--color-primary) !important;
+    color: var(--color-text-inverse) !important;
+    border-color: transparent !important;
+    box-shadow: var(--shadow-xs) !important;
+}
+
+.confirm-button:hover {
+    background-color: var(--color-primary-hover) !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.confirm-button-danger {
+    background-color: var(--color-danger) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+    box-shadow: var(--shadow-xs) !important;
+}
+
+.confirm-button-danger:hover {
+    opacity: 0.88 !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+/* =========================
+   Dark mode
+========================= */
+
+[data-theme="dark"] .confirm-modal {
+    background-color: #1e1e24;
+    color: #d0d0d0;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65);
+    border-color: var(--color-border);
+}
+
+[data-theme="dark"] .confirm-modal input {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #d0d0d0;
+}
+
+[data-theme="dark"] .confirm-modal-actions button {
+    background-color: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #d0d0d0;
+}
+
+[data-theme="dark"] .confirm-modal-actions button:hover {
+    background-color: rgba(225, 225, 225, 0.9);
+    color: #111111;
+}
+
+[data-theme="dark"] .confirm-button {
+    background-color: rgba(225, 225, 225, 0.92) !important;
+    color: #111111 !important;
+}
+
+[data-theme="dark"] .confirm-button:hover {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+[data-theme="dark"] .confirm-button-danger {
+    background-color: #810101 !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .confirm-button-danger:hover {
+    background-color: #a00000 !important;
+    color: #ffffff !important;
+}

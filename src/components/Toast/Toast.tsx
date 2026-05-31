@@ -1,3 +1,5 @@
+import './Toast.css'
+
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
 export interface ToastMessage {

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
+import './PromptModal.css'
 
 interface PromptModalProps {
     isOpen: boolean

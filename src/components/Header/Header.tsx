@@ -1,6 +1,7 @@
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import type { AuthUser } from '../../services/authApi'
 import { usuariosApi } from '../../services/usuariosApi'
+import './Header.css'
 
 interface HeaderProps {
     user: AuthUser | null

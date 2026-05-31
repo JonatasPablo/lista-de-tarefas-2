@@ -1,0 +1,653 @@
+/* =========================
+   Header — Lista de Tarefas
+========================= */
+
+.header {
+    margin-top: 3px;
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) auto;
+    align-items: start;
+    gap: 16px;
+}
+
+.header-brand {
+    margin-top: 1px;
+    min-width: 0;
+    padding-left: 10px;
+}
+
+.header h1 {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.055em;
+    white-space: nowrap;
+}
+
+.header-logo {
+    width: 42px;
+    height: 42px;
+    display: block;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12));
+}
+
+.header-brand-inner {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.header-brand-name {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    line-height: 1;
+    user-select: none;
+}
+
+.header-content {
+    margin-top: 1px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: 10px;
+    min-width: 0;
+    margin-left: auto;
+    padding-right: 10px;
+}
+
+.main-nav {
+    margin-top: 1px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-left: 0;
+}
+
+.header .main-nav {
+    display: none;
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.88);
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    box-shadow: var(--shadow-xs);
+    transition:
+        background-color var(--transition-base),
+        color var(--transition-base),
+        transform var(--transition-fast),
+        box-shadow var(--transition-base);
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.14);
+}
+
+/* Header logado */
+
+.header:has(.header-user) {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+}
+
+.header:has(.header-user) .header-brand {
+    width: auto;
+    padding-left: 10px;
+}
+
+.header:has(.header-user) .header-logo {
+    width: 22px;
+    height: 22px;
+}
+
+.header:has(.header-user) .header-content {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.header:has(.header-user) .main-nav {
+    flex-wrap: nowrap;
+    gap: 7px;
+}
+
+.header:has(.header-user) .nav-link {
+    min-height: 31px;
+    padding: 7px 11px;
+    font-size: 12px;
+}
+
+.header-user {
+    display: grid;
+    grid-template-columns: auto minmax(0, auto) auto;
+    align-items: center;
+    gap: 6px;
+    width: auto;
+    max-width: 198px;
+    padding: 5px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.header-user-avatar {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-full);
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-color);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.02em;
+    box-shadow: var(--shadow-sm);
+}
+
+.header-user-avatar-button {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    box-shadow: none;
+}
+
+.header-user-avatar-image {
+    position: absolute;
+    inset: 0;
+    object-fit: cover;
+}
+
+.header-user-avatar-button:hover,
+.header-user-avatar-button:focus-visible {
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.header-user-avatar-button:focus-visible .header-user-avatar {
+    box-shadow:
+        0 0 0 3px var(--color-focus-ring),
+        0 8px 16px rgba(0, 0, 0, 0.18);
+}
+
+.header-user-info {
+    display: grid;
+    min-width: 0;
+}
+
+.header-user-info strong {
+    max-width: 78px;
+    overflow: hidden;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.header-logout-button {
+    min-width: 48px;
+    min-height: 32px;
+    padding: 7px 10px;
+    border: 1px solid var(--btn-primary-border);
+    border-radius: var(--radius-full);
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-color);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    box-shadow: var(--shadow-xs);
+    transition:
+        background var(--transition-fast),
+        box-shadow var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+.header-logout-button:hover {
+    background: var(--btn-primary-bg-hover);
+    color: var(--btn-primary-color);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+/* =========================
+   Notebook
+========================= */
+
+@media only screen and (min-width: 1025px) and (max-width: 1366px) {
+    .header h1 {
+        font-size: 36px;
+    }
+
+    .nav-link {
+        min-height: 31px;
+        padding: 7px 11px;
+        font-size: 12px;
+    }
+
+    .header:has(.header-user) {
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .header:has(.header-user) .header-content {
+        gap: 7px;
+    }
+
+    .header:has(.header-user) .main-nav {
+        gap: 6px;
+    }
+
+    .header:has(.header-user) .nav-link {
+        min-height: 30px;
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .header:has(.header-user) .header-logo {
+        width: 22px;
+        height: 22px;
+    }
+
+    .header:has(.header-user) .header-user {
+        max-width: 188px;
+    }
+
+    .header:has(.header-user) .header-user-info strong {
+        max-width: 70px;
+    }
+
+    .header:has(.header-user) .header-logout-button {
+        min-width: 46px;
+        min-height: 30px;
+        padding: 6px 9px;
+        font-size: 12px;
+    }
+}
+
+/* =========================
+   Notebook com pouca altura
+========================= */
+
+@media only screen and (min-width: 1025px) and (max-height: 650px) {
+    .header {
+        margin-top: 2px;
+    }
+
+    .header h1 {
+        font-size: 34px;
+    }
+
+    .nav-link {
+        min-height: 30px;
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .header:has(.header-user) .header-logo {
+        width: 20px;
+        height: 20px;
+    }
+
+    .header:has(.header-user) .header-user {
+        max-width: 174px;
+        padding: 4px;
+    }
+
+    .header:has(.header-user) .header-user-avatar {
+        width: 30px;
+        height: 30px;
+        font-size: 11px;
+    }
+
+    .header:has(.header-user) .header-user-avatar-button {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+        min-height: 30px;
+    }
+
+    .header:has(.header-user) .header-user-info strong {
+        max-width: 64px;
+        font-size: 11px;
+    }
+
+    .header:has(.header-user) .header-logout-button {
+        min-width: 44px;
+        min-height: 29px;
+        padding: 6px 8px;
+        font-size: 11px;
+    }
+}
+
+/* =========================
+   Tablet e mobile
+========================= */
+
+@media only screen and (max-width: 1024px) {
+    .header {
+        grid-template-columns: 1fr;
+        align-items: center;
+        justify-items: center;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .header-brand {
+        width: 100%;
+        padding-left: 0;
+        margin-top: 0;
+    }
+
+    .header h1 {
+        width: 100%;
+        margin: 0;
+        font-size: clamp(34px, 8vw, 46px);
+        line-height: 0.95;
+        letter-spacing: -0.055em;
+        white-space: normal;
+        text-align: center;
+    }
+
+    .header-content {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding-right: 0;
+        margin-top: 0;
+        margin-left: 0;
+    }
+
+    .main-nav {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .nav-link {
+        min-height: 34px;
+        padding: 7px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .nav-link.active {
+        box-shadow: 0 10px 18px rgba(0, 0, 0, 0.16);
+    }
+
+    .header-user {
+        width: auto;
+        max-width: 100%;
+        border-radius: 999px;
+    }
+
+    .header:has(.header-user) {
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: center;
+        justify-items: stretch;
+        gap: 8px;
+        text-align: left;
+    }
+
+    .header:has(.header-user) .header-brand {
+        width: auto;
+        padding-left: 10px;
+    }
+
+    .header:has(.header-user) .header-logo {
+        width: 22px;
+        height: 22px;
+    }
+
+    .header:has(.header-user) .header-content {
+        width: 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 7px;
+        padding-right: 10px;
+    }
+
+    .header:has(.header-user) .main-nav {
+        width: auto;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .header:has(.header-user) .nav-link {
+        min-height: 32px;
+        padding: 7px 11px;
+        font-size: 12px;
+    }
+}
+
+/* =========================
+   Tablet específico
+========================= */
+
+@media only screen and (min-width: 769px) and (max-width: 1024px) {
+    .header h1 {
+        font-size: 46px;
+    }
+
+    .nav-link {
+        min-height: 36px;
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
+/* =========================
+   Celular
+========================= */
+
+@media only screen and (max-width: 768px) {
+    .header h1 {
+        font-size: clamp(34px, 10vw, 46px);
+    }
+
+    .header:has(.header-user) .header-logo {
+        width: 20px;
+        height: 20px;
+    }
+
+    .header:has(.header-user) .header-user {
+        max-width: 172px;
+    }
+
+    .header:has(.header-user) .header-user-info strong {
+        max-width: 62px;
+    }
+}
+
+/* =========================
+   Celular menor
+========================= */
+
+@media only screen and (max-width: 480px) {
+    .header h1 {
+        font-size: clamp(32px, 10vw, 42px);
+    }
+
+    .nav-link {
+        min-height: 34px;
+        padding: 7px 13px;
+        font-size: 13px;
+    }
+
+    .header:has(.header-user) {
+        gap: 6px;
+    }
+
+    .header:has(.header-user) .header-brand {
+        padding-left: 8px;
+    }
+
+    .header:has(.header-user) .header-content {
+        gap: 6px;
+        padding-right: 8px;
+    }
+
+    .header:has(.header-user) .header-logo {
+        width: 20px;
+        height: 20px;
+    }
+
+    .header:has(.header-user) .main-nav {
+        gap: 5px;
+    }
+
+    .header:has(.header-user) .nav-link {
+        min-height: 30px;
+        padding: 6px 9px;
+        font-size: 11px;
+    }
+
+    .header:has(.header-user) .header-user {
+        max-width: 78px;
+        grid-template-columns: auto auto;
+        padding: 4px;
+        gap: 4px;
+    }
+
+    .header:has(.header-user) .header-user-info {
+        display: none;
+    }
+
+    .header:has(.header-user) .header-user-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 10px;
+    }
+
+    .header:has(.header-user) .header-user-avatar-button {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        min-height: 28px;
+    }
+
+    .header:has(.header-user) .header-logout-button {
+        min-width: 40px;
+        min-height: 28px;
+        padding: 5px 7px;
+        font-size: 10px;
+    }
+}
+
+/* =========================
+   Celular muito pequeno (≤360px)
+========================= */
+
+@media only screen and (max-width: 360px) {
+    .header h1 {
+        font-size: 28px;
+    }
+}
+
+/* =========================
+   Impressão
+========================= */
+
+@media print {
+    .header {
+        display: none;
+    }
+}
+
+/* =========================
+   Dark mode
+========================= */
+
+[data-theme="dark"] .header h1 {
+    color: #d8d8d8;
+}
+
+[data-theme="dark"] .header-brand-name {
+    color: rgba(200, 200, 200, 0.55);
+}
+
+[data-theme="dark"] .nav-link {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #c0c0c0;
+}
+
+[data-theme="dark"] .nav-link:hover,
+[data-theme="dark"] .nav-link.active {
+    background-color: rgba(225, 225, 225, 0.9);
+    color: #111111;
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="dark"] .header-user {
+    background-color: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .header-user-info strong {
+    color: #c8c8c8;
+}
+
+[data-theme="dark"] .header-user-avatar-button:focus-visible .header-user-avatar {
+    box-shadow:
+        0 0 0 3px rgba(225, 225, 225, 0.22),
+        0 8px 16px rgba(0, 0, 0, 0.32);
+}
+
+[data-theme="dark"] .header-logout-button {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #d0d0d0;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="dark"] .header-logout-button:hover {
+    background-color: rgba(225, 225, 225, 0.9);
+    color: #111111;
+}

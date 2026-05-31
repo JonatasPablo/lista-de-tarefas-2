@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import type { AuthUser } from '../../services/authApi'
+import './BottomNav.css'
 
 interface BottomNavProps {
     user: AuthUser | null

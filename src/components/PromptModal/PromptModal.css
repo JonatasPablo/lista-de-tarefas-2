@@ -1,0 +1,2 @@
+/* PromptModal usa as mesmas classes de .modal-overlay e .confirm-modal */
+@import '../ConfirmModal/ConfirmModal.css';
