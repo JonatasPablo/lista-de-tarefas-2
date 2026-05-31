@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
     HashRouter,
     Navigate,
@@ -18,6 +18,7 @@ import { useTasks } from './hooks/useTasks'
 import { useTaskFiles } from './hooks/useTaskFiles'
 import { useTheme } from './hooks/useTheme'
 import { PwaInstallPrompt } from './components/PwaInstallPrompt/PwaInstallPrompt'
+import { BuscaGlobal } from './components/BuscaGlobal/BuscaGlobal'
 import { ConfirmEmailPage } from './pages/ConfirmEmailPage/ConfirmEmailPage'
 import { EsqueciSenhaPage } from './pages/EsqueciSenhaPage/EsqueciSenhaPage'
 import { CompletedTasksPage } from './pages/CompletedTasksPage/CompletedTasksPage'
@@ -98,6 +99,9 @@ function AppContent({
         showToast,
     })
 
+    const [buscaGlobalAberta, setBuscaGlobalAberta] = useState(false)
+    const [abrirNovaTarefa, setAbrirNovaTarefa] = useState(false)
+
     const logoutCallbackRef = useRef<(() => Promise<void>) | null>(null)
     const onSessaoExpirada = useCallback(() => {
         logoutCallbackRef.current?.()
@@ -142,6 +146,21 @@ function AppContent({
     useEffect(() => {
         document.title = `${APP_NAME} v${APP_VERSION}`
     }, [])
+
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault()
+                setBuscaGlobalAberta(true)
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault()
+                if (user) setAbrirNovaTarefa(true)
+            }
+        }
+        window.addEventListener('keydown', handler)
+        return () => window.removeEventListener('keydown', handler)
+    }, [user])
 
     useEffect(() => {
         const storedVersion = localStorage.getItem(APP_VERSION_STORAGE_KEY)
@@ -416,6 +435,10 @@ function AppContent({
                                         onDeleteFile={deleteTaskFile}
                                         onBulkCompleteTasks={bulkCompleteTasks}
                                         onBulkDeleteTasks={bulkDeleteTasks}
+                                        abrirNovaTarefa={abrirNovaTarefa}
+                                        onNovaTarefaHandled={() =>
+                                            setAbrirNovaTarefa(false)
+                                        }
                                     />
                                 </PrivateLayout>
                             )
@@ -531,6 +554,11 @@ function AppContent({
             />
 
             <PwaInstallPrompt />
+
+            <BuscaGlobal
+                isOpen={buscaGlobalAberta}
+                onClose={() => setBuscaGlobalAberta(false)}
+            />
         </>
     )
 }
