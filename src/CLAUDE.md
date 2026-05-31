@@ -164,5 +164,6 @@ npm run deploy           # build + gh-pages -d dist
 > Atualizado após cada operação significativa.
 > Nunca remover entradas antigas — adicionar novas no topo.
 
+- 2026-05-31: Sprint 2 — v2.2.0. Novos componentes: BuscaGlobal, TagBadge, TagPicker. Novos utils: csv.ts, date.ts (getStatusPrazo, formatarDataVencimento, getDiffDias). TaskItem envolto em React.memo. TaskStats e TaskFilters também com React.memo. TaskFilters tem nova opção 'vencimento'. TaskDetailModal tem focus trap e campo de due date. TaskList tem aria-live. sr-only no global.css. Atalhos globais Ctrl+K e Ctrl+N em App.tsx.
 - 2026-05-31: Sprint 1 — v2.1.0. Novos componentes: AuthHeroPanel, TaskEmptyState, TaskSkeleton. CSS co-localizado: Header.css, BottomNav.css, Toast.css, ConfirmModal.css, PromptModal.css. TaskList agora aceita tipoEstadoVazio, isLoading e onNovaTarefa. TaskFilters tem badge de filtros ativos. Regra: sortOption default = 'mais-recentes' (não 'Filtros').
 - 2026-05-30: Arquivo criado com base na leitura de src/App.tsx, vite.config.ts, package.json e estrutura de pastas.

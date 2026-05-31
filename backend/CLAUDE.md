@@ -221,4 +221,5 @@ GOOGLE_CLIENT_ID=
 > Atualizado após cada operação significativa.
 > Nunca remover entradas antigas — adicionar novas no topo.
 
+- 2026-05-31: Sprint 2 — v2.2.0. Novas rotas: GET /tasks/search, /tags (CRUD), /tasks/:id/tags (vincular/desvincular). due_date nos queries de tasks (createTask, updateTask, listTasks, getTaskById). Migrations: 008 (due_date — sem IF NOT EXISTS), 009 (tags/task_tags — INT(11) para bater com users.id e tasks.id). users.id e tasks.id são INT(11) não BIGINT, charset latin1.
 - 2026-05-30: Arquivo criado com base na leitura de app.js, todas as rotas, middlewares, migrations e .env.example.
