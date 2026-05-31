@@ -1,0 +1,105 @@
+.tag-picker {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.tag-picker-loading {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+}
+
+.tag-picker-empty {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+}
+
+.tag-picker-current {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    min-height: 24px;
+}
+
+.tag-picker-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    padding: var(--space-2) 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.tag-picker-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    cursor: pointer;
+}
+
+.tag-picker-item input[type='checkbox'] {
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--color-accent);
+}
+
+.tag-picker-create {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.tag-picker-create input[type='text'] {
+    width: 100%;
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-input);
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
+}
+
+.tag-picker-cores {
+    display: flex;
+    gap: var(--space-1);
+    flex-wrap: wrap;
+}
+
+.tag-picker-cor {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color var(--transition-fast), transform var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.tag-picker-cor:hover,
+.tag-picker-cor.selected {
+    border-color: var(--color-text);
+    transform: scale(1.15);
+}
+
+.tag-picker-criar-btn {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-surface);
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    align-self: flex-start;
+    transition: background var(--transition-fast);
+}
+
+.tag-picker-criar-btn:hover:not(:disabled) {
+    background: var(--color-bg-hover);
+}
+
+.tag-picker-criar-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

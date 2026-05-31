@@ -5,6 +5,7 @@ const helmet = require('helmet')
 const authRoutes = require('./routes/auth.routes')
 const tasksRoutes = require('./routes/tasks.routes')
 const usersRoutes = require('./routes/users.routes')
+const tagsRoutes = require('./routes/tags.routes')
 const connection = require('./database/connection')
 const authMiddleware = require('./middlewares/authMiddleware')
 const errorHandler = require('./middlewares/errorHandler')
@@ -127,6 +128,7 @@ app.get('/health', async (req, res, next) => {
 app.use('/auth', authRoutes)
 app.use('/users', authMiddleware, usersRoutes)
 app.use('/tasks', authMiddleware, tasksRoutes)
+app.use('/tags', authMiddleware, tagsRoutes)
 
 app.use(errorHandler)
 

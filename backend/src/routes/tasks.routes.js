@@ -3,6 +3,7 @@ const { Router } = require('express')
 const tasksController = require('../controllers/tasks.controller')
 const taskFilesController = require('../controllers/taskFiles.controller')
 const checklistController = require('../controllers/checklist.controller')
+const tagsController = require('../controllers/tags.controller')
 const asyncHandler = require('../helpers/asyncHandler')
 const uploadTaskFile = require('../middlewares/uploadTaskFile')
 const {
@@ -21,6 +22,12 @@ tasksRoutes.get(
     '/history',
     pollingReadLimiter,
     asyncHandler(tasksController.listUserHistory)
+)
+
+tasksRoutes.get(
+    '/search',
+    pollingReadLimiter,
+    asyncHandler(tasksController.searchTasks)
 )
 
 tasksRoutes.patch(
@@ -131,5 +138,9 @@ tasksRoutes.delete(
     taskMutationLimiter,
     asyncHandler(tasksController.deleteTask)
 )
+
+tasksRoutes.get('/:id/tags', pollingReadLimiter, asyncHandler(tagsController.listTagsForTask))
+tasksRoutes.post('/:id/tags', taskMutationLimiter, asyncHandler(tagsController.addTagToTask))
+tasksRoutes.delete('/:id/tags/:tagId', taskMutationLimiter, asyncHandler(tagsController.removeTagFromTask))
 
 module.exports = tasksRoutes
