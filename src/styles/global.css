@@ -884,3 +884,96 @@ select:focus {
     );
     background-size: 200% 100%;
 }
+
+/* ---- Badge de data de vencimento ---- */
+
+.task-duedate-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 7px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.task-duedate-badge--vencida {
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+    border: 1px solid rgba(192, 0, 30, 0.22);
+}
+
+.task-duedate-badge--vence-hoje {
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
+    border: 1px solid rgba(138, 108, 0, 0.22);
+}
+
+.task-duedate-badge--vence-em-breve {
+    background: rgba(138, 108, 0, 0.05);
+    color: var(--color-warning);
+    border: 1px solid rgba(138, 108, 0, 0.15);
+}
+
+.task-duedate-badge--ok {
+    background: var(--color-bg-badge);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+}
+
+/* ---- TaskForm: campo de data ---- */
+
+.task-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.task-form-field-optional {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-normal);
+}
+
+.task-form-date-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.task-form-date-wrapper input[type='date'] {
+    flex: 1;
+    padding-right: 36px;
+}
+
+.task-form-date-clear {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--color-text-muted);
+    line-height: 1;
+    padding: 0 2px;
+}
+
+.task-form-date-clear:hover {
+    color: var(--color-danger);
+}
+
+/* ---- sr-only (acessibilidade) ---- */
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

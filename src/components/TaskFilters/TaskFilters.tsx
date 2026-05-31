@@ -1,3 +1,4 @@
+import React from 'react'
 import type { TaskPriority } from '../../types/task'
 
 export type PriorityFilter = 'todas' | TaskPriority
@@ -9,6 +10,7 @@ export type TaskSortOption =
     | 'ultimas-editadas'
     | 'nome-az'
     | 'nome-za'
+    | 'vencimento'
 
 interface TaskFiltersProps {
     searchTerm: string
@@ -19,7 +21,7 @@ interface TaskFiltersProps {
     onClearFilters: () => void
 }
 
-export const TaskFilters = ({
+export const TaskFilters = React.memo(({
     searchTerm,
     priorityFilter,
     sortOption,
@@ -63,6 +65,7 @@ export const TaskFilters = ({
                 <option value="ultimas-editadas">Últimas editadas</option>
                 <option value="nome-az">Nome A-Z</option>
                 <option value="nome-za">Nome Z-A</option>
+                <option value="vencimento">Vencimento</option>
             </select>
 
             <div className="task-filters-actions">
@@ -82,4 +85,4 @@ export const TaskFilters = ({
             </div>
         </div>
     )
-}
+})

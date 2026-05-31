@@ -13,6 +13,7 @@ type ApiTask = {
     title: string
     description: string | null
     priority: TaskPriority
+    due_date: string | null
     status: ApiTaskStatus
     created_at: string
     updated_at: string | null
@@ -27,12 +28,30 @@ type CreateTaskPayload = {
     title: string
     description: string
     priority: TaskPriority
+    dueDate?: string | null
 }
 
 type UpdateTaskPayload = {
     title: string
     description: string
     priority: TaskPriority
+    dueDate?: string | null
+}
+
+type ApiSearchResult = {
+    id: number
+    title: string
+    status: ApiTaskStatus
+    priority: TaskPriority
+    created_at: string
+}
+
+export type SearchResult = {
+    id: string
+    title: string
+    status: ApiTaskStatus
+    priority: TaskPriority
+    createdAt: string
 }
 
 const formatDateTime = (date: string | null) => {
@@ -49,6 +68,7 @@ const mapApiTaskToTask = (apiTask: ApiTask): Task => {
         title: apiTask.title,
         description: apiTask.description || '',
         priority: apiTask.priority,
+        dueDate: apiTask.due_date || null,
         completed: apiTask.status === 'concluida',
         createdAt: formatDateTime(apiTask.created_at) || '',
         updatedAt: formatDateTime(apiTask.updated_at),
@@ -121,5 +141,19 @@ export const tasksApi = {
                 body: { taskIds: taskIds.map(Number) },
             }
         )
+    },
+
+    async searchTasks(q: string, limit = 20): Promise<SearchResult[]> {
+        const results = await apiRequest<ApiSearchResult[]>(
+            `/tasks/search?q=${encodeURIComponent(q)}&limit=${limit}`
+        )
+
+        return results.map((r) => ({
+            id: String(r.id),
+            title: r.title,
+            status: r.status,
+            priority: r.priority,
+            createdAt: formatDateTime(r.created_at) || '',
+        }))
     },
 }

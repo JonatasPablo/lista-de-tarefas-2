@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { TaskFilters } from '../../components/TaskFilters/TaskFilters'
 import type {
     PriorityFilter,
@@ -9,6 +9,7 @@ import { TaskList } from '../../components/TaskList/TaskList'
 import { TaskStats } from '../../components/TaskStats/TaskStats'
 import type { Task, TaskFile, TaskPriority } from '../../types/task'
 import { filterTasks, sortTasks } from '../../utils/tasks'
+import { exportarTarefasPendentesCsv } from '../../utils/csv'
 
 import './TasksPage.css'
 
@@ -21,7 +22,8 @@ interface TasksPageProps {
     onAddTask: (
         title: string,
         description: string,
-        priority: TaskPriority
+        priority: TaskPriority,
+        dueDate?: string | null
     ) => Promise<boolean> | void
     onToggleTask: (taskId: string) => void | Promise<void>
     onDeleteTask: (taskId: string) => void | Promise<void>
@@ -29,7 +31,8 @@ interface TasksPageProps {
         taskId: string,
         title: string,
         description: string,
-        priority: TaskPriority
+        priority: TaskPriority,
+        dueDate?: string | null
     ) => void
     onAddFiles: (taskId: string, files: File[]) => void | Promise<void>
     onRenameFile: (
@@ -41,6 +44,8 @@ interface TasksPageProps {
     onBulkCompleteTasks: (taskIds: string[]) => void | Promise<void>
     onBulkDeleteTasks: (taskIds: string[]) => void | Promise<void>
     onRequestRenameFile: (taskId: string, file: TaskFile) => void
+    abrirNovaTarefa?: boolean
+    onNovaTarefaHandled?: () => void
 }
 
 export const TasksPage = ({
@@ -59,6 +64,8 @@ export const TasksPage = ({
     onDeleteFile,
     onBulkCompleteTasks,
     onBulkDeleteTasks,
+    abrirNovaTarefa,
+    onNovaTarefaHandled,
 }: TasksPageProps) => {
     const [searchTerm, setSearchTerm] = useState('')
     const [priorityFilter, setPriorityFilter] =
@@ -66,6 +73,15 @@ export const TasksPage = ({
     const [sortOption, setSortOption] =
         useState<TaskSortOption>('mais-recentes')
     const [isTaskFormVisible, setIsTaskFormVisible] = useState(false)
+
+    useEffect(() => {
+        if (!abrirNovaTarefa) return
+        const id = setTimeout(() => {
+            setIsTaskFormVisible(true)
+            onNovaTarefaHandled?.()
+        }, 0)
+        return () => clearTimeout(id)
+    }, [abrirNovaTarefa, onNovaTarefaHandled])
 
     const statsTasks = useMemo(() => {
         return filterTasks(pendingTasks, searchTerm, 'todas')
@@ -97,9 +113,10 @@ export const TasksPage = ({
     const handleAddTask = async (
         title: string,
         description: string,
-        priority: TaskPriority
+        priority: TaskPriority,
+        dueDate?: string | null
     ): Promise<boolean> => {
-        const sucesso = await onAddTask(title, description, priority)
+        const sucesso = await onAddTask(title, description, priority, dueDate)
 
         if (sucesso !== false) {
             setIsTaskFormVisible(false)
@@ -227,6 +244,19 @@ export const TasksPage = ({
                         disabled={selectedVisibleTasks.length === 0}
                     >
                         Excluir sel.
+                    </button>
+
+                    <button
+                        type="button"
+                        className="tasks-csv-btn"
+                        onClick={() =>
+                            exportarTarefasPendentesCsv(pendingTasks)
+                        }
+                        disabled={pendingTasks.length === 0}
+                        title="Exportar pendentes (CSV)"
+                        aria-label="Exportar tarefas pendentes em CSV"
+                    >
+                        ↓ CSV
                     </button>
 
                     {hasActiveFilters && (

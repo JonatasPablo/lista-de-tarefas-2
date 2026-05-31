@@ -1,9 +1,14 @@
-import type { KeyboardEvent } from 'react'
+import React, { type KeyboardEvent } from 'react'
 import type {
     ChecklistSummary,
     Task,
     TaskPriority,
 } from '../../types/task'
+import {
+    formatarDataVencimento,
+    getDiffDias,
+    getStatusPrazo,
+} from '../../utils/date'
 
 interface TaskItemProps {
     task: Task
@@ -22,7 +27,33 @@ const priorityLabelMap: Record<TaskPriority, string> = {
 const isChecklistDone = (summary: ChecklistSummary | null | undefined) =>
     !!summary && summary.total > 0 && summary.concluidos === summary.total
 
-export const TaskItem = ({
+const DueDateBadge = ({ dueDate }: { dueDate: string }) => {
+    const status = getStatusPrazo(dueDate)
+    if (!status) return null
+
+    let label: string
+    if (status === 'vencida') {
+        label = 'Vencida'
+    } else if (status === 'vence-hoje') {
+        label = 'Vence hoje'
+    } else if (status === 'vence-em-breve') {
+        const diff = getDiffDias(dueDate)
+        label = diff === 1 ? 'Vence amanhã' : `Vence em ${diff} dias`
+    } else {
+        label = formatarDataVencimento(dueDate)
+    }
+
+    return (
+        <span
+            className={`task-duedate-badge task-duedate-badge--${status}`}
+            title={`Vencimento: ${dueDate}`}
+        >
+            {label}
+        </span>
+    )
+}
+
+export const TaskItem = React.memo(({
     task,
     selectable = false,
     selected = false,
@@ -85,6 +116,10 @@ export const TaskItem = ({
                                 {task.description}
                             </small>
                         ) : null}
+
+                        {task.dueDate && (
+                            <DueDateBadge dueDate={task.dueDate} />
+                        )}
                     </div>
 
                     {checklistBadge && checklistBadge.total > 0 && (
@@ -137,4 +172,9 @@ export const TaskItem = ({
             </div>
         </li>
     )
-}
+}, (prevProps, nextProps) => {
+    return (
+        prevProps.task === nextProps.task &&
+        prevProps.selected === nextProps.selected
+    )
+})

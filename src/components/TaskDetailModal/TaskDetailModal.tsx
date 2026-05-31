@@ -15,8 +15,10 @@ import type {
     TaskPriority,
 } from '../../types/task'
 import { MAX_FILE_SIZE_BYTES, formatFileSize } from '../../utils/file'
+import { formatarDataVencimento, getStatusPrazo } from '../../utils/date'
 import { TaskChecklist } from '../TaskChecklist/TaskChecklist'
 import { TaskFiles } from '../TaskFiles/TaskFiles'
+import { TagPicker } from '../TagPicker/TagPicker'
 import './TaskDetailModal.css'
 
 interface TaskDetailModalProps {
@@ -28,7 +30,8 @@ interface TaskDetailModalProps {
         taskId: string,
         title: string,
         description: string,
-        priority: TaskPriority
+        priority: TaskPriority,
+        dueDate?: string | null
     ) => void | Promise<void>
     onAddFiles: (taskId: string, files: File[]) => void | Promise<void>
     onDeleteFile: (taskId: string, fileId: string) => void
@@ -66,9 +69,13 @@ export const TaskDetailModal = ({
     )
     const [editedPriority, setEditedPriority] =
         useState<TaskPriority>(task.priority)
+    const [editedDueDate, setEditedDueDate] = useState<string>(
+        task.dueDate || ''
+    )
     const [fileMessage, setFileMessage] = useState<string | null>(null)
     const [isUploadingFiles, setIsUploadingFiles] = useState(false)
     const shouldSkipBlurSaveRef = useRef(false)
+    const modalRef = useRef<HTMLDivElement>(null)
 
     const isTaskCompleted = task.completed
     const priorityLabel = priorityLabelMap[task.priority]
@@ -125,6 +132,29 @@ export const TaskDetailModal = ({
         }
     }, [])
 
+    useEffect(() => {
+        const modal = modalRef.current
+        if (!modal) return
+        const focusaveis = modal.querySelectorAll<HTMLElement>(
+            'button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
+        )
+        const primeiro = focusaveis[0]
+        const ultimo = focusaveis[focusaveis.length - 1]
+        primeiro?.focus()
+        const handler = (e: globalThis.KeyboardEvent) => {
+            if (e.key !== 'Tab') return
+            if (e.shiftKey && document.activeElement === primeiro) {
+                e.preventDefault()
+                ultimo?.focus()
+            } else if (!e.shiftKey && document.activeElement === ultimo) {
+                e.preventDefault()
+                primeiro?.focus()
+            }
+        }
+        modal.addEventListener('keydown', handler)
+        return () => modal.removeEventListener('keydown', handler)
+    }, [])
+
     const handleOverlayClick = (event: MouseEvent<HTMLDivElement>) => {
         if (event.target === event.currentTarget && !campoEmEdicao) onClose()
     }
@@ -158,7 +188,8 @@ export const TaskDetailModal = ({
     const salvarTaskAtualizada = async (
         title: string,
         description: string,
-        priority: TaskPriority
+        priority: TaskPriority,
+        dueDate?: string | null
     ) => {
         const tituloNormalizado = title.trim()
         const descricaoNormalizada = description.trim()
@@ -172,7 +203,8 @@ export const TaskDetailModal = ({
                 task.id,
                 tituloNormalizado,
                 descricaoNormalizada,
-                priority
+                priority,
+                dueDate !== undefined ? dueDate : editedDueDate || null
             )
         )
     }
@@ -230,6 +262,17 @@ export const TaskDetailModal = ({
             editedTitle || task.title,
             editedDescription,
             priority
+        )
+    }
+
+    const handleDueDateChange = async (date: string) => {
+        if (isTaskCompleted) return
+        setEditedDueDate(date)
+        await salvarTaskAtualizada(
+            editedTitle || task.title,
+            editedDescription,
+            editedPriority,
+            date || null
         )
     }
 
@@ -309,7 +352,7 @@ export const TaskDetailModal = ({
             aria-label={`Detalhes da tarefa ${task.title}`}
             onClick={handleOverlayClick}
         >
-            <article className="task-detail-modal">
+            <article className="task-detail-modal" ref={modalRef}>
                 <header className="task-detail-header">
                     <div className="task-detail-title-area">
                         <div className="task-detail-priority-row">
@@ -432,6 +475,16 @@ export const TaskDetailModal = ({
 
                         <section className="task-detail-section">
                             <div className="task-detail-section-header">
+                                <h3>Tags</h3>
+                            </div>
+                            <TagPicker
+                                taskId={task.id}
+                                isTaskCompleted={isTaskCompleted}
+                            />
+                        </section>
+
+                        <section className="task-detail-section">
+                            <div className="task-detail-section-header">
                                 <h3>Checklist</h3>
                             </div>
 
@@ -445,6 +498,59 @@ export const TaskDetailModal = ({
                     </section>
 
                     <aside className="task-detail-side">
+                        {!isTaskCompleted && (
+                            <section className="task-detail-section task-detail-duedate-panel">
+                                <div className="task-detail-section-header">
+                                    <h3>Vencimento</h3>
+                                </div>
+                                <div className="task-detail-duedate-field">
+                                    <input
+                                        type="date"
+                                        value={editedDueDate}
+                                        onChange={(e) =>
+                                            handleDueDateChange(e.target.value)
+                                        }
+                                        aria-label="Data de vencimento"
+                                    />
+                                    {editedDueDate && (
+                                        <button
+                                            type="button"
+                                            className="task-detail-duedate-clear"
+                                            onClick={() =>
+                                                handleDueDateChange('')
+                                            }
+                                            aria-label="Remover data de vencimento"
+                                        >
+                                            ×
+                                        </button>
+                                    )}
+                                </div>
+                                {editedDueDate && (() => {
+                                    const status = getStatusPrazo(editedDueDate)
+                                    const label =
+                                        status === 'vencida' ? 'Vencida' :
+                                        status === 'vence-hoje' ? 'Vence hoje' :
+                                        formatarDataVencimento(editedDueDate)
+                                    return (
+                                        <span className={`task-duedate-badge task-duedate-badge--${status}`}>
+                                            {label}
+                                        </span>
+                                    )
+                                })()}
+                            </section>
+                        )}
+
+                        {isTaskCompleted && task.dueDate && (
+                            <section className="task-detail-section task-detail-duedate-panel">
+                                <div className="task-detail-section-header">
+                                    <h3>Vencimento</h3>
+                                </div>
+                                <span className={`task-duedate-badge task-duedate-badge--${getStatusPrazo(task.dueDate)}`}>
+                                    {formatarDataVencimento(task.dueDate)}
+                                </span>
+                            </section>
+                        )}
+
                         <section className="task-detail-section task-detail-actions-panel">
                             <div className="task-detail-section-header">
                                 <h3>Ações</h3>

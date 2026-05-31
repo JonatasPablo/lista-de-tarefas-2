@@ -26,7 +26,8 @@ interface TaskListProps {
         taskId: string,
         title: string,
         description: string,
-        priority: TaskPriority
+        priority: TaskPriority,
+        dueDate?: string | null
     ) => void
     onAddFiles: (taskId: string, files: File[]) => void | Promise<void>
     onRenameFile: (
@@ -130,6 +131,12 @@ export const TaskList = ({
 
     return (
         <>
+            <div aria-live="polite" aria-atomic="false" className="sr-only">
+                {tasks.length === 0
+                    ? 'Nenhuma tarefa'
+                    : `${tasks.length} tarefa${tasks.length === 1 ? '' : 's'}`}
+            </div>
+
             <ul className="task-list">
                 {tasksWithChecklistSummary.map((task) => (
                     <TaskItem

@@ -91,6 +91,14 @@ export const sortTasks = (tasks: Task[], sortOption: TaskSortOption) => {
                 getTaskTitle(taskB).localeCompare(getTaskTitle(taskA))
             )
 
+        case 'vencimento':
+            return sortedTasks.sort((a, b) => {
+                if (!a.dueDate && !b.dueDate) return 0
+                if (!a.dueDate) return 1
+                if (!b.dueDate) return -1
+                return a.dueDate.localeCompare(b.dueDate)
+            })
+
         case 'Filtros':
         default:
             return sortedTasks.sort(

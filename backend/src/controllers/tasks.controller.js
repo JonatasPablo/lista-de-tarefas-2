@@ -7,6 +7,7 @@ const {
     validateTaskDescription,
     validateTaskPriority,
     validateTaskStatus,
+    validateDueDate,
 } = require('../helpers/validateTask')
 
 const listTasks = async (req, res) => {
@@ -16,16 +17,18 @@ const listTasks = async (req, res) => {
 }
 
 const createTask = async (req, res) => {
-    const { title, description, priority } = req.body
+    const { title, description, priority, dueDate } = req.body
 
     const validTitle = validateTaskTitle(title)
     const validDescription = validateTaskDescription(description)
     const validPriority = validateTaskPriority(priority)
+    const validDueDate = validateDueDate(dueDate)
 
     const newTask = await tasksService.createTask(req.user.id, {
         title: validTitle,
         description: validDescription,
         priority: validPriority,
+        dueDate: validDueDate,
     })
 
     return res.status(201).json(newTask)
@@ -33,17 +36,19 @@ const createTask = async (req, res) => {
 
 const updateTask = async (req, res) => {
     const { id } = req.params
-    const { title, description, priority } = req.body
+    const { title, description, priority, dueDate } = req.body
 
     const taskId = validateTaskId(id)
     const validTitle = validateTaskTitle(title)
     const validDescription = validateTaskDescription(description)
     const validPriority = validateTaskPriority(priority)
+    const validDueDate = validateDueDate(dueDate)
 
     const task = await tasksService.updateTask(req.user.id, taskId, {
         title: validTitle,
         description: validDescription,
         priority: validPriority,
+        dueDate: validDueDate,
     })
 
     if (!task) {
@@ -175,6 +180,18 @@ const listUserHistory = async (req, res) => {
     return res.json(history)
 }
 
+const searchTasks = async (req, res) => {
+    const q = (req.query.q || '').trim()
+    const limit = Math.min(Number(req.query.limit) || 20, 50)
+
+    if (!q || q.length < 2) {
+        return res.json([])
+    }
+
+    const results = await tasksService.searchTasks(req.user.id, q, limit)
+    return res.json(results)
+}
+
 module.exports = {
     listTasks,
     createTask,
@@ -186,4 +203,5 @@ module.exports = {
     bulkDeleteTasks,
     listTaskHistory,
     listUserHistory,
+    searchTasks,
 }

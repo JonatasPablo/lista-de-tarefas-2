@@ -319,3 +319,42 @@
         font-size: var(--font-size-2xs);
     }
 }
+
+/* ---- Painel de data de vencimento no modal ---- */
+
+.task-detail-duedate-panel {
+    padding: var(--space-4);
+}
+
+.task-detail-duedate-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+}
+
+.task-detail-duedate-field input[type='date'] {
+    flex: 1;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-input);
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
+}
+
+.task-detail-duedate-clear {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--color-text-muted);
+    padding: 0 var(--space-1);
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.task-detail-duedate-clear:hover {
+    color: var(--color-danger);
+}

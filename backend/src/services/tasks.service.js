@@ -12,6 +12,7 @@ const getTaskById = async (id, userId) => {
                 title,
                 description,
                 priority,
+                due_date,
                 status,
                 created_at,
                 updated_at,
@@ -37,6 +38,7 @@ const listTasks = async (userId) => {
                 t.title,
                 t.description,
                 t.priority,
+                t.due_date,
                 t.status,
                 t.created_at,
                 t.updated_at,
@@ -77,18 +79,19 @@ const listTasks = async (userId) => {
     }))
 }
 
-const createTask = async (userId, { title, description, priority }) => {
+const createTask = async (userId, { title, description, priority, dueDate }) => {
     const [result] = await connection.query(
         `
             INSERT INTO tasks (
                 user_id,
                 title,
                 description,
-                priority
+                priority,
+                due_date
             )
-            VALUES (?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?)
         `,
-        [userId, title, description, priority]
+        [userId, title, description, priority, dueDate || null]
     )
 
     const task = await getTaskById(result.insertId, userId)
@@ -109,7 +112,7 @@ const createTask = async (userId, { title, description, priority }) => {
     return task
 }
 
-const updateTask = async (userId, id, { title, description, priority }) => {
+const updateTask = async (userId, id, { title, description, priority, dueDate }) => {
     const oldTask = await getTaskById(id, userId)
 
     if (!oldTask) {
@@ -127,12 +130,13 @@ const updateTask = async (userId, id, { title, description, priority }) => {
                 title = ?,
                 description = ?,
                 priority = ?,
+                due_date = ?,
                 updated_at = NOW()
             WHERE id = ?
                 AND user_id = ?
                 AND deleted_at IS NULL
         `,
-        [title, description, priority, id, userId]
+        [title, description, priority, dueDate !== undefined ? dueDate : oldTask.due_date, id, userId]
     )
 
     const updatedTask = await getTaskById(id, userId)
@@ -145,11 +149,13 @@ const updateTask = async (userId, id, { title, description, priority }) => {
             title: oldTask.title,
             description: oldTask.description,
             priority: oldTask.priority,
+            due_date: oldTask.due_date,
         }),
         newValue: JSON.stringify({
             title: updatedTask.title,
             description: updatedTask.description,
             priority: updatedTask.priority,
+            due_date: updatedTask.due_date,
         }),
     })
 
@@ -397,6 +403,21 @@ const listUserHistory = async (userId) => {
     return history
 }
 
+const searchTasks = async (userId, q, limit = 20) => {
+    const termo = `%${q}%`
+    const [tasks] = await connection.query(
+        `SELECT id, title, status, priority, created_at
+         FROM tasks
+         WHERE user_id = ?
+           AND deleted_at IS NULL
+           AND (title LIKE ? OR description LIKE ?)
+         ORDER BY created_at DESC
+         LIMIT ?`,
+        [userId, termo, termo, limit]
+    )
+    return tasks
+}
+
 module.exports = {
     listTasks,
     createTask,
@@ -408,4 +429,5 @@ module.exports = {
     bulkDeleteTasks,
     listTaskHistory,
     listUserHistory,
+    searchTasks,
 }

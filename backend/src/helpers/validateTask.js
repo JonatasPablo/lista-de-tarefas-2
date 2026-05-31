@@ -59,10 +59,18 @@ const validateTaskStatus = (status) => {
     return status
 }
 
+const validateDueDate = (dueDate) => {
+    if (!dueDate) return null
+    const parsed = new Date(dueDate)
+    if (isNaN(parsed.getTime())) throw new AppError('Data de vencimento inválida.', 400)
+    return dueDate
+}
+
 module.exports = {
     validateTaskTitle,
     validateTaskId,
     validateTaskDescription,
     validateTaskPriority,
-    validateTaskStatus
+    validateTaskStatus,
+    validateDueDate,
 }

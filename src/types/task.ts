@@ -1,5 +1,11 @@
 export type TaskPriority = 'alta' | 'media' | 'baixa'
 
+export interface Tag {
+    id: string
+    nome: string
+    cor: string
+}
+
 export interface TaskFile {
     id: string
     originalName: string
@@ -23,6 +29,7 @@ export interface Task {
     description?: string
     text?: string
     priority: TaskPriority
+    dueDate?: string | null
     completed: boolean
     createdAt: string
     updatedAt?: string
