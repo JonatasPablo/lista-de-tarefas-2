@@ -62,13 +62,19 @@ const formatDateTime = (date: string | null) => {
     return new Date(date).toLocaleString('pt-BR')
 }
 
+const parseDueDate = (value: string | null | undefined): string | null => {
+    if (!value) return null
+    // mysql2 retorna DATE como Date obj serializado em ISO — extrai só YYYY-MM-DD
+    return String(value).substring(0, 10)
+}
+
 const mapApiTaskToTask = (apiTask: ApiTask): Task => {
     return {
         id: String(apiTask.id),
         title: apiTask.title,
         description: apiTask.description || '',
         priority: apiTask.priority,
-        dueDate: apiTask.due_date || null,
+        dueDate: parseDueDate(apiTask.due_date),
         completed: apiTask.status === 'concluida',
         createdAt: formatDateTime(apiTask.created_at) || '',
         updatedAt: formatDateTime(apiTask.updated_at),
