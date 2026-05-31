@@ -10,6 +10,7 @@ import {
 import { createPortal } from 'react-dom'
 import type {
     ChecklistSummary,
+    Tag,
     Task,
     TaskFile,
     TaskPriority,
@@ -31,7 +32,8 @@ interface TaskDetailModalProps {
         title: string,
         description: string,
         priority: TaskPriority,
-        dueDate?: string | null
+        dueDate?: string | null,
+        dueTime?: string | null
     ) => void | Promise<void>
     onAddFiles: (taskId: string, files: File[]) => void | Promise<void>
     onDeleteFile: (taskId: string, fileId: string) => void
@@ -40,6 +42,7 @@ interface TaskDetailModalProps {
         taskId: string,
         summary: ChecklistSummary | null
     ) => void
+    onTagsChange?: (taskId: string, tags: Tag[]) => void
 }
 
 type CampoEdicaoTask = 'titulo' | 'descricao' | null
@@ -60,6 +63,7 @@ export const TaskDetailModal = ({
     onDeleteFile,
     onRequestRenameFile,
     onChecklistProgressChange,
+    onTagsChange,
 }: TaskDetailModalProps) => {
     const [campoEmEdicao, setCampoEmEdicao] =
         useState<CampoEdicaoTask>(null)
@@ -71,6 +75,9 @@ export const TaskDetailModal = ({
         useState<TaskPriority>(task.priority)
     const [editedDueDate, setEditedDueDate] = useState<string>(
         task.dueDate || ''
+    )
+    const [editedDueTime, setEditedDueTime] = useState<string>(
+        task.dueTime || ''
     )
     const [fileMessage, setFileMessage] = useState<string | null>(null)
     const [isUploadingFiles, setIsUploadingFiles] = useState(false)
@@ -99,6 +106,13 @@ export const TaskDetailModal = ({
             onDeleteFile(task.id, fileId)
         },
         [onDeleteFile, task.id]
+    )
+
+    const handleTagsChange = useCallback(
+        (tags: Tag[]) => {
+            onTagsChange?.(task.id, tags)
+        },
+        [onTagsChange, task.id]
     )
 
     useEffect(() => {
@@ -189,7 +203,8 @@ export const TaskDetailModal = ({
         title: string,
         description: string,
         priority: TaskPriority,
-        dueDate?: string | null
+        dueDate?: string | null,
+        dueTime?: string | null
     ) => {
         const tituloNormalizado = title.trim()
         const descricaoNormalizada = description.trim()
@@ -204,7 +219,8 @@ export const TaskDetailModal = ({
                 tituloNormalizado,
                 descricaoNormalizada,
                 priority,
-                dueDate !== undefined ? dueDate : editedDueDate || null
+                dueDate !== undefined ? dueDate : editedDueDate || null,
+                dueTime !== undefined ? dueTime : editedDueTime || null
             )
         )
     }
@@ -261,18 +277,35 @@ export const TaskDetailModal = ({
         await salvarTaskAtualizada(
             editedTitle || task.title,
             editedDescription,
-            priority
+            priority,
+            editedDueDate || null,
+            editedDueTime || null
         )
     }
 
     const handleDueDateChange = async (date: string) => {
         if (isTaskCompleted) return
+        const nextTime = date ? editedDueTime : ''
         setEditedDueDate(date)
+        if (!date) setEditedDueTime('')
         await salvarTaskAtualizada(
             editedTitle || task.title,
             editedDescription,
             editedPriority,
-            date || null
+            date || null,
+            nextTime || null
+        )
+    }
+
+    const handleDueTimeChange = async (time: string) => {
+        if (isTaskCompleted || !editedDueDate) return
+        setEditedDueTime(time)
+        await salvarTaskAtualizada(
+            editedTitle || task.title,
+            editedDescription,
+            editedPriority,
+            editedDueDate,
+            time || null
         )
     }
 
@@ -480,6 +513,8 @@ export const TaskDetailModal = ({
                             <TagPicker
                                 taskId={task.id}
                                 isTaskCompleted={isTaskCompleted}
+                                initialTaskTags={task.tags}
+                                onTagsChange={handleTagsChange}
                             />
                         </section>
 
@@ -516,14 +551,27 @@ export const TaskDetailModal = ({
                                         <button
                                             type="button"
                                             className="task-detail-duedate-clear"
-                                            onClick={() =>
-                                                handleDueDateChange('')
-                                            }
+                                            onClick={() => handleDueDateChange('')}
                                             aria-label="Remover data de vencimento"
                                         >
                                             ×
                                         </button>
                                     )}
+                                </div>
+                                <div className="task-detail-duetime-field">
+                                    <label htmlFor="task-detail-due-time">
+                                        Horario <span>(opcional)</span>
+                                    </label>
+                                    <input
+                                        id="task-detail-due-time"
+                                        type="time"
+                                        value={editedDueTime}
+                                        onChange={(e) =>
+                                            handleDueTimeChange(e.target.value)
+                                        }
+                                        disabled={!editedDueDate}
+                                        aria-label="Horario de vencimento"
+                                    />
                                 </div>
                                 {editedDueDate && (() => {
                                     const status = getStatusPrazo(editedDueDate)
@@ -533,7 +581,7 @@ export const TaskDetailModal = ({
                                         formatarDataVencimento(editedDueDate)
                                     return (
                                         <span className={`task-duedate-badge task-duedate-badge--${status}`}>
-                                            {label}
+                                            {editedDueTime ? `${label} as ${editedDueTime}` : label}
                                         </span>
                                     )
                                 })()}
@@ -546,7 +594,9 @@ export const TaskDetailModal = ({
                                     <h3>Vencimento</h3>
                                 </div>
                                 <span className={`task-duedate-badge task-duedate-badge--${getStatusPrazo(task.dueDate)}`}>
-                                    {formatarDataVencimento(task.dueDate)}
+                                    {task.dueTime
+                                        ? `${formatarDataVencimento(task.dueDate)} as ${task.dueTime}`
+                                        : formatarDataVencimento(task.dueDate)}
                                 </span>
                             </section>
                         )}

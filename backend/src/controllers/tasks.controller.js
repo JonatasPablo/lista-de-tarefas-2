@@ -8,6 +8,7 @@ const {
     validateTaskPriority,
     validateTaskStatus,
     validateDueDate,
+    validateDueTime,
 } = require('../helpers/validateTask')
 
 const listTasks = async (req, res) => {
@@ -17,18 +18,20 @@ const listTasks = async (req, res) => {
 }
 
 const createTask = async (req, res) => {
-    const { title, description, priority, dueDate } = req.body
+    const { title, description, priority, dueDate, dueTime } = req.body
 
     const validTitle = validateTaskTitle(title)
     const validDescription = validateTaskDescription(description)
     const validPriority = validateTaskPriority(priority)
     const validDueDate = validateDueDate(dueDate)
+    const validDueTime = validDueDate ? validateDueTime(dueTime) : null
 
     const newTask = await tasksService.createTask(req.user.id, {
         title: validTitle,
         description: validDescription,
         priority: validPriority,
         dueDate: validDueDate,
+        dueTime: validDueTime,
     })
 
     return res.status(201).json(newTask)
@@ -36,19 +39,21 @@ const createTask = async (req, res) => {
 
 const updateTask = async (req, res) => {
     const { id } = req.params
-    const { title, description, priority, dueDate } = req.body
+    const { title, description, priority, dueDate, dueTime } = req.body
 
     const taskId = validateTaskId(id)
     const validTitle = validateTaskTitle(title)
     const validDescription = validateTaskDescription(description)
     const validPriority = validateTaskPriority(priority)
     const validDueDate = validateDueDate(dueDate)
+    const validDueTime = validDueDate ? validateDueTime(dueTime) : null
 
     const task = await tasksService.updateTask(req.user.id, taskId, {
         title: validTitle,
         description: validDescription,
         priority: validPriority,
         dueDate: validDueDate,
+        dueTime: validDueTime,
     })
 
     if (!task) {

@@ -27,6 +27,14 @@ export const formatarDataVencimento = (dueDate: string): string => {
     })
 }
 
+export const formatarDataHoraVencimento = (
+    dueDate: string,
+    dueTime: string
+): string => {
+    const data = formatarDataVencimento(dueDate)
+    return `${data} as ${dueTime.slice(0, 5)}`
+}
+
 export const getDiffDias = (dueDate: string): number => {
     const hoje = new Date()
     hoje.setHours(0, 0, 0, 0)

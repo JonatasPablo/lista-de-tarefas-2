@@ -1,9 +1,6 @@
-const path = require('path')
+const loadEnv = require('../config/loadEnv')
 
-require('dotenv').config({
-    path: path.resolve(__dirname, '..', '..', '.env'),
-})
-
+loadEnv()
 const connection = require('../database/connection')
 
 const main = async () => {

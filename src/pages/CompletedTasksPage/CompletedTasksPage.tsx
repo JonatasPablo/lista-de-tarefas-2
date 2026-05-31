@@ -20,7 +20,8 @@ interface CompletedTasksPageProps {
         title: string,
         description: string,
         priority: TaskPriority,
-        dueDate?: string | null
+        dueDate?: string | null,
+        dueTime?: string | null
     ) => void
     onAddFiles: (taskId: string, files: File[]) => void | Promise<void>
     onRenameFile: (

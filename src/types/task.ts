@@ -30,10 +30,12 @@ export interface Task {
     text?: string
     priority: TaskPriority
     dueDate?: string | null
+    dueTime?: string | null
     completed: boolean
     createdAt: string
     updatedAt?: string
     completedAt?: string
+    tags: Tag[]
     files: TaskFile[]
     checklistSummary?: ChecklistSummary
 }

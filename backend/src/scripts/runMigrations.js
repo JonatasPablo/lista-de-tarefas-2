@@ -1,10 +1,9 @@
 const fs = require('fs')
 const path = require('path')
 const mysql = require('mysql2/promise')
+const loadEnv = require('../config/loadEnv')
 
-require('dotenv').config({
-    path: path.resolve(__dirname, '..', '..', '.env'),
-})
+loadEnv()
 
 const requiredEnvVariables = [
     'DB_HOST',

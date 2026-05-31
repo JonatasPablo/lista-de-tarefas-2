@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from 'react'
+﻿import { useMemo, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import type { ToastType } from '../../components/Toast/Toast'
 import { ValidacaoSenha } from '../../components/ValidacaoSenha/ValidacaoSenha'
@@ -59,11 +59,11 @@ const validarNome = (nome: string) => {
         return 'O nome não pode ter mais que 150 caracteres.'
     }
 
-    if (!/^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$/.test(nomeValido)) {
+    if (!/^[\p{L}' -]+$/u.test(nomeValido)) {
         return 'Use apenas letras, acentos, espaços, hífen e apóstrofo.'
     }
 
-    const letras = nomeValido.match(/[A-Za-zÀ-ÖØ-öø-ÿ]/g) || []
+    const letras = nomeValido.match(/\p{L}/gu) || []
 
     if (letras.length < 2) {
         return 'Informe um nome com letras suficientes.'
@@ -75,10 +75,10 @@ const validarNome = (nome: string) => {
 const senhaAtendeRequisitosBasicos = (senha: string) => {
     return (
         senha.length >= 8 &&
-        /[A-ZÀ-Ö]/.test(senha) &&
-        /[a-zà-öø-ÿ]/.test(senha) &&
+        /\p{Lu}/u.test(senha) &&
+        /\p{Ll}/u.test(senha) &&
         /\d/.test(senha) &&
-        /[^A-Za-zÀ-ÖØ-öø-ÿ0-9]/.test(senha)
+        /[^\p{L}0-9]/u.test(senha)
     )
 }
 
@@ -479,16 +479,17 @@ export const MinhaContaPage = ({
                                 <p className="mc-privacy-rights-text">
                                     Acesso, correção e exclusão de dados via canal LGPD.
                                 </p>
-                                <a
-                                    href={`mailto:${LGPD_CONTACT_EMAIL}`}
+                                <Link
+                                    to="/contato-lgpd"
                                     className="mc-privacy-contact-link"
+                                    aria-label={`Enviar solicitação LGPD para ${LGPD_CONTACT_EMAIL}`}
                                 >
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                                         <polyline points="22,6 12,13 2,6" />
                                     </svg>
-                                    <Link to="/contato-lgpd">Enviar solicitação</Link>
-                                </a>
+                                    Enviar solicitação
+                                </Link>
                             </div>
 
                             <div className="mc-privacy-group mc-privacy-actions-group">

@@ -1,279 +1,153 @@
 /* =============================================================
-   Design Tokens — Lista de Tarefas v2.1.0
-   Tokens globais de cores, espaçamentos, bordas, sombras,
-   fontes e transições. Suporte a dark mode via data-theme="dark".
+   Design Tokens - Lista de Tarefas v2.2.0
+   Paleta Indigo SaaS
 ============================================================= */
 
-/* ============================================================
-   LIGHT MODE (padrão)
-============================================================ */
-
 :root {
-    /* --- Cores de texto --- */
-    --color-text:           #2a2a2a;
-    --color-text-secondary: #4a4a4a;
-    --color-text-muted:     #808080;
-    --color-text-subtle:    #b0b0b0;
-    --color-text-inverse:   #ffffff;
-    --color-text-accent:    #1a6ef5;
+    --color-text: #111827;
+    --color-text-secondary: #374151;
+    --color-text-muted: #6b7280;
+    --color-text-subtle: #9ca3af;
+    --color-text-inverse: #ffffff;
+    --color-text-accent: #6366f1;
 
-    /* --- Cores de fundo --- */
-    --color-bg-app:         rgba(255, 255, 255, 0.90);
-    --color-bg-surface:     rgba(255, 255, 255, 0.78);
-    --color-bg-surface-2:   rgba(255, 255, 255, 0.58);
-    --color-bg-input:       #ffffff;
-    --color-bg-input-muted: rgba(250, 250, 252, 0.88);
-    --color-bg-hover:       rgba(26, 110, 245, 0.05);
-    --color-bg-active:      rgba(26, 110, 245, 0.09);
-    --color-bg-card:        rgba(255, 255, 255, 0.66);
-    --color-bg-overlay:     rgba(10, 10, 24, 0.52);
-    --color-bg-badge:       rgba(0, 0, 0, 0.055);
+    --color-bg-page: #f5f5f7;
+    --color-bg-app: rgba(255, 255, 255, 0.96);
+    --color-bg-surface: rgba(255, 255, 255, 0.92);
+    --color-bg-surface-2: rgba(248, 248, 252, 0.88);
+    --color-bg-input: #ffffff;
+    --color-bg-input-muted: #f9fafb;
+    --color-bg-hover: rgba(99, 102, 241, 0.05);
+    --color-bg-active: rgba(99, 102, 241, 0.1);
+    --color-bg-card: rgba(255, 255, 255, 0.88);
+    --color-bg-overlay: rgba(15, 15, 30, 0.55);
+    --color-bg-badge: rgba(99, 102, 241, 0.07);
 
-    /* --- Cores semânticas --- */
-    --color-primary:        #1a1a1a;
-    --color-primary-hover:  #000000;
-    --color-accent:         #1a6ef5;
-    --color-accent-hover:   #1055cc;
-    --color-accent-bg:      rgba(26, 110, 245, 0.08);
-    --color-success:        #057401;
-    --color-success-hover:  #045e01;
-    --color-success-bg:     rgba(5, 116, 1, 0.08);
-    --color-danger:         #c0001e;
-    --color-danger-hover:   #9a0018;
-    --color-danger-bg:      rgba(192, 0, 30, 0.08);
-    --color-warning:        #8a6c00;
-    --color-warning-bg:     rgba(138, 108, 0, 0.08);
-    --color-info:           #1a6ef5;
-    --color-info-bg:        rgba(26, 110, 245, 0.08);
+    --color-primary: #6366f1;
+    --color-primary-hover: #4f46e5;
+    --color-primary-light: rgba(99, 102, 241, 0.08);
+    --color-accent: #8b5cf6;
+    --color-accent-hover: #7c3aed;
+    --color-accent-bg: rgba(139, 92, 246, 0.08);
+    --color-success: #059669;
+    --color-success-hover: #047857;
+    --color-success-bg: rgba(5, 150, 105, 0.08);
+    --color-danger: #dc2626;
+    --color-danger-hover: #b91c1c;
+    --color-danger-bg: rgba(220, 38, 38, 0.08);
+    --color-warning: #d97706;
+    --color-warning-bg: rgba(217, 119, 6, 0.08);
+    --color-info: #0ea5e9;
+    --color-info-bg: rgba(14, 165, 233, 0.08);
 
-    /* --- Botão primário (light mode) --- */
-    --btn-primary-bg:       linear-gradient(145deg, #1e1e1e 0%, #050505 100%);
-    --btn-primary-bg-hover: linear-gradient(145deg, #111111 0%, #000000 100%);
-    --btn-primary-color:    #ffffff;
-    --btn-primary-border:   #111111;
+    --btn-primary-bg: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    --btn-primary-bg-hover: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+    --btn-primary-color: #ffffff;
+    --btn-primary-border: #4f46e5;
 
-    /* --- Botão de ação — Concluir (verde) --- */
-    --btn-success-bg:       linear-gradient(145deg, #068501 0%, #045e01 100%);
-    --btn-success-bg-hover: linear-gradient(145deg, #045e01 0%, #034400 100%);
-    --btn-success-color:    #ffffff;
-    --btn-success-border:   #057401;
+    --btn-success-bg: linear-gradient(135deg, #059669 0%, #047857 100%);
+    --btn-success-bg-hover: linear-gradient(135deg, #047857 0%, #065f46 100%);
+    --btn-success-color: #ffffff;
+    --btn-success-border: #059669;
 
-    /* --- Botão de ação — Excluir (vermelho) --- */
-    --btn-danger-bg:        linear-gradient(145deg, #d50022 0%, #a8001a 100%);
-    --btn-danger-bg-hover:  linear-gradient(145deg, #b0001c 0%, #8a0016 100%);
-    --btn-danger-color:     #ffffff;
-    --btn-danger-border:    #c0001e;
+    --btn-danger-bg: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    --btn-danger-bg-hover: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+    --btn-danger-color: #ffffff;
+    --btn-danger-border: #dc2626;
 
-    /* --- Botão de acento (azul) --- */
-    --btn-accent-bg:        linear-gradient(145deg, #1a6ef5 0%, #1055cc 100%);
-    --btn-accent-bg-hover:  linear-gradient(145deg, #1055cc 0%, #0d44a8 100%);
-    --btn-accent-color:     #ffffff;
-    --btn-accent-border:    #1a6ef5;
+    --btn-accent-bg: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    --btn-accent-bg-hover: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    --btn-accent-color: #ffffff;
+    --btn-accent-border: #8b5cf6;
 
-    /* --- Bordas --- */
-    --color-border:         rgba(0, 0, 0, 0.09);
-    --color-border-strong:  rgba(0, 0, 0, 0.16);
-    --color-border-input:   rgba(0, 0, 0, 0.18);
-    --color-border-glass:   rgba(255, 255, 255, 0.5);
+    --color-border: rgba(99, 102, 241, 0.12);
+    --color-border-strong: rgba(99, 102, 241, 0.22);
+    --color-border-input: rgba(0, 0, 0, 0.14);
+    --color-border-glass: rgba(255, 255, 255, 0.7);
 
-    /* --- Foco --- */
-    --color-focus-ring:     rgba(26, 110, 245, 0.18);
-    --color-focus-border:   #1a6ef5;
+    --color-focus-ring: rgba(99, 102, 241, 0.22);
+    --color-focus-border: #6366f1;
 
-    /* --- Espaçamentos --- */
-    --space-1:  4px;
-    --space-2:  8px;
-    --space-3:  12px;
-    --space-4:  16px;
-    --space-5:  20px;
-    --space-6:  24px;
-    --space-8:  32px;
+    --color-bg-glass: linear-gradient(145deg, rgba(255,255,255,0.85), rgba(255,255,255,0.60));
+    --color-bg-glass-border: rgba(255, 255, 255, 0.75);
+    --shadow-glass: 0 8px 32px rgba(99, 102, 241, 0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.90);
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
     --space-10: 40px;
 
-    /* --- Raios de borda --- */
-    --radius-xs:   4px;
-    --radius-sm:   6px;
-    --radius-md:   10px;
-    --radius-lg:   14px;
-    --radius-xl:   20px;
-    --radius-2xl:  26px;
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    --radius-2xl: 26px;
     --radius-full: 999px;
 
-    /* --- Sombras --- */
-    --shadow-xs:  0 1px 4px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
-    --shadow-sm:  0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06);
-    --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.10), 0 8px 28px rgba(0, 0, 0, 0.07);
-    --shadow-lg:  0 8px 28px rgba(0, 0, 0, 0.13), 0 16px 48px rgba(0, 0, 0, 0.09);
-    --shadow-xl:  0 16px 48px rgba(0, 0, 0, 0.16), 0 32px 80px rgba(0, 0, 0, 0.10);
-    --shadow-btn: 0 4px 14px rgba(0, 0, 0, 0.14);
+    --shadow-xs: 0 1px 3px rgba(99, 102, 241, 0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-sm: 0 2px 8px rgba(99, 102, 241, 0.08), 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 16px rgba(99, 102, 241, 0.10), 0 2px 6px rgba(0,0,0,0.06);
+    --shadow-lg: 0 8px 28px rgba(99, 102, 241, 0.12), 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-xl: 0 16px 48px rgba(99, 102, 241, 0.14), 0 8px 24px rgba(0,0,0,0.10);
+    --shadow-btn: 0 4px 14px rgba(99, 102, 241, 0.30);
+    --shadow-glass-inset: inset 0 1px 0 rgba(255,255,255,0.70);
 
-    /* --- Sombra interna glass --- */
-    --shadow-glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.65);
-
-    /* --- Painéis glass-morphism --- */
-    --color-bg-glass:        linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.48));
-    --color-bg-glass-border: rgba(255, 255, 255, 0.70);
-    --shadow-glass:          0 10px 30px rgba(0, 0, 0, 0.07), 0 2px 6px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.90);
-
-    /* --- Tipografia --- */
     --font-size-2xs: 0.68rem;
-    --font-size-xs:  0.74rem;
-    --font-size-sm:  0.82rem;
-    --font-size-md:  0.875rem;
+    --font-size-xs: 0.74rem;
+    --font-size-sm: 0.82rem;
+    --font-size-md: 0.92rem;
     --font-size-base: 1rem;
-    --font-size-lg:  1.125rem;
-    --font-size-xl:  1.3rem;
-    --font-size-2xl: 1.6rem;
+    --font-size-lg: 1.05rem;
+    --font-size-xl: 1.2rem;
+    --font-size-2xl: 1.4rem;
+    --font-size-3xl: 1.7rem;
 
-    --font-weight-normal:    400;
-    --font-weight-medium:    500;
-    --font-weight-semibold:  600;
-    --font-weight-bold:      700;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
     --font-weight-extrabold: 800;
 
-    --line-height-tight:  1.2;
-    --line-height-snug:   1.35;
-    --line-height-base:   1.55;
-    --line-height-loose:  1.75;
+    --line-height-tight: 1.2;
+    --line-height-snug: 1.35;
+    --line-height-base: 1.55;
+    --line-height-loose: 1.75;
 
-    /* --- Transições --- */
-    --transition-fast:  0.12s ease;
-    --transition-base:  0.18s ease;
-    --transition-slow:  0.28s ease;
+    --input-padding-y: 9px;
+    --input-padding-x: 14px;
+    --input-height-sm: 32px;
+    --input-height-md: 38px;
+    --input-height-lg: 46px;
 
-    /* --- Alturas de botão --- */
-    --btn-height-sm:  30px;
-    --btn-height-md:  38px;
-    --btn-height-lg:  44px;
-    --btn-padding-x-sm: 10px;
-    --btn-padding-x-md: 16px;
-    --btn-padding-x-lg: 20px;
+    --btn-height-sm: 30px;
+    --btn-height-md: 38px;
+    --btn-height-lg: 46px;
+    --btn-padding-x-sm: 12px;
+    --btn-padding-x-md: 18px;
+    --btn-padding-x-lg: 24px;
 
-    /* --- Input base --- */
-    --input-height-sm:  32px;
-    --input-height-md:  42px;
-    --input-height-lg:  50px;
-    --input-padding-x:  14px;
-    --input-padding-y:  10px;
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-overlay: 300;
+    --z-modal: 400;
+    --z-toast: 500;
 
-    /* --- Z-index --- */
-    --z-dropdown:  100;
-    --z-sticky:    200;
-    --z-modal:     10000;
-    --z-toast:     10100;
-    --z-overlay:   9998;
+    --transition-fast: 0.14s ease;
+    --transition-base: 0.20s ease;
+    --transition-slow: 0.30s ease;
 
-    /* --- Cores de prioridade --- */
-    --color-priority-high:        #c0001e;
-    --color-priority-high-bg:     rgba(192, 0, 30, 0.08);
-    --color-priority-high-border: rgba(192, 0, 30, 0.24);
-    --color-priority-medium:      #8a6c00;
-    --color-priority-medium-bg:   rgba(138, 108, 0, 0.08);
-    --color-priority-medium-border: rgba(138, 108, 0, 0.24);
-    --color-priority-low:         #057401;
-    --color-priority-low-bg:      rgba(5, 116, 1, 0.08);
-    --color-priority-low-border:  rgba(5, 116, 1, 0.24);
-}
-
-/* ============================================================
-   DARK MODE
-============================================================ */
-
-[data-theme='dark'] {
-    /* --- Cores de texto --- */
-    --color-text:           #e4e4e4;
-    --color-text-secondary: #c0c0c0;
-    --color-text-muted:     #a8a8a8;
-    --color-text-subtle:    #8a8a8a;
-    --color-text-inverse:   #111111;
-    --color-text-accent:    #5b93ff;
-
-    /* --- Cores de fundo --- */
-    --color-bg-app:         rgba(255, 255, 255, 0.055);
-    --color-bg-surface:     rgba(255, 255, 255, 0.085);
-    --color-bg-surface-2:   rgba(255, 255, 255, 0.055);
-    --color-bg-input:       rgba(255, 255, 255, 0.085);
-    --color-bg-input-muted: rgba(255, 255, 255, 0.055);
-    --color-bg-hover:       rgba(91, 147, 255, 0.08);
-    --color-bg-active:      rgba(91, 147, 255, 0.14);
-    --color-bg-card:        rgba(255, 255, 255, 0.05);
-    --color-bg-overlay:     rgba(0, 0, 0, 0.65);
-    --color-bg-badge:       rgba(255, 255, 255, 0.08);
-
-    /* --- Cores semânticas --- */
-    --color-primary:        rgba(228, 228, 228, 0.92);
-    --color-primary-hover:  rgba(255, 255, 255, 1);
-    --color-accent:         #5b93ff;
-    --color-accent-hover:   #80acff;
-    --color-accent-bg:      rgba(91, 147, 255, 0.12);
-    --color-success:        #2ea827;
-    --color-success-hover:  #3fbe38;
-    --color-success-bg:     rgba(46, 168, 39, 0.10);
-    --color-danger:         #f05555;
-    --color-danger-hover:   #ff7070;
-    --color-danger-bg:      rgba(240, 85, 85, 0.12);
-    --color-warning:        #c9a400;
-    --color-warning-bg:     rgba(201, 164, 0, 0.10);
-    --color-info:           #5b93ff;
-    --color-info-bg:        rgba(91, 147, 255, 0.10);
-
-    /* --- Botão primário (dark mode) --- */
-    --btn-primary-bg:       rgba(228, 228, 228, 0.92);
-    --btn-primary-bg-hover: rgba(255, 255, 255, 1);
-    --btn-primary-color:    #111111;
-    --btn-primary-border:   rgba(255, 255, 255, 0.18);
-
-    /* --- Botão de ação — Concluir (verde dark) --- */
-    --btn-success-bg:       linear-gradient(145deg, #2ea827 0%, #259020 100%);
-    --btn-success-bg-hover: linear-gradient(145deg, #35c22e 0%, #2ea827 100%);
-    --btn-success-color:    #ffffff;
-    --btn-success-border:   rgba(46, 168, 39, 0.4);
-
-    /* --- Botão de ação — Excluir (vermelho dark) --- */
-    --btn-danger-bg:        linear-gradient(145deg, #f05555 0%, #d03030 100%);
-    --btn-danger-bg-hover:  linear-gradient(145deg, #ff7070 0%, #f05555 100%);
-    --btn-danger-color:     #ffffff;
-    --btn-danger-border:    rgba(240, 85, 85, 0.4);
-
-    /* --- Botão de acento (azul dark) --- */
-    --btn-accent-bg:        linear-gradient(145deg, #5b93ff 0%, #3b78f0 100%);
-    --btn-accent-bg-hover:  linear-gradient(145deg, #7aaaff 0%, #5b93ff 100%);
-    --btn-accent-color:     #ffffff;
-    --btn-accent-border:    rgba(91, 147, 255, 0.4);
-
-    /* --- Bordas --- */
-    --color-border:         rgba(255, 255, 255, 0.13);
-    --color-border-strong:  rgba(255, 255, 255, 0.22);
-    --color-border-input:   rgba(255, 255, 255, 0.22);
-    --color-border-glass:   rgba(255, 255, 255, 0.08);
-
-    /* --- Foco --- */
-    --color-focus-ring:     rgba(91, 147, 255, 0.20);
-    --color-focus-border:   #5b93ff;
-
-    /* --- Sombras --- */
-    --shadow-xs:  0 1px 4px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.18);
-    --shadow-sm:  0 2px 8px rgba(0, 0, 0, 0.30), 0 4px 16px rgba(0, 0, 0, 0.22);
-    --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.38), 0 8px 28px rgba(0, 0, 0, 0.28);
-    --shadow-lg:  0 8px 28px rgba(0, 0, 0, 0.48), 0 16px 48px rgba(0, 0, 0, 0.34);
-    --shadow-xl:  0 16px 48px rgba(0, 0, 0, 0.58), 0 32px 80px rgba(0, 0, 0, 0.40);
-    --shadow-btn: 0 4px 14px rgba(0, 0, 0, 0.36);
-
-    --shadow-glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.07);
-
-    /* --- Painéis glass-morphism dark --- */
-    --color-bg-glass:        linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025));
-    --color-bg-glass-border: rgba(255, 255, 255, 0.07);
-    --shadow-glass:          0 10px 30px rgba(0, 0, 0, 0.32), 0 2px 6px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-
-    /* --- Prioridades dark mode --- */
-    --color-priority-high:         #f05555;
-    --color-priority-high-bg:      rgba(240, 85, 85, 0.12);
-    --color-priority-high-border:  rgba(240, 85, 85, 0.28);
-    --color-priority-medium:       #c9a400;
-    --color-priority-medium-bg:    rgba(201, 164, 0, 0.10);
-    --color-priority-medium-border: rgba(201, 164, 0, 0.28);
-    --color-priority-low:          #2ea827;
-    --color-priority-low-bg:       rgba(46, 168, 39, 0.10);
-    --color-priority-low-border:   rgba(46, 168, 39, 0.28);
+    --color-priority-high: #dc2626;
+    --color-priority-high-bg: rgba(220, 38, 38, 0.08);
+    --color-priority-high-border: rgba(220, 38, 38, 0.24);
+    --color-priority-medium: #d97706;
+    --color-priority-medium-bg: rgba(217, 119, 6, 0.08);
+    --color-priority-medium-border: rgba(217, 119, 6, 0.24);
+    --color-priority-low: #059669;
+    --color-priority-low-bg: rgba(5, 150, 105, 0.08);
+    --color-priority-low-border: rgba(5, 150, 105, 0.24);
 }

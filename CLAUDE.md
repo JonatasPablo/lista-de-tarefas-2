@@ -208,6 +208,8 @@ GOOGLE_CLIENT_ID=
 - Não adicionar dependências sem avaliar bundle size e segurança.
 
 ## [LEARNING LOG]
+- 2026-05-31: Validacao visual privada refeita com Playwright temporario fora do repo. Criado usuario local de validacao com tarefas/tags/historico reais. Cobertura: tasks, historico, log, ajuda, minha conta e modal de detalhe em 375/768/1024/1440, light/dark. Resultado final: 48 screenshots em visual-validation-private, sem overflow horizontal e sem erros de console. Bug encontrado/corrigido: MinhaContaPage tinha Link aninhado dentro de anchor; tambem foi reparada codificacao do arquivo apos edicao local.
+- 2026-05-31: v2.2.0 finalizado com paleta Indigo SaaS, dark-mode.css refeito, due_time, tags na listagem, TagPicker com edicao/exclusao, filtro por tag, package/package-lock em 2.2.0. Validacao: lint/build/db:test/db:migrate OK. Erro: Playwright require nao estava local; screenshots via CLI bateram timeout parcial e foram limpos.
 > Atualizado após cada operação significativa.
 > Nunca remover entradas antigas — adicionar novas no topo.
 

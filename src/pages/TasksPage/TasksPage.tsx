@@ -23,7 +23,8 @@ interface TasksPageProps {
         title: string,
         description: string,
         priority: TaskPriority,
-        dueDate?: string | null
+        dueDate?: string | null,
+        dueTime?: string | null
     ) => Promise<boolean> | void
     onToggleTask: (taskId: string) => void | Promise<void>
     onDeleteTask: (taskId: string) => void | Promise<void>
@@ -32,7 +33,8 @@ interface TasksPageProps {
         title: string,
         description: string,
         priority: TaskPriority,
-        dueDate?: string | null
+        dueDate?: string | null,
+        dueTime?: string | null
     ) => void
     onAddFiles: (taskId: string, files: File[]) => void | Promise<void>
     onRenameFile: (
@@ -72,6 +74,7 @@ export const TasksPage = ({
         useState<PriorityFilter>('todas')
     const [sortOption, setSortOption] =
         useState<TaskSortOption>('mais-recentes')
+    const [tagFilter, setTagFilter] = useState('todas')
     const [isTaskFormVisible, setIsTaskFormVisible] = useState(false)
 
     useEffect(() => {
@@ -89,9 +92,24 @@ export const TasksPage = ({
 
     const filteredTasks = useMemo(() => {
         const filtered = filterTasks(pendingTasks, searchTerm, priorityFilter)
+            .filter((task) =>
+                tagFilter === 'todas'
+                    ? true
+                    : task.tags.some((tag) => tag.id === tagFilter)
+            )
 
         return sortTasks(filtered, sortOption)
-    }, [pendingTasks, priorityFilter, searchTerm, sortOption])
+    }, [pendingTasks, priorityFilter, searchTerm, sortOption, tagFilter])
+
+    const availableTags = useMemo(() => {
+        const tagsMap = new Map<string, Task['tags'][number]>()
+        pendingTasks.forEach((task) => {
+            task.tags.forEach((tag) => tagsMap.set(tag.id, tag))
+        })
+        return Array.from(tagsMap.values()).sort((a, b) =>
+            a.nome.localeCompare(b.nome)
+        )
+    }, [pendingTasks])
 
     const selectedVisibleTasks = filteredTasks.filter((task) =>
         selectedTaskIds.includes(task.id)
@@ -104,7 +122,8 @@ export const TasksPage = ({
     const hasActiveFilters =
         searchTerm.trim() !== '' ||
         priorityFilter !== 'todas' ||
-        sortOption !== 'Filtros'
+        sortOption !== 'mais-recentes' ||
+        tagFilter !== 'todas'
 
     const handleToggleTaskForm = () => {
         setIsTaskFormVisible((currentValue) => !currentValue)
@@ -114,9 +133,10 @@ export const TasksPage = ({
         title: string,
         description: string,
         priority: TaskPriority,
-        dueDate?: string | null
+        dueDate?: string | null,
+        dueTime?: string | null
     ): Promise<boolean> => {
-        const sucesso = await onAddTask(title, description, priority, dueDate)
+        const sucesso = await onAddTask(title, description, priority, dueDate, dueTime)
 
         if (sucesso !== false) {
             setIsTaskFormVisible(false)
@@ -129,6 +149,7 @@ export const TasksPage = ({
         setSearchTerm('')
         setPriorityFilter('todas')
         setSortOption('mais-recentes')
+        setTagFilter('todas')
         onClearSelectedTasks()
     }
 
@@ -139,6 +160,11 @@ export const TasksPage = ({
 
     const handleSortChange = (value: TaskSortOption) => {
         setSortOption(value)
+        onClearSelectedTasks()
+    }
+
+    const handleTagChange = (value: string) => {
+        setTagFilter(value)
         onClearSelectedTasks()
     }
 
@@ -205,8 +231,11 @@ export const TasksPage = ({
                     searchTerm={searchTerm}
                     priorityFilter={priorityFilter}
                     sortOption={sortOption}
+                    availableTags={availableTags}
+                    selectedTagId={tagFilter}
                     onSearchChange={handleSearchChange}
                     onSortChange={handleSortChange}
+                    onTagChange={handleTagChange}
                     onClearFilters={handleClearFilters}
                 />
 

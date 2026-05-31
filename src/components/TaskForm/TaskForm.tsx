@@ -6,7 +6,8 @@ interface TaskFormProps {
         title: string,
         description: string,
         priority: TaskPriority,
-        dueDate?: string | null
+        dueDate?: string | null,
+        dueTime?: string | null
     ) => Promise<boolean> | void
 }
 
@@ -15,6 +16,7 @@ export const TaskForm = ({ onAddTask }: TaskFormProps) => {
     const [description, setDescription] = useState('')
     const [priority, setPriority] = useState<TaskPriority>('alta')
     const [dueDate, setDueDate] = useState('')
+    const [dueTime, setDueTime] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     const normalizedTitle = title.trim()
@@ -33,7 +35,8 @@ export const TaskForm = ({ onAddTask }: TaskFormProps) => {
                 normalizedTitle,
                 normalizedDescription,
                 priority,
-                dueDate || null
+                dueDate || null,
+                dueDate ? dueTime || null : null
             )
 
             if (sucesso !== false) {
@@ -41,6 +44,7 @@ export const TaskForm = ({ onAddTask }: TaskFormProps) => {
                 setDescription('')
                 setPriority('alta')
                 setDueDate('')
+                setDueTime('')
             }
         } finally {
             setIsSubmitting(false)
@@ -106,13 +110,24 @@ export const TaskForm = ({ onAddTask }: TaskFormProps) => {
                         <button
                             type="button"
                             className="task-form-date-clear"
-                            onClick={() => setDueDate('')}
+                            onClick={() => {
+                                setDueDate('')
+                                setDueTime('')
+                            }}
                             aria-label="Remover data de vencimento"
                         >
                             ×
                         </button>
                     )}
                 </div>
+                <input
+                    id="task-due-time"
+                    type="time"
+                    value={dueTime}
+                    onChange={(e) => setDueTime(e.target.value)}
+                    disabled={isSubmitting || !dueDate}
+                    aria-label="Horario de vencimento"
+                />
             </div>
 
             <button type="submit" disabled={!canSubmit}>

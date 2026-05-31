@@ -1,6 +1,7 @@
 const connection = require('../database/connection')
 const taskHistoryService = require('./taskHistory.service')
 const taskFilesService = require('./taskFiles.service')
+const tagsService = require('./tags.service')
 const AppError = require('../errors/AppError')
 
 const getTaskById = async (id, userId) => {
@@ -13,6 +14,7 @@ const getTaskById = async (id, userId) => {
                 description,
                 priority,
                 due_date,
+                due_time,
                 status,
                 created_at,
                 updated_at,
@@ -39,6 +41,7 @@ const listTasks = async (userId) => {
                 t.description,
                 t.priority,
                 t.due_date,
+                t.due_time,
                 t.status,
                 t.created_at,
                 t.updated_at,
@@ -72,14 +75,19 @@ const listTasks = async (userId) => {
         taskIds,
         userId
     )
+    const tagsByTaskId = await tagsService.listTagsByTaskIds(userId, taskIds)
 
     return tasks.map((task) => ({
         ...task,
         files: filesByTaskId.get(task.id) || [],
+        tags: tagsByTaskId.get(task.id) || [],
     }))
 }
 
-const createTask = async (userId, { title, description, priority, dueDate }) => {
+const createTask = async (
+    userId,
+    { title, description, priority, dueDate, dueTime }
+) => {
     const [result] = await connection.query(
         `
             INSERT INTO tasks (
@@ -87,11 +95,19 @@ const createTask = async (userId, { title, description, priority, dueDate }) => 
                 title,
                 description,
                 priority,
-                due_date
+                due_date,
+                due_time
             )
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?)
         `,
-        [userId, title, description, priority, dueDate || null]
+        [
+            userId,
+            title,
+            description,
+            priority,
+            dueDate || null,
+            dueDate ? dueTime || null : null,
+        ]
     )
 
     const task = await getTaskById(result.insertId, userId)
@@ -105,6 +121,8 @@ const createTask = async (userId, { title, description, priority, dueDate }) => 
             title: task.title,
             description: task.description,
             priority: task.priority,
+            due_date: task.due_date,
+            due_time: task.due_time,
             status: task.status,
         }),
     })
@@ -112,7 +130,11 @@ const createTask = async (userId, { title, description, priority, dueDate }) => 
     return task
 }
 
-const updateTask = async (userId, id, { title, description, priority, dueDate }) => {
+const updateTask = async (
+    userId,
+    id,
+    { title, description, priority, dueDate, dueTime }
+) => {
     const oldTask = await getTaskById(id, userId)
 
     if (!oldTask) {
@@ -123,6 +145,13 @@ const updateTask = async (userId, id, { title, description, priority, dueDate })
         throw new AppError('Não é possível editar uma tarefa concluída.', 400)
     }
 
+    const nextDueDate = dueDate !== undefined ? dueDate : oldTask.due_date
+    const nextDueTime = nextDueDate
+        ? dueTime !== undefined
+            ? dueTime
+            : oldTask.due_time
+        : null
+
     await connection.query(
         `
             UPDATE tasks
@@ -131,12 +160,21 @@ const updateTask = async (userId, id, { title, description, priority, dueDate })
                 description = ?,
                 priority = ?,
                 due_date = ?,
+                due_time = ?,
                 updated_at = NOW()
             WHERE id = ?
                 AND user_id = ?
                 AND deleted_at IS NULL
         `,
-        [title, description, priority, dueDate !== undefined ? dueDate : oldTask.due_date, id, userId]
+        [
+            title,
+            description,
+            priority,
+            nextDueDate,
+            nextDueTime || null,
+            id,
+            userId,
+        ]
     )
 
     const updatedTask = await getTaskById(id, userId)
@@ -150,12 +188,14 @@ const updateTask = async (userId, id, { title, description, priority, dueDate })
             description: oldTask.description,
             priority: oldTask.priority,
             due_date: oldTask.due_date,
+            due_time: oldTask.due_time,
         }),
         newValue: JSON.stringify({
             title: updatedTask.title,
             description: updatedTask.description,
             priority: updatedTask.priority,
             due_date: updatedTask.due_date,
+            due_time: updatedTask.due_time,
         }),
     })
 

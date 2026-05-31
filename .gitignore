@@ -30,6 +30,7 @@ backups
 
 .env
 .env.local
+.env.production
 .env.*.local
 
 backend/node_modules
@@ -37,6 +38,8 @@ backend/dist
 backend/dev-dist
 backend/.env
 backend/.env.local
+backend/.env.development
+backend/.env.production
 backend/.env.*.local
 
 .claude/

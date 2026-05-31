@@ -3,7 +3,7 @@ import {
     mapApiTaskFileToTaskFile,
     type ApiTaskFile,
 } from './taskFilesApi'
-import type { Task, TaskPriority } from '../types/task'
+import type { Tag, Task, TaskPriority } from '../types/task'
 
 type ApiTaskStatus = 'pendente' | 'concluida' | 'cancelada' | 'arquivada'
 
@@ -14,14 +14,22 @@ type ApiTask = {
     description: string | null
     priority: TaskPriority
     due_date: string | null
+    due_time: string | null
     status: ApiTaskStatus
     created_at: string
     updated_at: string | null
     completed_at: string | null
     deleted_at: string | null
     files?: ApiTaskFile[]
+    tags?: ApiTag[]
     checklist_total?: number
     checklist_concluidos?: number
+}
+
+type ApiTag = {
+    id: number
+    nome: string
+    cor: string
 }
 
 type CreateTaskPayload = {
@@ -29,6 +37,7 @@ type CreateTaskPayload = {
     description: string
     priority: TaskPriority
     dueDate?: string | null
+    dueTime?: string | null
 }
 
 type UpdateTaskPayload = {
@@ -36,6 +45,7 @@ type UpdateTaskPayload = {
     description: string
     priority: TaskPriority
     dueDate?: string | null
+    dueTime?: string | null
 }
 
 type ApiSearchResult = {
@@ -68,6 +78,17 @@ const parseDueDate = (value: string | null | undefined): string | null => {
     return String(value).substring(0, 10)
 }
 
+const parseDueTime = (value: string | null | undefined): string | null => {
+    if (!value) return null
+    return String(value).slice(0, 5)
+}
+
+const mapApiTagToTag = (tag: ApiTag): Tag => ({
+    id: String(tag.id),
+    nome: tag.nome,
+    cor: tag.cor,
+})
+
 const mapApiTaskToTask = (apiTask: ApiTask): Task => {
     return {
         id: String(apiTask.id),
@@ -75,10 +96,12 @@ const mapApiTaskToTask = (apiTask: ApiTask): Task => {
         description: apiTask.description || '',
         priority: apiTask.priority,
         dueDate: parseDueDate(apiTask.due_date),
+        dueTime: parseDueTime(apiTask.due_time),
         completed: apiTask.status === 'concluida',
         createdAt: formatDateTime(apiTask.created_at) || '',
         updatedAt: formatDateTime(apiTask.updated_at),
         completedAt: formatDateTime(apiTask.completed_at),
+        tags: apiTask.tags?.map(mapApiTagToTag) || [],
         files: apiTask.files?.map(mapApiTaskFileToTaskFile) || [],
         checklistSummary:
             apiTask.checklist_total !== undefined

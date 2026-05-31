@@ -15,7 +15,7 @@ const listTags = async (userId) => {
 const createTag = async (userId, { nome, cor }) => {
     const [result] = await connection.query(
         `INSERT INTO tags (user_id, nome, cor) VALUES (?, ?, ?)`,
-        [userId, nome.trim(), cor]
+        [userId, nome.trim(), cor || '#6366f1']
     )
     const [rows] = await connection.query(
         `SELECT id, user_id, nome, cor, created_at FROM tags WHERE id = ?`,
@@ -32,8 +32,8 @@ const updateTag = async (userId, tagId, { nome, cor }) => {
     if (!rows.length) return null
 
     await connection.query(
-        `UPDATE tags SET nome = ?, cor = ? WHERE id = ? AND user_id = ?`,
-        [nome.trim(), cor, tagId, userId]
+        `UPDATE tags SET nome = ?, cor = ?, updated_at = NOW() WHERE id = ? AND user_id = ?`,
+        [nome.trim(), cor || '#6366f1', tagId, userId]
     )
     const [updated] = await connection.query(
         `SELECT id, user_id, nome, cor, created_at FROM tags WHERE id = ?`,
@@ -96,6 +96,38 @@ const listTagsForTask = async (userId, taskId) => {
     return tags
 }
 
+const listTagsByTaskIds = async (userId, taskIds) => {
+    if (!taskIds.length) {
+        return new Map()
+    }
+
+    const placeholders = taskIds.map(() => '?').join(', ')
+    const [rows] = await connection.query(
+        `SELECT tt.task_id, tg.id, tg.nome, tg.cor
+         FROM task_tags tt
+         JOIN tags tg ON tg.id = tt.tag_id
+         JOIN tasks t ON t.id = tt.task_id
+         WHERE tt.task_id IN (${placeholders})
+           AND t.user_id = ?
+           AND tg.user_id = ?
+           AND t.deleted_at IS NULL
+           AND tg.deleted_at IS NULL
+         ORDER BY tg.nome ASC`,
+        [...taskIds, userId, userId]
+    )
+
+    return rows.reduce((map, row) => {
+        const tags = map.get(row.task_id) || []
+        tags.push({
+            id: row.id,
+            nome: row.nome,
+            cor: row.cor,
+        })
+        map.set(row.task_id, tags)
+        return map
+    }, new Map())
+}
+
 module.exports = {
     listTags,
     createTag,
@@ -104,4 +136,5 @@ module.exports = {
     addTagToTask,
     removeTagFromTask,
     listTagsForTask,
+    listTagsByTaskIds,
 }

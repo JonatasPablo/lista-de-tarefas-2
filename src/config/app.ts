@@ -1,11 +1,11 @@
-export const APP_NAME = 'Lista de Tarefas'
-export const APP_DEVELOPER = 'Jonatas Pablo'
-export const DEVELOPER_EMAIL = 'jonathaspabllo@gmail.com'
-export const LGPD_CONTACT_EMAIL = 'jonathaspabllo@gmail.com'
-export const APP_VERSION = '2.2.0'
-export const TERMS_VERSION = '1.0'
-export const PRIVACY_POLICY_VERSION = '1.0'
-export const COOKIES_POLICY_VERSION = '1.0'
+export const APP_NAME = 'Lista de Tarefas';
+export const APP_DEVELOPER = 'Jonatas Pablo';
+export const DEVELOPER_EMAIL = 'jonathaspabllo@gmail.com';
+export const LGPD_CONTACT_EMAIL = 'jonathaspabllo@gmail.com';
+export const APP_VERSION = '2.2.1';
+export const TERMS_VERSION = '1.0';
+export const PRIVACY_POLICY_VERSION = '1.0';
+export const COOKIES_POLICY_VERSION = '1.0';
 
 /*
 Regras da versão:

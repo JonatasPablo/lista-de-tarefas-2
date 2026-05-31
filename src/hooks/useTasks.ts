@@ -92,7 +92,8 @@ export const useTasks = ({
         title: string,
         description: string,
         priority: TaskPriority,
-        dueDate?: string | null
+        dueDate?: string | null,
+        dueTime?: string | null
     ): Promise<boolean> => {
         sincronizacao.pausar()
 
@@ -102,6 +103,7 @@ export const useTasks = ({
                 description,
                 priority,
                 dueDate,
+                dueTime,
             })
 
             setTasks((currentTasks) => [newTask, ...currentTasks])
@@ -151,8 +153,9 @@ export const useTasks = ({
                 currentTasks.map((task) =>
                     task.id === taskId
                         ? {
-                              ...updatedTask,
+                          ...updatedTask,
                               files: task.files,
+                              tags: task.tags,
                           }
                         : task
                 )
@@ -184,7 +187,8 @@ export const useTasks = ({
         title: string,
         description: string,
         priority: TaskPriority,
-        dueDate?: string | null
+        dueDate?: string | null,
+        dueTime?: string | null
     ) => {
         const taskToUpdate = tasks.find((task) => task.id === taskId)
 
@@ -206,6 +210,7 @@ export const useTasks = ({
                 description,
                 priority,
                 dueDate,
+                dueTime,
             })
 
             setTasks((currentTasks) =>
@@ -214,6 +219,7 @@ export const useTasks = ({
                         ? {
                               ...updatedTask,
                               files: task.files,
+                              tags: task.tags,
                           }
                         : task
                 )

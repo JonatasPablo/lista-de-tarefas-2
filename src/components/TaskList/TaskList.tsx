@@ -4,6 +4,7 @@ import type {
     Task,
     TaskFile,
     TaskPriority,
+    Tag,
 } from '../../types/task'
 import { TaskDetailModal } from '../TaskDetailModal/TaskDetailModal'
 import { TaskEmptyState } from '../TaskEmptyState/TaskEmptyState'
@@ -27,7 +28,8 @@ interface TaskListProps {
         title: string,
         description: string,
         priority: TaskPriority,
-        dueDate?: string | null
+        dueDate?: string | null,
+        dueTime?: string | null
     ) => void
     onAddFiles: (taskId: string, files: File[]) => void | Promise<void>
     onRenameFile: (
@@ -60,6 +62,7 @@ export const TaskList = ({
     const [checklistSummaries, setChecklistSummaries] = useState<
         Record<string, ChecklistSummary | null>
     >({})
+    const [tagsPorTarefa, setTagsPorTarefa] = useState<Record<string, Tag[]>>({})
 
     const selectedTaskIdsSet = useMemo(
         () => new Set(selectedTaskIds),
@@ -74,8 +77,9 @@ export const TaskList = ({
                     task.id in checklistSummaries
                         ? checklistSummaries[task.id] || undefined
                         : task.checklistSummary,
+                tags: task.id in tagsPorTarefa ? tagsPorTarefa[task.id] : task.tags,
             })),
-        [checklistSummaries, tasks]
+        [checklistSummaries, tagsPorTarefa, tasks]
     )
 
     const activeTask =
@@ -105,6 +109,13 @@ export const TaskList = ({
 
     const handleCloseModal = useCallback(() => {
         setActiveTaskId(null)
+    }, [])
+
+    const handleTagsChange = useCallback((taskId: string, tags: Tag[]) => {
+        setTagsPorTarefa((current) => ({
+            ...current,
+            [taskId]: tags,
+        }))
     }, [])
 
     if (isLoading) {
@@ -161,6 +172,7 @@ export const TaskList = ({
                     onDeleteFile={onDeleteFile}
                     onRequestRenameFile={onRequestRenameFile}
                     onChecklistProgressChange={handleChecklistProgressChange}
+                    onTagsChange={handleTagsChange}
                 />
             )}
         </>

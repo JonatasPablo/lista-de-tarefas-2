@@ -14,7 +14,7 @@ const validarNome = (nome) => {
 }
 
 const validarCor = (cor) => {
-    if (!cor) return '#808080'
+    if (!cor) return '#6366f1'
     if (!CORES_VALIDAS.test(cor)) {
         throw new AppError('A cor deve ser um valor hexadecimal válido (ex: #1a6ef5).', 400)
     }

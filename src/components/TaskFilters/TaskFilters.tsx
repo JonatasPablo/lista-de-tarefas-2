@@ -1,5 +1,5 @@
 import React from 'react'
-import type { TaskPriority } from '../../types/task'
+import type { Tag, TaskPriority } from '../../types/task'
 
 export type PriorityFilter = 'todas' | TaskPriority
 
@@ -16,8 +16,11 @@ interface TaskFiltersProps {
     searchTerm: string
     priorityFilter: PriorityFilter
     sortOption: TaskSortOption
+    availableTags?: Tag[]
+    selectedTagId?: string
     onSearchChange: (value: string) => void
     onSortChange: (value: TaskSortOption) => void
+    onTagChange?: (value: string) => void
     onClearFilters: () => void
 }
 
@@ -25,14 +28,18 @@ export const TaskFilters = React.memo(({
     searchTerm,
     priorityFilter,
     sortOption,
+    availableTags = [],
+    selectedTagId = 'todas',
     onSearchChange,
     onSortChange,
+    onTagChange,
     onClearFilters,
 }: TaskFiltersProps) => {
     const filtrosAtivos = [
         searchTerm.trim() !== '',
         priorityFilter !== 'todas',
         sortOption !== 'mais-recentes' && sortOption !== 'Filtros',
+        selectedTagId !== 'todas',
     ].filter(Boolean).length
 
     const hasActiveFilters = filtrosAtivos > 0
@@ -67,6 +74,25 @@ export const TaskFilters = React.memo(({
                 <option value="nome-za">Nome Z-A</option>
                 <option value="vencimento">Vencimento</option>
             </select>
+
+            {availableTags.length > 0 && onTagChange && (
+                <>
+                    <label htmlFor="task-filter-tag">Filtrar por tag</label>
+
+                    <select
+                        id="task-filter-tag"
+                        value={selectedTagId}
+                        onChange={(event) => onTagChange(event.target.value)}
+                    >
+                        <option value="todas">Todas as tags</option>
+                        {availableTags.map((tag) => (
+                            <option key={tag.id} value={tag.id}>
+                                {tag.nome}
+                            </option>
+                        ))}
+                    </select>
+                </>
+            )}
 
             <div className="task-filters-actions">
                 <button

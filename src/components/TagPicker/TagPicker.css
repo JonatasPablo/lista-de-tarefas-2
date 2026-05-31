@@ -22,27 +22,75 @@
 }
 
 .tag-picker-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1);
+    display: grid;
+    gap: var(--space-2);
     padding: var(--space-2) 0;
     border-top: 1px solid var(--color-border);
     border-bottom: 1px solid var(--color-border);
-    max-height: 100px;
+    max-height: 180px;
     overflow-y: auto;
 }
 
 .tag-picker-item {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-surface-2);
+}
+
+.tag-picker-check {
     display: flex;
     align-items: center;
     gap: var(--space-1);
     cursor: pointer;
 }
 
-.tag-picker-item input[type='checkbox'] {
+.tag-picker-check input[type='checkbox'] {
     margin: 0;
     cursor: pointer;
     accent-color: var(--color-accent);
+}
+
+.tag-picker-actions,
+.tag-picker-edit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.tag-picker-edit input[type='text'] {
+    flex: 1 1 140px;
+    min-width: 0;
+}
+
+.tag-picker-edit input[type='color'] {
+    width: 34px;
+    height: 30px;
+    padding: 2px;
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-input);
+}
+
+.tag-picker-actions button,
+.tag-picker-edit button {
+    min-height: 28px;
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-surface);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-bold);
+}
+
+.tag-picker-actions button:hover,
+.tag-picker-edit button:hover {
+    background: var(--color-bg-hover);
+    color: var(--color-text);
 }
 
 .tag-picker-create {

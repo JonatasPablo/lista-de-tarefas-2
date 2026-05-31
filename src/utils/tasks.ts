@@ -45,6 +45,9 @@ export const filterTasks = (
             normalizedSearch === '' ||
             taskTitle.includes(normalizedSearch) ||
             taskDescription.includes(normalizedSearch) ||
+            task.tags.some((tag) =>
+                tag.nome.toLowerCase().includes(normalizedSearch)
+            ) ||
             task.files.some((file) =>
                 file.displayName.toLowerCase().includes(normalizedSearch)
             )

@@ -5,10 +5,14 @@
     "main": "src/server.js",
     "private": true,
     "scripts": {
-        "dev": "nodemon src/server.js",
-        "start": "node src/server.js",
+        "dev": "set \"NODE_ENV=development\" && set \"PORT=3002\" && nodemon src/server.js",
+        "start": "set \"NODE_ENV=production\" && node src/server.js",
         "db:test": "node src/scripts/testDbConnection.js",
-        "db:migrate": "node src/scripts/runMigrations.js"
+        "db:test:dev": "set \"NODE_ENV=development\" && node src/scripts/testDbConnection.js",
+        "db:test:prod": "set \"NODE_ENV=production\" && node src/scripts/testDbConnection.js",
+        "db:migrate": "node src/scripts/runMigrations.js",
+        "db:migrate:dev": "set \"NODE_ENV=development\" && node src/scripts/runMigrations.js",
+        "db:migrate:prod": "set \"NODE_ENV=production\" && node src/scripts/runMigrations.js"
     },
     "keywords": [],
     "author": "Jonatas Pablo",

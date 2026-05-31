@@ -4,7 +4,9 @@
     gap: 4px;
     padding: 2px 8px;
     border-radius: var(--radius-full);
-    border: 1px solid transparent;
+    border: 1px solid var(--tag-border);
+    background: var(--tag-bg);
+    color: var(--tag-color);
     font-size: var(--font-size-2xs);
     font-weight: var(--font-weight-semibold);
     line-height: 1.5;
@@ -12,6 +14,14 @@
     max-width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.tag-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--tag-color);
+    flex: 0 0 6px;
 }
 
 .tag-badge-remove {

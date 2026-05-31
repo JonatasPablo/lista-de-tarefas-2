@@ -6,9 +6,11 @@ import type {
 } from '../../types/task'
 import {
     formatarDataVencimento,
+    formatarDataHoraVencimento,
     getDiffDias,
     getStatusPrazo,
 } from '../../utils/date'
+import { TagBadge } from '../TagBadge/TagBadge'
 
 interface TaskItemProps {
     task: Task
@@ -27,12 +29,20 @@ const priorityLabelMap: Record<TaskPriority, string> = {
 const isChecklistDone = (summary: ChecklistSummary | null | undefined) =>
     !!summary && summary.total > 0 && summary.concluidos === summary.total
 
-const DueDateBadge = ({ dueDate }: { dueDate: string }) => {
+const DueDateBadge = ({
+    dueDate,
+    dueTime,
+}: {
+    dueDate: string
+    dueTime?: string | null
+}) => {
     const status = getStatusPrazo(dueDate)
     if (!status) return null
 
     let label: string
-    if (status === 'vencida') {
+    if (dueTime) {
+        label = formatarDataHoraVencimento(dueDate, dueTime)
+    } else if (status === 'vencida') {
         label = 'Vencida'
     } else if (status === 'vence-hoje') {
         label = 'Vence hoje'
@@ -118,7 +128,18 @@ export const TaskItem = React.memo(({
                         ) : null}
 
                         {task.dueDate && (
-                            <DueDateBadge dueDate={task.dueDate} />
+                            <DueDateBadge
+                                dueDate={task.dueDate}
+                                dueTime={task.dueTime}
+                            />
+                        )}
+
+                        {task.tags.length > 0 && (
+                            <div className="task-summary-tags">
+                                {task.tags.map((tag) => (
+                                    <TagBadge key={tag.id} tag={tag} />
+                                ))}
+                            </div>
                         )}
                     </div>
 

@@ -1,11 +1,11 @@
 {
   "name": "lista-de-tarefas-2",
   "private": true,
-  "version": "2.1.0",
+  "version": "2.2.0",
   "type": "module",
   "scripts": {
     "dev": "concurrently -n frontend,backend -c cyan,green \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "dev:frontend": "vite",
+    "dev:frontend": "set \"VITE_API_URL=http://localhost:3002\" && vite --host localhost --port 5173 --strictPort",
     "dev:backend": "npm --prefix backend run dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
