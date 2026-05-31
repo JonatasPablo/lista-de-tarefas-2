@@ -1,5 +1,6 @@
 import { useMemo, useState, type SyntheticEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { AuthHeroPanel } from '../../components/AuthHeroPanel/AuthHeroPanel'
 
 import './EsqueciSenhaPage.css'
 
@@ -412,16 +413,10 @@ export const EsqueciSenhaPage = ({
     return (
         <main className="esqueci-senha-page">
             <section className="esqueci-senha-card">
-                <aside className="esqueci-senha-hero" aria-hidden="true">
-                    <p className="esqueci-senha-hero-description">
-                        Recupere o acesso com segurança usando um código enviado
-                        para seu e-mail.
-                    </p>
-
-                    <strong className="esqueci-senha-hero-title">
-                        Redefinir senha
-                    </strong>
-                </aside>
+                <AuthHeroPanel
+                    titulo="Redefinir senha"
+                    descricao="Recupere o acesso com segurança usando um código enviado para seu e-mail."
+                />
 
                 <section className="esqueci-senha-content">
                     <header className="esqueci-senha-header">

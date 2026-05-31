@@ -24,49 +24,6 @@
     backdrop-filter: blur(12px);
 }
 
-.esqueci-senha-hero {
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 24px;
-    padding: 38px 34px 44px;
-    background:
-        radial-gradient(
-            circle at 38% 18%,
-            rgba(255, 255, 255, 0.14),
-            transparent 34%
-        ),
-        linear-gradient(
-            145deg,
-            rgba(64, 64, 64, 0.96),
-            rgba(24, 24, 24, 0.98)
-        );
-    color: #ffffff;
-}
-
-.esqueci-senha-hero-description {
-    width: min(280px, 100%);
-    margin: 0;
-    color: rgba(255, 255, 255, 0.78);
-    font-size: 23px;
-    font-weight: 800;
-    line-height: 1.28;
-    letter-spacing: -0.035em;
-    padding-top: 30px;
-}
-
-.esqueci-senha-hero-title {
-    display: block;
-    width: min(310px, 100%);
-    color: #ffffff;
-    font-size: 48px;
-    font-weight: 900;
-    line-height: 0.95;
-    letter-spacing: -0.065em;
-    padding-bottom: 30px;
-}
-
 .esqueci-senha-content {
     min-width: 0;
     min-height: 0;
@@ -396,18 +353,6 @@
         grid-template-columns: minmax(290px, 0.9fr) minmax(400px, 1.1fr);
     }
 
-    .esqueci-senha-hero {
-        padding: 32px 30px 36px;
-    }
-
-    .esqueci-senha-hero-description {
-        font-size: 22px;
-    }
-
-    .esqueci-senha-hero-title {
-        font-size: 44px;
-    }
-
     .esqueci-senha-content {
         gap: 12px;
         padding: 24px 38px 24px;
@@ -427,23 +372,6 @@
         width: min(800px, 100%);
         height: clamp(350px, calc(100dvh - 110px), 430px);
         min-height: 0;
-    }
-
-    .esqueci-senha-hero {
-        gap: 16px;
-        padding: 24px 28px 28px;
-    }
-
-    .esqueci-senha-hero-description {
-        font-size: 20px;
-        padding-top: 18px;
-    }
-
-    .esqueci-senha-hero-title {
-        width: min(320px, 100%);
-        font-size: 38px;
-        line-height: 1.02;
-        padding-bottom: 18px;
     }
 
     .esqueci-senha-content {
@@ -505,31 +433,6 @@
         overflow: hidden;
     }
 
-    .esqueci-senha-hero {
-        min-height: 170px;
-        display: grid;
-        align-content: space-between;
-        gap: 18px;
-        padding: 26px 24px 28px;
-        border-radius: 0;
-    }
-
-    .esqueci-senha-hero-description {
-        width: min(360px, 100%);
-        padding-top: 0;
-        font-size: 20px;
-        line-height: 1.25;
-        letter-spacing: -0.035em;
-    }
-
-    .esqueci-senha-hero-title {
-        width: min(380px, 100%);
-        padding-bottom: 0;
-        font-size: 38px;
-        line-height: 0.95;
-        letter-spacing: -0.06em;
-    }
-
     .esqueci-senha-content {
         height: auto;
         align-content: start;
@@ -570,21 +473,6 @@
     .esqueci-senha-card {
         width: min(560px, 100%);
         border-radius: 26px;
-    }
-
-    .esqueci-senha-hero {
-        min-height: 205px;
-        padding: 32px 30px 34px;
-    }
-
-    .esqueci-senha-hero-description {
-        width: min(430px, 100%);
-        font-size: 23px;
-    }
-
-    .esqueci-senha-hero-title {
-        width: min(450px, 100%);
-        font-size: 44px;
     }
 
     .esqueci-senha-content {
@@ -636,19 +524,6 @@
         border-radius: 20px;
     }
 
-    .esqueci-senha-hero {
-        min-height: 150px;
-        padding: 22px 20px 24px;
-    }
-
-    .esqueci-senha-hero-description {
-        font-size: 17px;
-    }
-
-    .esqueci-senha-hero-title {
-        font-size: 32px;
-    }
-
     .esqueci-senha-content {
         gap: 16px;
         padding: 24px 20px 26px;
@@ -680,19 +555,6 @@
 
     .esqueci-senha-card {
         border-radius: 18px;
-    }
-
-    .esqueci-senha-hero {
-        min-height: 115px;
-        padding: 15px;
-    }
-
-    .esqueci-senha-hero-description {
-        font-size: 15px;
-    }
-
-    .esqueci-senha-hero-title {
-        font-size: 27px;
     }
 
     .esqueci-senha-content {

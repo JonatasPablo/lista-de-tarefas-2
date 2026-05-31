@@ -24,48 +24,6 @@
     backdrop-filter: blur(12px);
 }
 
-.confirm-email-hero {
-    min-height: 0;
-    display: grid;
-    align-content: space-between;
-    gap: 24px;
-    padding: 38px 34px 44px;
-    background:
-        radial-gradient(
-            circle at 38% 18%,
-            rgba(255, 255, 255, 0.14),
-            transparent 34%
-        ),
-        linear-gradient(
-            145deg,
-            rgba(64, 64, 64, 0.96),
-            rgba(24, 24, 24, 0.98)
-        );
-    color: #ffffff;
-}
-
-.confirm-email-hero-description {
-    width: min(280px, 100%);
-    margin: 0;
-    color: rgba(255, 255, 255, 0.78);
-    font-size: 23px;
-    font-weight: 800;
-    line-height: 1.28;
-    letter-spacing: 0;
-    padding-top: 30px;
-}
-
-.confirm-email-hero-title {
-    display: block;
-    width: min(310px, 100%);
-    color: #ffffff;
-    font-size: 48px;
-    font-weight: 900;
-    line-height: 0.95;
-    letter-spacing: 0;
-    padding-bottom: 30px;
-}
-
 .confirm-email-content {
     min-width: 0;
     min-height: 0;
@@ -290,18 +248,6 @@
         grid-template-columns: minmax(280px, 0.88fr) minmax(460px, 1.12fr);
     }
 
-    .confirm-email-hero {
-        padding: 32px 30px 36px;
-    }
-
-    .confirm-email-hero-description {
-        font-size: 21px;
-    }
-
-    .confirm-email-hero-title {
-        font-size: 42px;
-    }
-
     .confirm-email-content {
         gap: 15px;
         padding: 28px 38px 26px;
@@ -334,21 +280,6 @@
         width: min(800px, 100%);
         height: clamp(350px, calc(100dvh - 110px), 430px);
         min-height: 0;
-    }
-
-    .confirm-email-hero {
-        gap: 18px;
-        padding: 26px 28px 30px;
-    }
-
-    .confirm-email-hero-description {
-        font-size: 19px;
-        padding-top: 22px;
-    }
-
-    .confirm-email-hero-title {
-        font-size: 38px;
-        padding-bottom: 22px;
     }
 
     .confirm-email-content {
@@ -428,31 +359,6 @@
         overflow: hidden;
     }
 
-    .confirm-email-hero {
-        min-height: 170px;
-        display: grid;
-        align-content: space-between;
-        gap: 18px;
-        padding: 26px 24px 28px;
-        border-radius: 0;
-    }
-
-    .confirm-email-hero-description {
-        width: min(360px, 100%);
-        padding-top: 0;
-        font-size: 20px;
-        line-height: 1.25;
-        letter-spacing: 0;
-    }
-
-    .confirm-email-hero-title {
-        width: min(380px, 100%);
-        padding-bottom: 0;
-        font-size: 38px;
-        line-height: 0.95;
-        letter-spacing: 0;
-    }
-
     .confirm-email-content {
         height: auto;
         display: grid;
@@ -508,21 +414,6 @@
     .confirm-email-card {
         width: min(560px, 100%);
         border-radius: 26px;
-    }
-
-    .confirm-email-hero {
-        min-height: 205px;
-        padding: 32px 30px 34px;
-    }
-
-    .confirm-email-hero-description {
-        width: min(430px, 100%);
-        font-size: 23px;
-    }
-
-    .confirm-email-hero-title {
-        width: min(450px, 100%);
-        font-size: 44px;
     }
 
     .confirm-email-content {
@@ -592,19 +483,6 @@
         border-radius: 22px;
     }
 
-    .confirm-email-hero {
-        min-height: 150px;
-        padding: 22px 20px 24px;
-    }
-
-    .confirm-email-hero-description {
-        font-size: 17px;
-    }
-
-    .confirm-email-hero-title {
-        font-size: 32px;
-    }
-
     .confirm-email-content {
         gap: 18px;
         padding: 26px 20px 26px;
@@ -634,19 +512,6 @@
 
     .confirm-email-card {
         border-radius: 18px;
-    }
-
-    .confirm-email-hero {
-        min-height: 115px;
-        padding: 15px;
-    }
-
-    .confirm-email-hero-description {
-        font-size: 15px;
-    }
-
-    .confirm-email-hero-title {
-        font-size: 27px;
     }
 
     .confirm-email-content {

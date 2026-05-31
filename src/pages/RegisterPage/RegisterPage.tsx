@@ -1,6 +1,7 @@
 import { useCallback, useState, type SyntheticEvent, type UIEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { GoogleSignInButton } from '../../components/GoogleSignInButton/GoogleSignInButton'
+import { AuthHeroPanel } from '../../components/AuthHeroPanel/AuthHeroPanel'
 import { useGoogleButtonWidth } from '../../hooks/useGoogleButtonWidth'
 import {
     PRIVACY_POLICY_VERSION,
@@ -8,6 +9,15 @@ import {
 } from '../../config/app'
 
 import './RegisterPage.css'
+
+const REGISTER_HERO_ITENS = [
+    'Tarefas com título, prazo e prioridade',
+    'Histórico completo de alterações',
+    'Log detalhado de todas as ações',
+    'Login seguro com e-mail ou Google',
+    'Redefinição de senha por e-mail',
+    'Confirmação de e-mail no cadastro',
+]
 
 interface RegisterPageProps {
     onRegister: (
@@ -130,25 +140,11 @@ export const RegisterPage = ({
     return (
         <main className="register-page">
             <section className="register-card">
-                <aside className="register-hero" aria-hidden="true">
-                    <p className="register-hero-description">
-                        Crie sua conta, confirme seu e-mail e organize suas
-                        tarefas com segurança.
-                    </p>
-
-                    <ul className="register-hero-features">
-                        <li>Tarefas com título, prazo e prioridade</li>
-                        <li>Histórico completo de alterações</li>
-                        <li>Log detalhado de todas as ações</li>
-                        <li>Login seguro com e-mail ou Google</li>
-                        <li>Redefinição de senha por e-mail</li>
-                        <li>Confirmação de e-mail no cadastro</li>
-                    </ul>
-
-                    <strong className="register-hero-title">
-                        Comece sua organização
-                    </strong>
-                </aside>
+                <AuthHeroPanel
+                    titulo="Comece sua organização"
+                    descricao="Crie sua conta, confirme seu e-mail e organize suas tarefas com segurança."
+                    itens={REGISTER_HERO_ITENS}
+                />
 
                 <section className="register-content">
                     <header className="register-header">

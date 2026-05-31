@@ -12,6 +12,7 @@ import {
     useNavigate,
     useSearchParams,
 } from 'react-router-dom'
+import { AuthHeroPanel } from '../../components/AuthHeroPanel/AuthHeroPanel'
 
 import './ConfirmEmailPage.css'
 
@@ -207,16 +208,10 @@ export const ConfirmEmailPage = ({
         return (
             <main className="confirm-email-page">
                 <section className="confirm-email-card">
-                    <aside className="confirm-email-hero" aria-hidden="true">
-                        <p className="confirm-email-hero-description">
-                            Seu e-mail foi confirmado e sua conta já está pronta
-                            para uso.
-                        </p>
-
-                        <strong className="confirm-email-hero-title">
-                            Confirmação concluída
-                        </strong>
-                    </aside>
+                    <AuthHeroPanel
+                        titulo="Confirmação concluída"
+                        descricao="Seu e-mail foi confirmado e sua conta já está pronta para uso."
+                    />
 
                     <section className="confirm-email-content">
                         <header className="confirm-email-header">
@@ -283,16 +278,10 @@ export const ConfirmEmailPage = ({
     return (
         <main className="confirm-email-page">
             <section className="confirm-email-card">
-                <aside className="confirm-email-hero" aria-hidden="true">
-                    <p className="confirm-email-hero-description">
-                        Confirme seu e-mail para proteger sua conta e liberar o
-                        acesso ao sistema.
-                    </p>
-
-                    <strong className="confirm-email-hero-title">
-                        Falta só confirmar
-                    </strong>
-                </aside>
+                <AuthHeroPanel
+                    titulo="Falta só confirmar"
+                    descricao="Confirme seu e-mail para proteger sua conta e liberar o acesso ao sistema."
+                />
 
                 <section className="confirm-email-content">
                     <header className="confirm-email-header">

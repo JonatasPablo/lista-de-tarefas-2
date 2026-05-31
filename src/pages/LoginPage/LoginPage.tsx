@@ -1,9 +1,19 @@
 import { useCallback, useState, type SyntheticEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { GoogleSignInButton } from '../../components/GoogleSignInButton/GoogleSignInButton'
+import { AuthHeroPanel } from '../../components/AuthHeroPanel/AuthHeroPanel'
 import { useGoogleButtonWidth } from '../../hooks/useGoogleButtonWidth'
 
 import './LoginPage.css'
+
+const LOGIN_HERO_ITENS = [
+    'Tarefas com prazo e prioridade',
+    'Histórico completo de alterações',
+    'Log detalhado de todas as ações',
+    'Login seguro com e-mail ou Google',
+    'Redefinição de senha por e-mail',
+    'Confirmação de e-mail no cadastro',
+]
 
 interface LoginPageProps {
     onLogin: (email: string, password: string) => Promise<void>
@@ -62,24 +72,11 @@ export const LoginPage = ({
     return (
         <main className="login-page">
             <section className="login-card">
-                <aside className="login-hero" aria-hidden="true">
-                    <p className="login-hero-description">
-                        Tarefas, histórico, logs e anexos em um só lugar.
-                    </p>
-
-                    <ul className="login-hero-features">
-                        <li>Tarefas com prazo e prioridade</li>
-                        <li>Histórico completo de alterações</li>
-                        <li>Log detalhado de todas as ações</li>
-                        <li>Login seguro com e-mail ou Google</li>
-                        <li>Redefinição de senha por e-mail</li>
-                        <li>Confirmação de e-mail no cadastro</li>
-                    </ul>
-
-                    <strong className="login-hero-title">
-                        Organize seu dia com leveza
-                    </strong>
-                </aside>
+                <AuthHeroPanel
+                    titulo="Organize seu dia com leveza"
+                    descricao="Tarefas, histórico, logs e anexos em um só lugar."
+                    itens={LOGIN_HERO_ITENS}
+                />
 
                 <section className="login-content">
                     <header className="login-header">

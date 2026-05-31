@@ -23,83 +23,6 @@
     backdrop-filter: blur(12px);
 }
 
-.register-hero {
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    padding: 38px 34px 44px;
-    background:
-        radial-gradient(
-            circle at 38% 18%,
-            rgba(255, 255, 255, 0.14),
-            transparent 34%
-        ),
-        linear-gradient(
-            145deg,
-            rgba(64, 64, 64, 0.96),
-            rgba(24, 24, 24, 0.98)
-        );
-    color: #ffffff;
-}
-
-.register-hero-description {
-    width: min(280px, 100%);
-    margin: 0;
-    color: rgba(255, 255, 255, 0.78);
-    font-size: 24px;
-    font-weight: 800;
-    line-height: 1.28;
-    letter-spacing: -0.035em;
-    padding-top: 30px;
-}
-
-.register-hero-title {
-    display: block;
-    width: min(300px, 100%);
-    color: #ffffff;
-    font-size: 48px;
-    font-weight: 900;
-    line-height: 0.95;
-    letter-spacing: -0.065em;
-    padding-bottom: 30px;
-}
-
-.register-hero-features {
-    flex: 1;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-}
-
-.register-hero-features li {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    color: rgba(255, 255, 255, 0.68);
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.3;
-    letter-spacing: -0.01em;
-}
-
-.register-hero-features li::before {
-    content: '';
-    flex-shrink: 0;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1.5px solid rgba(255, 255, 255, 0.25);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
-    background-size: 11px;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
 .register-content {
     min-width: 0;
     min-height: 0;
@@ -546,29 +469,6 @@
         grid-template-columns: minmax(280px, 0.88fr) minmax(480px, 1.12fr);
     }
 
-    .register-hero {
-        padding: 32px 30px 36px;
-    }
-
-    .register-hero-description {
-        font-size: 22px;
-    }
-
-    .register-hero-features li {
-        font-size: 13px;
-        gap: 10px;
-    }
-
-    .register-hero-features li::before {
-        width: 16px;
-        height: 16px;
-        background-size: 10px;
-    }
-
-    .register-hero-title {
-        font-size: 44px;
-    }
-
     .register-content {
         min-height: 0;
         gap: 9px;
@@ -635,43 +535,6 @@
         width: min(880px, 100%);
         height: clamp(430px, calc(100dvh - 110px), 470px);
         min-height: 0;
-    }
-
-    .register-hero {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        padding: 24px 28px 28px;
-    }
-
-    .register-hero-description {
-        font-size: 20px;
-        padding-top: 18px;
-    }
-
-    .register-hero-features {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-    }
-
-    .register-hero-features li {
-        gap: 9px;
-        font-size: 12px;
-    }
-
-    .register-hero-features li::before {
-        width: 15px;
-        height: 15px;
-        background-size: 9px;
-    }
-
-    .register-hero-title {
-        width: min(320px, 100%);
-        font-size: 38px;
-        line-height: 1.02;
-        padding-bottom: 18px;
     }
 
     .register-content {
@@ -837,35 +700,6 @@
         overflow: hidden;
     }
 
-    .register-hero {
-        min-height: 170px;
-        display: grid;
-        align-content: space-between;
-        gap: 18px;
-        padding: 26px 24px 28px;
-        border-radius: 0;
-    }
-
-    .register-hero-features {
-        display: none;
-    }
-
-    .register-hero-description {
-        width: min(360px, 100%);
-        padding-top: 0;
-        font-size: 20px;
-        line-height: 1.25;
-        letter-spacing: -0.035em;
-    }
-
-    .register-hero-title {
-        width: min(380px, 100%);
-        padding-bottom: 0;
-        font-size: 38px;
-        line-height: 0.95;
-        letter-spacing: -0.06em;
-    }
-
     .register-content {
         height: auto;
         gap: 18px;
@@ -982,21 +816,6 @@
         border-radius: 26px;
     }
 
-    .register-hero {
-        min-height: 205px;
-        padding: 32px 30px 34px;
-    }
-
-    .register-hero-description {
-        width: min(430px, 100%);
-        font-size: 23px;
-    }
-
-    .register-hero-title {
-        width: min(450px, 100%);
-        font-size: 44px;
-    }
-
     .register-content {
         gap: 22px;
         padding: 34px 30px 34px;
@@ -1062,19 +881,6 @@
         border-radius: 22px;
     }
 
-    .register-hero {
-        min-height: 145px;
-        padding: 22px 20px 24px;
-    }
-
-    .register-hero-description {
-        font-size: 17px;
-    }
-
-    .register-hero-title {
-        font-size: 31px;
-    }
-
     .register-content {
         gap: 16px;
         padding: 24px 20px 26px;
@@ -1109,19 +915,6 @@
 
     .register-card {
         border-radius: 18px;
-    }
-
-    .register-hero {
-        min-height: 112px;
-        padding: 15px;
-    }
-
-    .register-hero-description {
-        font-size: 14px;
-    }
-
-    .register-hero-title {
-        font-size: 26px;
     }
 
     .register-content {
