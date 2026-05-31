@@ -7,14 +7,21 @@
     display: flex;
     flex-direction: column;
     min-height: 100dvh;
+    background: transparent;
+}
+
+.public-layout::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
     background:
         radial-gradient(circle at 12% 18%, rgba(255,255,255,0.95) 0, transparent 24%),
         radial-gradient(circle at 82% 12%, rgba(255,255,255,0.55) 0, transparent 28%),
         linear-gradient(135deg, #e8e8e8 0%, #d5d5d5 45%, #c4c4c4 100%);
-    background-attachment: fixed;
 }
 
-[data-theme='dark'] .public-layout {
+[data-theme='dark'] .public-layout::before {
     background:
         radial-gradient(circle at 12% 18%, rgba(50,50,50,0.6) 0, transparent 30%),
         linear-gradient(135deg, #1a1a1a 0%, #121212 100%);
@@ -226,6 +233,29 @@
 /* O PublicLayout já tem o toggle de tema no header; esconde o botão interno das páginas de auth */
 .public-layout .auth-header-row .theme-toggle-btn {
     display: none;
+}
+
+/* =========================
+   Animação de entrada nos cards de auth
+========================= */
+
+@keyframes card-enter {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.99);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.login-card,
+.register-card,
+.confirm-email-card,
+.esqueci-senha-card {
+    animation: card-enter 0.28s ease-out;
 }
 
 @media only screen and (max-width: 480px) {
