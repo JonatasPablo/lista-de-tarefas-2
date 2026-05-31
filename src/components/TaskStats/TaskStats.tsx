@@ -1,3 +1,4 @@
+import React from 'react'
 import type { Task, TaskPriority } from '../../types/task'
 
 type TaskStatsFilter = 'todas' | TaskPriority
@@ -9,7 +10,7 @@ interface TaskStatsProps {
     onFilterChange?: (filter: TaskStatsFilter) => void
 }
 
-export const TaskStats = ({
+export const TaskStats = React.memo(({
     tasks,
     title = 'Resumo',
     activeFilter = 'todas',
@@ -81,4 +82,4 @@ export const TaskStats = ({
             </div>
         </section>
     )
-}
+})
