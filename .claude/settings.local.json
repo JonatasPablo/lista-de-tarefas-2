@@ -7,7 +7,10 @@
       "Bash(Get-ChildItem -Path \"g:\\\\Projetos\\\\lista-de-tarefas-2\" -Recurse -Directory)",
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(Sort-Object)",
-      "Bash(Get-ChildItem -Force)"
+      "Bash(Get-ChildItem -Force)",
+      "PowerShell(if \\(!\\(Test-Path \"G:\\\\Projetos\\\\lista-de-tarefas-2\\\\.claude\\\\rules\"\\)\\) { New-Item -ItemType Directory -Force \"G:\\\\Projetos\\\\lista-de-tarefas-2\\\\.claude\\\\rules\" } else { Write-Host \"Diretório já existe\" })",
+      "Bash(code *)",
+      "Bash(echo   $ext *)"
     ]
   }
 }
