@@ -222,6 +222,16 @@
     opacity: 0.55;
 }
 
+.completed-tasks-page .task-filters .task-filters-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.completed-tasks-page .task-filters .task-filters-actions button {
+    flex-shrink: 0;
+}
+
 .completed-tasks-filter-status {
     display: inline-flex;
     align-items: center;

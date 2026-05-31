@@ -27,10 +27,13 @@ export const TaskFilters = ({
     onSortChange,
     onClearFilters,
 }: TaskFiltersProps) => {
-    const hasActiveFilters =
-        searchTerm.trim() !== '' ||
-        priorityFilter !== 'todas' ||
-        sortOption !== 'Filtros'
+    const filtrosAtivos = [
+        searchTerm.trim() !== '',
+        priorityFilter !== 'todas',
+        sortOption !== 'mais-recentes' && sortOption !== 'Filtros',
+    ].filter(Boolean).length
+
+    const hasActiveFilters = filtrosAtivos > 0
 
     return (
         <div className="task-filters">
@@ -62,13 +65,21 @@ export const TaskFilters = ({
                 <option value="nome-za">Nome Z-A</option>
             </select>
 
-            <button
-                type="button"
-                onClick={onClearFilters}
-                disabled={!hasActiveFilters}
-            >
-                Limpar filtros
-            </button>
+            <div className="task-filters-actions">
+                <button
+                    type="button"
+                    onClick={onClearFilters}
+                    disabled={!hasActiveFilters}
+                >
+                    Limpar filtros
+                </button>
+
+                {hasActiveFilters && (
+                    <span className="task-filters-badge">
+                        {filtrosAtivos} ativo{filtrosAtivos > 1 ? 's' : ''}
+                    </span>
+                )}
+            </div>
         </div>
     )
 }

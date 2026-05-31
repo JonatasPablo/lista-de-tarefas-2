@@ -6,11 +6,17 @@ import type {
     TaskPriority,
 } from '../../types/task'
 import { TaskDetailModal } from '../TaskDetailModal/TaskDetailModal'
+import { TaskEmptyState } from '../TaskEmptyState/TaskEmptyState'
 import { TaskItem } from '../TaskItem/TaskItem'
+import { TaskSkeleton } from '../TaskSkeleton/TaskSkeleton'
 
 interface TaskListProps {
     tasks: Task[]
     emptyMessage?: string
+    tipoEstadoVazio?: 'pendentes' | 'concluidas' | 'busca'
+    termoBusca?: string
+    onNovaTarefa?: () => void
+    isLoading?: boolean
     selectable?: boolean
     selectedTaskIds?: string[]
     onSelectTask?: (taskId: string) => void
@@ -36,6 +42,10 @@ export const TaskList = ({
     onRequestRenameFile,
     tasks,
     emptyMessage = 'Nenhuma tarefa cadastrada.',
+    tipoEstadoVazio,
+    termoBusca,
+    onNovaTarefa,
+    isLoading = false,
     selectable = false,
     selectedTaskIds = [],
     onSelectTask,
@@ -96,7 +106,21 @@ export const TaskList = ({
         setActiveTaskId(null)
     }, [])
 
+    if (isLoading) {
+        return <TaskSkeleton />
+    }
+
     if (tasks.length === 0) {
+        if (tipoEstadoVazio) {
+            return (
+                <TaskEmptyState
+                    tipo={tipoEstadoVazio}
+                    termoBusca={termoBusca}
+                    onNovaTarefa={onNovaTarefa}
+                />
+            )
+        }
+
         return (
             <p className="empty-message task-list-empty">
                 {emptyMessage}

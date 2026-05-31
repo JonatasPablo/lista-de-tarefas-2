@@ -127,7 +127,8 @@ export const CompletedTasksPage = ({
                     <TaskList
                         onRequestRenameFile={onRequestRenameFile}
                         tasks={filteredTasks}
-                        emptyMessage="Nenhuma tarefa concluída encontrada."
+                        tipoEstadoVazio={searchTerm.trim() ? 'busca' : 'concluidas'}
+                        termoBusca={searchTerm.trim()}
                         onToggleTask={onToggleTask}
                         onDeleteTask={onDeleteTask}
                         onUpdateTask={onUpdateTask}

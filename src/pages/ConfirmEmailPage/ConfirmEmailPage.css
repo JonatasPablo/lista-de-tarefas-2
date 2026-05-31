@@ -471,6 +471,17 @@
     .confirm-email-card {
         width: min(480px, 100%);
     }
+
+    .confirm-email-content {
+        gap: 14px;
+        padding: 22px 18px;
+        overflow-y: auto;
+        max-height: calc(100dvh - 200px);
+    }
+
+    .confirm-email-header h2 {
+        font-size: 28px;
+    }
 }
 
 /* =========================

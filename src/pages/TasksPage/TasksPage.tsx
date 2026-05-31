@@ -111,7 +111,7 @@ export const TasksPage = ({
     const handleClearFilters = () => {
         setSearchTerm('')
         setPriorityFilter('todas')
-        setSortOption('Filtros')
+        setSortOption('mais-recentes')
         onClearSelectedTasks()
     }
 
@@ -254,10 +254,12 @@ export const TasksPage = ({
                     <TaskList
                         onRequestRenameFile={onRequestRenameFile}
                         tasks={filteredTasks}
+                        tipoEstadoVazio={searchTerm.trim() ? 'busca' : 'pendentes'}
+                        termoBusca={searchTerm.trim()}
+                        onNovaTarefa={handleToggleTaskForm}
                         selectable
                         selectedTaskIds={selectedTaskIds}
                         onSelectTask={onSelectTask}
-                        emptyMessage="Nenhuma tarefa pendente encontrada."
                         onToggleTask={onToggleTask}
                         onDeleteTask={onDeleteTask}
                         onUpdateTask={onUpdateTask}
